@@ -516,8 +516,8 @@ class _AddUserScreenState extends State<AddUserScreen> {
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmPasswordCtrl = TextEditingController();
-  String? _selectedRole;
-  String _selectedStatus = 'Active';
+  // String? _selectedRole;
+  // String _selectedStatus = 'Active';
   bool _showPw = false;
   bool _showConfirmPw = false;
   bool _saving = false;

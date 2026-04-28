@@ -21,6 +21,33 @@ class AppColors {
   static const Color green = Color(0xFF15803D);
   static const Color border = Color(0xFFE5E7EB);
   static const Color scaffoldBg = Color(0xFFE8E9ED);
+
+
+  static const Color background = Color(0xFFF0F1F5);
+  static const Color surface = Colors.white;
+  static const Color textPrimary = Color(0xFF1C1917);
+  static const Color textSecondary = Color(0xFF9CA3AF);
+  static const Color textMuted = Color(0xFF6B7280);
+
+  // Status
+  static const Color greenBg = Color(0xFFDCFCE7);
+  static const Color greenText = Color(0xFF15803D);
+  static const Color blueBg = Color(0xFFDBEAFE);
+  static const Color blueText = Color(0xFF1D4ED8);
+  static const Color yellowBg = Color(0xFFFEF3C7);
+  static const Color yellowText = Color(0xFFB45309);
+  static const Color grayBg = Color(0xFFF3F4F6);
+  static const Color grayText = Color(0xFF6B7280);
+  static const Color redBg = Color(0xFFFEE2E2);
+  static const Color redText = Color(0xFFB91C1C);
+  static const Color purpleBg = Color(0xFFEDE9FE);
+  static const Color purpleText = Color(0xFF6D28D9);
+
+  // Material/Labour
+  static const Color matBg = Color(0xFFFEF9C3);
+  static const Color matText = Color(0xFF854D0E);
+  static const Color labBg = Color(0xFFDCFCE7);
+  static const Color labText = Color(0xFF15803D);
 }
 
 class AppTheme {
@@ -79,4 +106,30 @@ class AppTheme {
       ),
     );
   }
+}
+
+
+String formatCurrency(double amount) {
+  if (amount >= 100000) {
+    double lakh = amount / 100000;
+    if (lakh == lakh.floor()) {
+      return '₹${lakh.floor()}L';
+    }
+    return '₹${lakh.toStringAsFixed(1)}L';
+  }
+  if (amount >= 1000) {
+    return '₹${(amount / 1000).toStringAsFixed(0)}K';
+  }
+  return '₹${amount.toStringAsFixed(0)}';
+}
+
+String formatCurrencyFull(double amount) {
+  final parts = amount.toStringAsFixed(0).split('').reversed.toList();
+  final result = <String>[];
+  for (int i = 0; i < parts.length; i++) {
+    if (i == 3 && i < parts.length - 1) result.add(',');
+    if (i > 3 && (i - 3) % 2 == 0 && i < parts.length - 1) result.add(',');
+    result.add(parts[i]);
+  }
+  return '₹${result.reversed.join()}';
 }

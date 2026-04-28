@@ -15,4 +15,6 @@ class AppConfig {
   static String? customerNumber;
   static String? settings;
   static int? version = 1;
+
+  static int? companyId;
 }

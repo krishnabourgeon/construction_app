@@ -36,6 +36,8 @@ class LoginProvider extends ChangeNotifier with ProviderHelperClass {
         await SharedPreferenceHelper.saveToken(loginModel.token);
         await SharedPreferenceHelper.saveUserID(loginModel.data.id.toString());
         await SharedPreferenceHelper.saveRole(loginModel.data.role);
+        await SharedPreferenceHelper.saveCompanyId(loginModel.data.companyId);
+        //print("Saved Company ID: ${loginModel.data.companyId}");
       }
       
       if (onSuccess != null) onSuccess(loginModel.data.role.toLowerCase());

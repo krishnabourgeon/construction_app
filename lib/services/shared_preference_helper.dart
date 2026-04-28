@@ -23,6 +23,13 @@ class SharedPreferenceHelper {
     AppConfig.role = role;
     log("SAVED ROLE : $role");
   }
+
+  static Future<void> saveCompanyId(int companyId) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt("company_id", companyId);
+    AppConfig.companyId = companyId;
+    log("SAVED COMPANY ID : $companyId");
+  }
  
 
   static Future<String> getUserId() async {
@@ -56,9 +63,18 @@ class SharedPreferenceHelper {
     return role;
   }
 
+  static Future<int> getCompanyId() async {
+    final prefs = await SharedPreferences.getInstance();
+    int companyId = prefs.getInt("company_id") ?? 0;
+    log('company_id $companyId');
+    AppConfig.companyId = companyId;
+    return companyId;
+  }
+
   static Future<void> clearWholeData() async {
     AppConfig.accessToken = null;
     AppConfig.role = null;
+    AppConfig.companyId = null;
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
   }

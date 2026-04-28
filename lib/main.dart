@@ -1,4 +1,3 @@
-import 'package:construction_app/view/login_screen.dart';
 import 'package:construction_app/view/splash_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';

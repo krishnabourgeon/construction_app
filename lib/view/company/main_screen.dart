@@ -1,7 +1,8 @@
+import 'package:construction_app/models/models.dart';
 import 'package:construction_app/view/company/dashboard_screen.dart';
 import 'package:construction_app/view/company/labour_screen.dart';
 import 'package:construction_app/view/company/materials_screen.dart';
-import 'package:construction_app/view/company/site_screen.dart';
+import 'package:construction_app/view/company/site_list_screen.dart';
 import 'package:construction_app/view/company/user_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -17,14 +18,16 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+    final List<Site> sites = getSampleSites();
   int _currentIndex = 0;
 
-  final _screens = const [
-    DashboardScreen(),
-    UserScreen(),
-    SitesScreen(),
-    MaterialsScreen(),
-    LabourScreen(),
+  late final _screens = [
+    const DashboardScreen(),
+    const UserScreen(),
+    const SitesScreen(),
+    
+    ViewMaterialsScreen(sites: sites),
+    ViewLabourScreen(sites: sites),
   ];
 
   @override

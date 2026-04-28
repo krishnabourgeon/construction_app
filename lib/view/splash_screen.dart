@@ -25,6 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
     
     String token = await SharedPreferenceHelper.getToken();
     String role = await SharedPreferenceHelper.getRole();
+    await SharedPreferenceHelper.getCompanyId();
 
     if (!mounted) return;
 

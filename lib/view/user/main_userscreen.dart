@@ -1,7 +1,6 @@
 import 'package:construction_app/view/user/dashboard_userscreen.dart';
 import 'package:construction_app/view/user/labour_userscreen.dart';
 import 'package:construction_app/view/user/materials_userscreen.dart';
-import 'package:construction_app/view/user/site_userscreen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,7 +19,7 @@ class _MainUserScreenState extends State<MainUserScreen> {
 
   final _screens = const [
     DashboardUserScreen(),
-    SitesUserScreen(),
+   // SitesUserScreen(),
     MaterialsUserScreen(),
     LabourUserScreen(),
   ];
