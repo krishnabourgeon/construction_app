@@ -64,19 +64,19 @@ class Data {
     });
 
     factory Data.fromJson(Map<String, dynamic> json) => Data(
-        companyId: json["company_id"],
-        sitename: json["sitename"],
-        contactperson: json["contactperson"],
-        mobile: json["mobile"],
-        supervisorId: json["supervisor_id"],
-        startDate: DateTime.parse(json["start_date"]),
-        tentativeCompletionDate: DateTime.parse(json["tentative_completion_date"]),
-        estimateAmount: json["estimate_amount"],
-        description: json["description"],
-        status: json["status"],
-        updatedAt: DateTime.parse(json["updated_at"]),
-        createdAt: DateTime.parse(json["created_at"]),
-        id: json["id"],
+        companyId: json["company_id"] ?? 0,
+        sitename: json["sitename"] ?? "",
+        contactperson: json["contactperson"] ?? "",
+        mobile: json["mobile"] ?? "",
+        supervisorId: json["supervisor_id"] ?? 0,
+        startDate: json["start_date"] != null ? DateTime.parse(json["start_date"]) : DateTime.now(),
+        tentativeCompletionDate: json["tentative_completion_date"] != null ? DateTime.parse(json["tentative_completion_date"]) : DateTime.now(),
+        estimateAmount: json["estimate_amount"] ?? 0,
+        description: json["description"] ?? "",
+        status: json["status"] ?? 0,
+        updatedAt: json["updated_at"] != null ? DateTime.parse(json["updated_at"]) : DateTime.now(),
+        createdAt: json["created_at"] != null ? DateTime.parse(json["created_at"]) : DateTime.now(),
+        id: json["id"] ?? 0,
     );
 
     Map<String, dynamic> toJson() => {

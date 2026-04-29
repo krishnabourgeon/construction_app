@@ -18,7 +18,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-    final List<Site> sites = getSampleSites();
+   // final List<Site> sites = getSampleSites();
   int _currentIndex = 0;
 
   late final _screens = [
@@ -26,8 +26,8 @@ class _MainScreenState extends State<MainScreen> {
     const UserScreen(),
     const SitesScreen(),
     
-    ViewMaterialsScreen(sites: sites),
-    ViewLabourScreen(sites: sites),
+    // ViewMaterialsScreen(sites: sites),
+    // ViewLabourScreen(sites: sites),
   ];
 
   @override
@@ -70,16 +70,16 @@ class _MainScreenState extends State<MainScreen> {
               activeIcon: Icon(Icons.domain_rounded),
               label: 'Sites',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.inventory_2_outlined),
-              activeIcon: Icon(Icons.inventory_2_rounded),
-              label: 'Materials',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.people_alt_outlined),
-              activeIcon: Icon(Icons.people_alt_rounded),
-              label: 'Labour',
-            ),
+            // BottomNavigationBarItem(
+            //   icon: Icon(Icons.inventory_2_outlined),
+            //   activeIcon: Icon(Icons.inventory_2_rounded),
+            //   label: 'Materials',
+            // ),
+            // BottomNavigationBarItem(
+            //   icon: Icon(Icons.people_alt_outlined),
+            //   activeIcon: Icon(Icons.people_alt_rounded),
+            //   label: 'Labour',
+            // ),
           ],
         ),
       ),

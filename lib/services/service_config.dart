@@ -1,4 +1,6 @@
 import 'package:construction_app/models/add-sites_model.dart';
+import 'package:construction_app/models/add_labour_body.dart';
+import 'package:construction_app/models/add_labour_model.dart';
 import 'package:construction_app/models/add_materials_body.dart';
 import 'package:construction_app/models/add_materials_model.dart';
 import 'package:construction_app/models/add_site_body.dart';
@@ -10,6 +12,8 @@ import 'package:construction_app/models/create_user_body.dart';
 import 'package:construction_app/models/create_user_model.dart';
 import 'package:construction_app/models/error_response_model.dart';
 import 'package:construction_app/models/get_company.dart';
+import 'package:construction_app/models/get_stages_model.dart';
+import 'package:construction_app/models/get_sub_stages.dart';
 import 'package:construction_app/models/get_supervisor_model.dart';
 import 'package:construction_app/models/login_model.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
@@ -189,7 +193,7 @@ Future<Result> addStages(AddStagesBody addStagesBody)async{
 
 
 Future<Result> addSubStages(AddSubStagesBody addSubStagesBody)async {
-  Result res = await BaseClient.post('sites/add-sub-stages');
+  Result res = await BaseClient.post('sites/add-sub-stages',body: addSubStagesBody.toJson(),);
   if(res.isError){
     ErrorResponseModel errorResponseModel = 
     ErrorResponseModel(errorMessage: "oops something went wrong...!");
@@ -201,6 +205,56 @@ Future<Result> addSubStages(AddSubStagesBody addSubStagesBody)async {
     return (addSubStagesModel.status)
     ?Result.value(addSubStagesModel)
     :Result.error(addSubStagesModel);
+  }
+}
+
+
+Future<Result> getStages(int siteId)async{
+  Result res = await BaseClient.get("stages/$siteId");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel =
+    ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get stages : $response");
+    GetStagesModel getStagesModel = GetStagesModel.fromJson(response);
+    return (getStagesModel.status)
+    ?Result.value(getStagesModel)
+    :Result.error(getStagesModel);
+  }
+}
+
+Future<Result> getSubStages(int siteId)async{
+  Result res = await BaseClient.get("substages/$siteId");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel =
+    ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get Sub Stages : $response");
+    GetSubStages getSubStagesModel = GetSubStages.fromJson(response);
+    return (getSubStagesModel.status)
+    ?Result.value(getSubStagesModel)
+    :Result.error(getSubStagesModel);
+  }
+}
+
+
+Future<Result> addLabours(AddLabourBody addLabourBody)async{
+  Result res = await BaseClient.post("sites/add-labours",body: addLabourBody.toJson());
+  if(res.isError){
+    ErrorResponseModel errorResponseModel = 
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Add Labours : $response");
+    AddLabourModel addLabourModel = AddLabourModel.fromJson(response);
+    return (addLabourModel.status)
+    ?Result.value(addLabourModel)
+    :Result.error(addLabourModel);
   }
 }
 

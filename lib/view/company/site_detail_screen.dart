@@ -1,10 +1,12 @@
 import 'package:construction_app/models/models.dart';
+import 'package:construction_app/models/sitesbycompanies.dart';
 import 'package:construction_app/view/company/widgets/info_tab.dart';
 import 'package:construction_app/view/company/widgets/stages_tab.dart';
 import 'package:flutter/material.dart';
 
 class SiteDetailScreen extends StatefulWidget {
-  final Site site;
+  final SitesbyCompany site;
+ // final Site dummysite;
  
   const SiteDetailScreen({super.key, required this.site});
  
@@ -31,7 +33,7 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> with SingleTickerPr
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.site.name),
+        title: Text(widget.site.sitename),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: const Color(0xFFF59E0B),
@@ -47,8 +49,8 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> with SingleTickerPr
       body: TabBarView(
         controller: _tabController,
         children: [
-          InfoTab(site: widget.site),
-          WorkingStagesTab(site: widget.site),
+          InfoTab(),
+          WorkingStagesTab(site: widget.site,),
         ],
       ),
     );

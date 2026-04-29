@@ -12,6 +12,7 @@ class AppColors {
   static const Color grey = Color(0xFF6B7280);
   static const Color greyLight = Color(0xFF9CA3AF);
   static const Color greyBg = Color(0xFFF0F1F5);
+   static const greyFill = Color(0xFFF9FAFB);
   static const Color white = Color(0xFFFFFFFF);
   static const Color redLight = Color(0xFFFEE2E2);
   static const Color red = Color(0xFFB91C1C);
@@ -21,7 +22,10 @@ class AppColors {
   static const Color green = Color(0xFF15803D);
   static const Color border = Color(0xFFE5E7EB);
   static const Color scaffoldBg = Color(0xFFE8E9ED);
-
+  static const Color purple = Color(0xFF6D28D9);
+  static const Color purpleLight = Color(0xFFEDE9FE);
+  static const Color purpleMid = Color(0xFFC4B5FD);
+  static const Color borderLight = Color(0xFFF3F4F6);
 
   static const Color background = Color(0xFFF0F1F5);
   static const Color surface = Colors.white;

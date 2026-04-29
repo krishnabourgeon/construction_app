@@ -680,7 +680,7 @@ class WorkingStage {
   final String name;
   final String description;
   final String status;
-  final List<SubStage> subStages;
+  //final List<SubStage> subStages;
   final List<MaterialEntry> materials;
   final List<LabourEntry> labour;
  
@@ -689,40 +689,40 @@ class WorkingStage {
     required this.name,
     required this.description,
     required this.status,
-    this.subStages = const [],
+    //this.subStages = const [],
     this.materials = const [],
     this.labour = const [],
   });
  
-  double get totalMaterialCost =>
-      materials.fold(0.0, (sum, m) => sum + m.totalAmount) +
-      subStages.fold(0.0, (sum, s) => sum + s.totalMaterialCost);
+  // double get totalMaterialCost =>
+  //     materials.fold(0.0, (sum, m) => sum + m.totalAmount) +
+  //     //subStages.fold(0.0, (sum, s) => sum + s.totalMaterialCost);
  
-  double get totalLabourCost =>
-      labour.fold(0.0, (sum, l) => sum + l.amount) +
-      subStages.fold(0.0, (sum, s) => sum + s.totalLabourCost);
+  // double get totalLabourCost =>
+  //     labour.fold(0.0, (sum, l) => sum + l.amount) +
+  //     //subStages.fold(0.0, (sum, s) => sum + s.totalLabourCost);
 }
  
-class SubStage {
-  final String id;
-  final String name;
-  final String description;
-  final String status;
-  final List<MaterialEntry> materials;
-  final List<LabourEntry> labour;
+// class SubStage {
+//   final String id;
+//   final String name;
+//   final String description;
+//   final String status;
+//   final List<MaterialEntry> materials;
+//   final List<LabourEntry> labour;
  
-  SubStage({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.status,
-    this.materials = const [],
-    this.labour = const [],
-  });
+//   SubStage({
+//     required this.id,
+//     required this.name,
+//     required this.description,
+//     required this.status,
+//     this.materials = const [],
+//     this.labour = const [],
+//   });
  
-  double get totalMaterialCost => materials.fold(0.0, (sum, m) => sum + m.totalAmount);
-  double get totalLabourCost => labour.fold(0.0, (sum, l) => sum + l.amount);
-}
+//   double get totalMaterialCost => materials.fold(0.0, (sum, m) => sum + m.totalAmount);
+//   double get totalLabourCost => labour.fold(0.0, (sum, l) => sum + l.amount);
+// }
  
 class MaterialEntry {
   final String id;
@@ -777,199 +777,322 @@ class LabourEntry {
 }
 
 
-List<Site> getSampleSites() {
-  return [
-    Site(
-      id: 's1',
-      name: 'Sunrise Residency',
-      contactPerson: 'Rajan Kumar',
-      mobile: '+91 98765 43210',
-      startDate: DateTime(2025, 1, 1),
-      targetDate: DateTime(2025, 6, 30),
-      supervisor: 'Anand Krishnan',
-      estimatedAmount: 4500000,
-      actualSpent: 2880000,
-      status: 'Active',
-      description: 'G+2 residential building with 6 units per floor. RCC framed structure with brick masonry walls and basement parking.',
-      stages: [
-        WorkingStage(
-          id: 'st1',
-          name: 'Foundation Work',
-          description: 'Excavation, PCC & RCC footing',
-          status: 'Done',
-          subStages: [
-            SubStage(
-              id: 'sub1',
-              name: 'Excavation',
-              description: 'Dig to 2m depth as per drawing',
-              status: 'Done',
-              materials: [
-                MaterialEntry(
-                  id: 'm1',
-                  name: 'Diesel',
-                  quantity: 120,
-                  unit: 'Litre',
-                  pricePerUnit: 95,
-                  supplier: 'Local Dealer',
-                  date: DateTime(2025, 1, 5),
-                  stageName: 'Foundation Work',
-                  subStageName: 'Excavation',
-                  siteName: 'Sunrise Residency',
-                ),
-              ],
-              labour: [
-                LabourEntry(
-                  id: 'l1',
-                  type: 'Helper',
-                  workerName: 'Excavation Team',
-                  amount: 18000,
-                  remarks: '8 workers × 5 days',
-                  date: DateTime(2025, 1, 5),
-                  stageName: 'Foundation Work',
-                  subStageName: 'Excavation',
-                  siteName: 'Sunrise Residency',
-                ),
-              ],
-            ),
-            SubStage(
-              id: 'sub2',
-              name: 'PCC Laying',
-              description: 'Plain cement concrete base 1:4:8',
-              status: 'Done',
-              materials: [
-                MaterialEntry(
-                  id: 'm2',
-                  name: 'Cement (OPC 53)',
-                  quantity: 40,
-                  unit: 'Bag',
-                  pricePerUnit: 450,
-                  supplier: 'Ramco',
-                  date: DateTime(2025, 1, 8),
-                  stageName: 'Foundation Work',
-                  subStageName: 'PCC Laying',
-                  siteName: 'Sunrise Residency',
-                ),
-              ],
-              labour: [
-                LabourEntry(
-                  id: 'l2',
-                  type: 'Mason',
-                  workerName: 'PCC Team',
-                  amount: 12000,
-                  remarks: 'PCC laying work',
-                  date: DateTime(2025, 1, 8),
-                  stageName: 'Foundation Work',
-                  subStageName: 'PCC Laying',
-                  siteName: 'Sunrise Residency',
-                ),
-              ],
-            ),
-            SubStage(
-              id: 'sub3',
-              name: 'Footing',
-              description: 'RCC footing with TMT steel bars',
-              status: 'Done',
-              materials: [
-                MaterialEntry(
-                  id: 'm3',
-                  name: 'TMT Steel Bars',
-                  quantity: 3500,
-                  unit: 'Kg',
-                  pricePerUnit: 56,
-                  supplier: 'SAIL',
-                  date: DateTime(2025, 1, 12),
-                  stageName: 'Foundation Work',
-                  subStageName: 'Footing',
-                  siteName: 'Sunrise Residency',
-                ),
-                MaterialEntry(
-                  id: 'm4',
-                  name: 'Cement (OPC 53)',
-                  quantity: 80,
-                  unit: 'Bag',
-                  pricePerUnit: 450,
-                  supplier: 'Ramco',
-                  date: DateTime(2025, 1, 12),
-                  stageName: 'Foundation Work',
-                  subStageName: 'Footing',
-                  siteName: 'Sunrise Residency',
-                ),
-              ],
-              labour: [
-                LabourEntry(
-                  id: 'l3',
-                  type: 'Mason (Head)',
-                  workerName: 'RCC Footing Team',
-                  amount: 150000,
-                  remarks: '6 workers × 16 days',
-                  date: DateTime(2025, 1, 12),
-                  stageName: 'Foundation Work',
-                  subStageName: 'Footing',
-                  siteName: 'Sunrise Residency',
-                ),
-              ],
-            ),
-          ],
-        ),
-        WorkingStage(
-          id: 'st2',
-          name: 'Column & Slab',
-          description: 'RCC columns and floor slabs G+2',
-          status: 'Active',
-          materials: [
-            MaterialEntry(
-              id: 'm5',
-              name: 'Cement (OPC 53)',
-              quantity: 300,
-              unit: 'Bag',
-              pricePerUnit: 450,
-              supplier: 'Ramco',
-              date: DateTime(2025, 2, 1),
-              stageName: 'Column & Slab',
-              siteName: 'Sunrise Residency',
-            ),
-            MaterialEntry(
-              id: 'm6',
-              name: 'TMT Steel (Fe500)',
-              quantity: 8000,
-              unit: 'Kg',
-              pricePerUnit: 56,
-              supplier: 'SAIL',
-              date: DateTime(2025, 2, 1),
-              stageName: 'Column & Slab',
-              siteName: 'Sunrise Residency',
-            ),
-          ],
-          labour: [
-            LabourEntry(
-              id: 'l4',
-              type: 'Mason (Head)',
-              workerName: 'Head Mason',
-              amount: 35000,
-              remarks: 'Column & beam work, 2 weeks',
-              date: DateTime(2025, 2, 1),
-              stageName: 'Column & Slab',
-              siteName: 'Sunrise Residency',
-            ),
-            LabourEntry(
-              id: 'l5',
-              type: 'Helper',
-              workerName: 'Helper Workers (6)',
-              amount: 126000,
-              remarks: 'Slab casting team, 3 weeks',
-              date: DateTime(2025, 2, 5),
-              stageName: 'Column & Slab',
-              siteName: 'Sunrise Residency',
-            ),
-          ],
-        ),
-        WorkingStage(
-          id: 'st3',
-          name: 'Brick Masonry',
-          description: 'Wall construction & plastering',
-          status: 'Pending',
-        ),
-      ],
-    ),
-  ];
+// List<Site> getSampleSites() {
+//   return [
+//     Site(
+//       id: 's1',
+//       name: 'Sunrise Residency',
+//       contactPerson: 'Rajan Kumar',
+//       mobile: '+91 98765 43210',
+//       startDate: DateTime(2025, 1, 1),
+//       targetDate: DateTime(2025, 6, 30),
+//       supervisor: 'Anand Krishnan',
+//       estimatedAmount: 4500000,
+//       actualSpent: 2880000,
+//       status: 'Active',
+//       description: 'G+2 residential building with 6 units per floor. RCC framed structure with brick masonry walls and basement parking.',
+//       stages: [
+//         WorkingStage(
+//           id: 'st1',
+//           name: 'Foundation Work',
+//           description: 'Excavation, PCC & RCC footing',
+//           status: 'Done',
+//           subStages: [
+//             SubStage(
+//               id: 'sub1',
+//               name: 'Excavation',
+//               description: 'Dig to 2m depth as per drawing',
+//               status: 'Done',
+//               materials: [
+//                 MaterialEntry(
+//                   id: 'm1',
+//                   name: 'Diesel',
+//                   quantity: 120,
+//                   unit: 'Litre',
+//                   pricePerUnit: 95,
+//                   supplier: 'Local Dealer',
+//                   date: DateTime(2025, 1, 5),
+//                   stageName: 'Foundation Work',
+//                   subStageName: 'Excavation',
+//                   siteName: 'Sunrise Residency',
+//                 ),
+//               ],
+//               labour: [
+//                 LabourEntry(
+//                   id: 'l1',
+//                   type: 'Helper',
+//                   workerName: 'Excavation Team',
+//                   amount: 18000,
+//                   remarks: '8 workers × 5 days',
+//                   date: DateTime(2025, 1, 5),
+//                   stageName: 'Foundation Work',
+//                   subStageName: 'Excavation',
+//                   siteName: 'Sunrise Residency',
+//                 ),
+//               ],
+//             ),
+//             SubStage(
+//               id: 'sub2',
+//               name: 'PCC Laying',
+//               description: 'Plain cement concrete base 1:4:8',
+//               status: 'Done',
+//               materials: [
+//                 MaterialEntry(
+//                   id: 'm2',
+//                   name: 'Cement (OPC 53)',
+//                   quantity: 40,
+//                   unit: 'Bag',
+//                   pricePerUnit: 450,
+//                   supplier: 'Ramco',
+//                   date: DateTime(2025, 1, 8),
+//                   stageName: 'Foundation Work',
+//                   subStageName: 'PCC Laying',
+//                   siteName: 'Sunrise Residency',
+//                 ),
+//               ],
+//               labour: [
+//                 LabourEntry(
+//                   id: 'l2',
+//                   type: 'Mason',
+//                   workerName: 'PCC Team',
+//                   amount: 12000,
+//                   remarks: 'PCC laying work',
+//                   date: DateTime(2025, 1, 8),
+//                   stageName: 'Foundation Work',
+//                   subStageName: 'PCC Laying',
+//                   siteName: 'Sunrise Residency',
+//                 ),
+//               ],
+//             ),
+//             SubStage(
+//               id: 'sub3',
+//               name: 'Footing',
+//               description: 'RCC footing with TMT steel bars',
+//               status: 'Done',
+//               materials: [
+//                 MaterialEntry(
+//                   id: 'm3',
+//                   name: 'TMT Steel Bars',
+//                   quantity: 3500,
+//                   unit: 'Kg',
+//                   pricePerUnit: 56,
+//                   supplier: 'SAIL',
+//                   date: DateTime(2025, 1, 12),
+//                   stageName: 'Foundation Work',
+//                   subStageName: 'Footing',
+//                   siteName: 'Sunrise Residency',
+//                 ),
+//                 MaterialEntry(
+//                   id: 'm4',
+//                   name: 'Cement (OPC 53)',
+//                   quantity: 80,
+//                   unit: 'Bag',
+//                   pricePerUnit: 450,
+//                   supplier: 'Ramco',
+//                   date: DateTime(2025, 1, 12),
+//                   stageName: 'Foundation Work',
+//                   subStageName: 'Footing',
+//                   siteName: 'Sunrise Residency',
+//                 ),
+//               ],
+//               labour: [
+//                 LabourEntry(
+//                   id: 'l3',
+//                   type: 'Mason (Head)',
+//                   workerName: 'RCC Footing Team',
+//                   amount: 150000,
+//                   remarks: '6 workers × 16 days',
+//                   date: DateTime(2025, 1, 12),
+//                   stageName: 'Foundation Work',
+//                   subStageName: 'Footing',
+//                   siteName: 'Sunrise Residency',
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//         WorkingStage(
+//           id: 'st2',
+//           name: 'Column & Slab',
+//           description: 'RCC columns and floor slabs G+2',
+//           status: 'Active',
+//           materials: [
+//             MaterialEntry(
+//               id: 'm5',
+//               name: 'Cement (OPC 53)',
+//               quantity: 300,
+//               unit: 'Bag',
+//               pricePerUnit: 450,
+//               supplier: 'Ramco',
+//               date: DateTime(2025, 2, 1),
+//               stageName: 'Column & Slab',
+//               siteName: 'Sunrise Residency',
+//             ),
+//             MaterialEntry(
+//               id: 'm6',
+//               name: 'TMT Steel (Fe500)',
+//               quantity: 8000,
+//               unit: 'Kg',
+//               pricePerUnit: 56,
+//               supplier: 'SAIL',
+//               date: DateTime(2025, 2, 1),
+//               stageName: 'Column & Slab',
+//               siteName: 'Sunrise Residency',
+//             ),
+//           ],
+//           labour: [
+//             LabourEntry(
+//               id: 'l4',
+//               type: 'Mason (Head)',
+//               workerName: 'Head Mason',
+//               amount: 35000,
+//               remarks: 'Column & beam work, 2 weeks',
+//               date: DateTime(2025, 2, 1),
+//               stageName: 'Column & Slab',
+//               siteName: 'Sunrise Residency',
+//             ),
+//             LabourEntry(
+//               id: 'l5',
+//               type: 'Helper',
+//               workerName: 'Helper Workers (6)',
+//               amount: 126000,
+//               remarks: 'Slab casting team, 3 weeks',
+//               date: DateTime(2025, 2, 5),
+//               stageName: 'Column & Slab',
+//               siteName: 'Sunrise Residency',
+//             ),
+//           ],
+//         ),
+//         WorkingStage(
+//           id: 'st3',
+//           name: 'Brick Masonry',
+//           description: 'Wall construction & plastering',
+//           status: 'Pending',
+//         ),
+//       ],
+//     ),
+//   ];
+// }
+
+
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MODELS - Add these to your existing models file
+// ══════════════════════════════════════════════════════════════════════════════
+ 
+class SubStageMaterial {
+  final String id;
+  final String subStageId;
+  String materialName;
+  double quantity;
+  String unit;
+  double pricePerUnit;
+  double totalAmount;
+  String supplier;
+  String dateAdded;
+ 
+  SubStageMaterial({
+    required this.id,
+    required this.subStageId,
+    required this.materialName,
+    required this.quantity,
+    required this.unit,
+    required this.pricePerUnit,
+    required this.totalAmount,
+    this.supplier = '',
+    required this.dateAdded,
+  });
+ 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'subStageId': subStageId,
+        'materialName': materialName,
+        'quantity': quantity,
+        'unit': unit,
+        'pricePerUnit': pricePerUnit,
+        'totalAmount': totalAmount,
+        'supplier': supplier,
+        'dateAdded': dateAdded,
+      };
+ 
+  factory SubStageMaterial.fromJson(Map<String, dynamic> json) =>
+      SubStageMaterial(
+        id: json['id'],
+        subStageId: json['subStageId'],
+        materialName: json['materialName'],
+        quantity: json['quantity'].toDouble(),
+        unit: json['unit'],
+        pricePerUnit: json['pricePerUnit'].toDouble(),
+        totalAmount: json['totalAmount'].toDouble(),
+        supplier: json['supplier'] ?? '',
+        dateAdded: json['dateAdded'],
+      );
+}
+ 
+class SubStageLabour {
+  final String id;
+  final String subStageId;
+  String labourType;
+  String workerName;
+  double amount;
+  String remarks;
+  String dateAdded;
+ 
+  SubStageLabour({
+    required this.id,
+    required this.subStageId,
+    required this.labourType,
+    this.workerName = '',
+    required this.amount,
+    this.remarks = '',
+    required this.dateAdded,
+  });
+ 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'subStageId': subStageId,
+        'labourType': labourType,
+        'workerName': workerName,
+        'amount': amount,
+        'remarks': remarks,
+        'dateAdded': dateAdded,
+      };
+ 
+  factory SubStageLabour.fromJson(Map<String, dynamic> json) => SubStageLabour(
+        id: json['id'],
+        subStageId: json['subStageId'],
+        labourType: json['labourType'],
+        workerName: json['workerName'] ?? '',
+        amount: json['amount'].toDouble(),
+        remarks: json['remarks'] ?? '',
+        dateAdded: json['dateAdded'],
+      );
+}
+ 
+// Updated SubStage model - add these fields to your existing SubStage class
+class SubStageWithResources {
+  final String id;
+  final String stageId;
+  String name;
+  String description;
+  String status;
+  List<SubStageMaterial> materials;
+  List<SubStageLabour> labour;
+ 
+  SubStageWithResources({
+    required this.id,
+    required this.stageId,
+    required this.name,
+    this.description = '',
+    this.status = 'Not Started',
+    List<SubStageMaterial>? materials,
+    List<SubStageLabour>? labour,
+  })  : materials = materials ?? [],
+        labour = labour ?? [];
+ 
+  double get materialTotal =>
+      materials.fold(0, (sum, m) => sum + m.totalAmount);
+  double get labourTotal => labour.fold(0, (sum, l) => sum + l.amount);
+  double get totalCost => materialTotal + labourTotal;
 }

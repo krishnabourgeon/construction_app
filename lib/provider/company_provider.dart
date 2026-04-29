@@ -10,6 +10,8 @@ import 'package:construction_app/models/create_user_body.dart';
 import 'package:construction_app/models/create_user_model.dart';
 import 'package:construction_app/models/error_response_model.dart';
 import 'package:construction_app/models/get_company.dart';
+import 'package:construction_app/models/get_stages_model.dart';
+import 'package:construction_app/models/get_sub_stages.dart';
 import 'package:construction_app/models/get_supervisor_model.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
 import 'package:construction_app/services/provider_helper_class.dart';
@@ -39,6 +41,10 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
   List<SitesbyCompany> sitesList = [];
   int? selectedSupervisorId;
   int? selectedSiteId;
+  List<GetStages> stagesList = [];
+  List<SubStages> subStagesList = [];
+
+
   
   Future<void> createUser(
     // {Function(String? role)? onSuccess,
@@ -278,45 +284,53 @@ Future<void> addMaterials({
 }
 
 
-Future<void> addStages({
-    Function(String errorMessage)? onFailure,
-    required int siteid,
-    required String stage,
-    required String status,
-    required int hassubstage
-})async{
-    updateLoadState(LoaderState.loading);
+Future<int?> addStages({
+  Function(String errorMessage)? onFailure,
+  required int siteid,
+  required String stage,
+  required String description,
+  required int status,
+  required int hassubstage,
+}) async {
+  updateLoadState(LoaderState.loading);
 
-    var res = await serviceConfig.addStages(
-      AddStagesBody(
-        siteId: siteid,
-        stages: [Stage(
+  var res = await serviceConfig.addStages(
+    AddStagesBody(
+      siteId: siteid,
+      stages: [
+        Stage(
           stage: stage,
           hasSubstage: hassubstage,
-        )],
-      ),
-    );
+          status: status,
+          description: description,
+        )
+      ],
+    ),
+  );
 
-    if (!res.isError) {
+  if (!res.isError) {
     final response = res.asValue!.value as AddStagesModel;
-
-    updateLoadState(LoaderState.loaded);
+    updateLoadState(LoaderState.loaded);    
+    await getStages(siteId: siteid);
+    await getSubStages(siteId: siteid);
+    notifyListeners();
+    return response.data.first.id;
   } else {
-    String errorMessage = "Failed to add stages";
+    String errorMessage = "Failed to add stage";
 
     if (res.asError!.error is ErrorResponseModel) {
       errorMessage =
           (res.asError!.error as ErrorResponseModel).errorMessage ??
-          errorMessage;
+              errorMessage;
     }
 
     errorToast = errorMessage;
     if (onFailure != null) onFailure(errorMessage);
 
     updateLoadState(LoaderState.loaded);
+    notifyListeners();
+    return null;
   }
-
-  notifyListeners();
 }
 
 Future<void> addSubStages({
@@ -338,6 +352,10 @@ Future<void> addSubStages({
     if (!res.isError) {
     final response = res.asValue!.value as AddSubStagesModel;
 
+    // Refresh the stages list so any sub-stage indicators are updated
+    await getStages(siteId: siteId);
+    await getSubStages(siteId: siteId);
+
     updateLoadState(LoaderState.loaded);
   } else {
     String errorMessage = "Failed to add sub stages";
@@ -357,6 +375,51 @@ Future<void> addSubStages({
   notifyListeners();
 }
 
+
+Future<void> getStages({
+  required int siteId,
+  Function(String errorMessage)? onFailure,
+})async{
+  updateLoadState(LoaderState.loading);
+  var res = await serviceConfig.getStages(siteId);
+  if(!res.isError){
+    final response = res.asValue!.value as GetStagesModel;
+    stagesList = response.data;
+    updateLoadState(LoaderState.loaded);
+  } else {
+    String errorMessage = "Failed to load stages";
+    if(res.asError!.error is ErrorResponseModel){
+      errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+      errorMessage;
+    }
+    errorToast = errorMessage;
+    if(onFailure != null) onFailure(errorMessage);
+    updateLoadState(LoaderState.loaded);
+  }
+  notifyListeners();
+}
+
+
+
+Future<void> getSubStages({required int siteId,Function(String errorMessage)? onFailure})async{
+  updateLoadState(LoaderState.loading);
+  var res = await serviceConfig.getSubStages(siteId);
+  if(!res.isError){
+    final response = res.asValue!.value as GetSubStages;
+    subStagesList = response.data;
+    updateLoadState(LoaderState.loaded);
+  } else {
+    String errorMessage = "Failed to load sub stages";
+    if(res.asError!.error is ErrorResponseModel){
+      errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+      errorMessage;
+    }
+    errorToast = errorMessage;
+    if(onFailure != null) onFailure(errorMessage);
+    updateLoadState(LoaderState.loaded);
+  }
+  notifyListeners();
+}
 
 
   @override

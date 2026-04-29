@@ -11,7 +11,7 @@ String addSubStagesModelToJson(AddSubStagesModel data) => json.encode(data.toJso
 class AddSubStagesModel {
     bool status;
     String message;
-    List<Datum> data;
+    List<AddSubStage> data;
 
     AddSubStagesModel({
         required this.status,
@@ -22,7 +22,7 @@ class AddSubStagesModel {
     factory AddSubStagesModel.fromJson(Map<String, dynamic> json) => AddSubStagesModel(
         status: json["status"],
         message: json["message"],
-        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+        data: List<AddSubStage>.from(json["data"].map((x) => AddSubStage.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -32,7 +32,7 @@ class AddSubStagesModel {
     };
 }
 
-class Datum {
+class AddSubStage {
     int siteId;
     int stageId;
     String substage;
@@ -42,7 +42,7 @@ class Datum {
     DateTime createdAt;
     int id;
 
-    Datum({
+    AddSubStage({
         required this.siteId,
         required this.stageId,
         required this.substage,
@@ -53,7 +53,7 @@ class Datum {
         required this.id,
     });
 
-    factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+    factory AddSubStage.fromJson(Map<String, dynamic> json) => AddSubStage(
         siteId: json["site_id"],
         stageId: json["stage_id"],
         substage: json["substage"],

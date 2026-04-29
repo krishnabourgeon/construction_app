@@ -143,9 +143,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class InfoTab extends StatelessWidget {
-  final Site site;
+  // final Site site;
  
-  const InfoTab({super.key, required this.site});
+  const InfoTab({super.key});
  
   @override
   Widget build(BuildContext context) {
@@ -161,19 +161,19 @@ class InfoTab extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 14),
             child: Column(
               children: [
-                _infoRow('Contact Person', site.contactPerson),
-                _infoRow('Mobile', site.mobile, valueColor: const Color(0xFF2563EB)),
-                _infoRow('Start Date', dateFormat.format(site.startDate)),
-                _infoRow('Target Date', dateFormat.format(site.targetDate)),
-                _infoRow('Supervisor', site.supervisor),
+                _infoRow('Contact Person', "Rajan Kumar"),
+                _infoRow('Mobile', "9876543210", valueColor: const Color(0xFF2563EB)),
+                _infoRow('Start Date', dateFormat.format(DateTime.parse("2025-01-01"))),
+                _infoRow('Target Date', dateFormat.format(DateTime.parse("2025-06-30"))),
+                _infoRow('Supervisor', "Anand Krishnan"),
                 _infoRow(
                   'Estimated',
-                  '₹${site.estimatedAmount.toStringAsFixed(0)}',
+                  '₹${4500000.toStringAsFixed(0)}',
                   valueColor: const Color(0xFFEA580C),
                 ),
                 _infoRow(
                   'Actual Spent',
-                  '₹${site.actualSpent.toStringAsFixed(0)}',
+                  '₹${4000000.toStringAsFixed(0)}',
                   valueColor: const Color(0xFFDC2626),
                   isLast: true,
                 ),
@@ -196,7 +196,7 @@ class InfoTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  site.description,
+                  "G+2 residential building with 6 units per floor. RCC framed structure with brick masonry walls and basement parking.",
                   style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280), height: 1.7),
                 ),
               ],
@@ -220,14 +220,14 @@ class InfoTab extends StatelessWidget {
                       style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF374151)),
                     ),
                     Text(
-                      '${site.budgetProgress.toStringAsFixed(0)}%',
+                      '${4500000}%',
                       style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFFEA580C)),
                     ),
                   ],
                 ),
                 const SizedBox(height: 7),
                 LinearProgressIndicator(
-                  value: site.budgetProgress / 100,
+                  value: 4500000 / 100,
                   backgroundColor: const Color(0xFFE5E7EB),
                   valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFF59E0B)),
                   minHeight: 8,
@@ -237,11 +237,11 @@ class InfoTab extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '₹${(site.actualSpent / 100000).toStringAsFixed(1)}L spent',
+                      '₹${(4500000 / 100000).toStringAsFixed(1)}L spent',
                       style: const TextStyle(fontSize: 10, color: Color(0xFF9CA3AF)),
                     ),
                     Text(
-                      '₹${((site.estimatedAmount - site.actualSpent) / 100000).toStringAsFixed(1)}L remaining',
+                      '₹${((4500000 - 4000000) / 100000).toStringAsFixed(1)}L remaining',
                       style: const TextStyle(fontSize: 10, color: Color(0xFF9CA3AF)),
                     ),
                   ],

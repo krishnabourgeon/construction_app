@@ -1,9 +1,14 @@
 import 'package:construction_app/models/models.dart';
+import 'package:construction_app/models/sitesbycompanies.dart';
 import 'package:construction_app/provider/company_provider.dart';
+import 'package:construction_app/services/provider_helper_class.dart';
+import 'package:construction_app/services/shared_preference_helper.dart';
 import 'package:construction_app/view/company/add_site_screen.dart';
 import 'package:construction_app/view/company/site_detail_screen.dart';
 import 'package:construction_app/view/company/widgets/site_card.dart';
 import 'package:construction_app/widgets/app_theme.dart';
+import 'package:construction_app/services/provider_helper_class.dart';
+import 'package:construction_app/services/shared_preference_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +22,7 @@ class SitesScreen extends StatefulWidget {
 
 class _SitesScreenState extends State<SitesScreen> {
   String _search = '';
-  final List<Site> sites = getSampleSites();
+  //final List<Site> dummysites = getSampleSites();
 
   List<SiteModel> get _filtered => sampleSites
       .where((s) =>
@@ -30,7 +35,11 @@ class _SitesScreenState extends State<SitesScreen> {
 void initState() {
   super.initState();
 
-  Future.microtask(() {
+  Future.microtask(() async {
+    final companyId = await SharedPreferenceHelper.getCompanyId();
+    if (mounted) {
+      context.read<CompanyProvider>().sitesbycompanies(companyId: companyId);
+    }
     context.read<CompanyProvider>().getSupervisors();
   });
 }
@@ -134,24 +143,40 @@ void initState() {
 
           // List
           Expanded(
-            child: ListView.builder(
-        padding: const EdgeInsets.all(12),
-        itemCount: sites.length,
-        itemBuilder: (context, index) {
-          final site = sites[index];
-          return SiteCard(
-            site: site,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SiteDetailScreen(site: site),
-                ),
-              );
-            },
-          );
-        },
-      ),
+            child: Consumer<CompanyProvider>(
+              builder: (context, provider, child) {
+                final sites = provider.sitesList;
+                if (provider.loaderState == LoaderState.loading && sites.isEmpty) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (sites.isEmpty) {
+                  return const Center(child: Text('No sites found'));
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: sites.length,
+                  itemBuilder: (context, index) {
+                    // Using index % dummysites.length to avoid range error if dummysites is shorter
+                   // final dummysite = dummysites[index % dummysites.length];
+                    final site = sites[index];
+                    return SiteCard(
+                      site: site,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SiteDetailScreen(
+                              site: site,
+                             // dummysite: dummysite,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

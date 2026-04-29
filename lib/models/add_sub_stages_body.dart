@@ -35,19 +35,23 @@ class AddSubStagesBody {
 class Substage {
     String substage;
     int status;
+    String? description;
 
     Substage({
         required this.substage,
         required this.status,
+        this.description,
     });
 
     factory Substage.fromJson(Map<String, dynamic> json) => Substage(
         substage: json["substage"],
         status: json["status"],
+        description: json["description"],
     );
 
     Map<String, dynamic> toJson() => {
         "substage": substage,
         "status": status,
+        "description": description,
     };
 }
