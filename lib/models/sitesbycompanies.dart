@@ -1,12 +1,12 @@
 // To parse this JSON data, do
 //
-//     final sitesbycompanies = sitesbycompaniesFromJson(jsonString);
+//     final sitesbycompaniesModel = sitesbycompaniesModelFromJson(jsonString);
 
 import 'dart:convert';
 
-SitesbycompaniesModel sitesbycompaniesFromJson(String str) => SitesbycompaniesModel.fromJson(json.decode(str));
+SitesbycompaniesModel sitesbycompaniesModelFromJson(String str) => SitesbycompaniesModel.fromJson(json.decode(str));
 
-String sitesbycompaniesToJson(SitesbycompaniesModel data) => json.encode(data.toJson());
+String sitesbycompaniesModelToJson(SitesbycompaniesModel data) => json.encode(data.toJson());
 
 class SitesbycompaniesModel {
     bool status;
@@ -31,19 +31,43 @@ class SitesbycompaniesModel {
 class SitesbyCompany {
     int id;
     String sitename;
+    String contactperson;
+    String mobile;
+    String estimateAmount;
+    int supervisorId;
+    DateTime startDate;
+    DateTime tentativeCompletionDate;
 
     SitesbyCompany({
         required this.id,
         required this.sitename,
+        required this.contactperson,
+        required this.mobile,
+        required this.estimateAmount,
+        required this.supervisorId,
+        required this.startDate,
+        required this.tentativeCompletionDate,
     });
 
     factory SitesbyCompany.fromJson(Map<String, dynamic> json) => SitesbyCompany(
         id: json["id"],
         sitename: json["sitename"],
+        contactperson: json["contactperson"],
+        mobile: json["mobile"],
+        estimateAmount: json["estimate_amount"],
+        supervisorId: json["supervisor_id"],
+        startDate: DateTime.parse(json["start_date"]),
+        tentativeCompletionDate: DateTime.parse(json["tentative_completion_date"]),
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
         "sitename": sitename,
+        "contactperson": contactperson,
+        "mobile": mobile,
+        "estimate_amount": estimateAmount,
+        "supervisor_id": supervisorId,
+        "start_date": "${startDate.year.toString().padLeft(4, '0')}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}",
+        "tentative_completion_date": "${tentativeCompletionDate.year.toString().padLeft(4, '0')}-${tentativeCompletionDate.month.toString().padLeft(2, '0')}-${tentativeCompletionDate.day.toString().padLeft(2, '0')}",
     };
 }

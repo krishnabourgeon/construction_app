@@ -20,8 +20,8 @@ class _MainUserScreenState extends State<MainUserScreen> {
   final _screens = const [
     DashboardUserScreen(),
    // SitesUserScreen(),
-    MaterialsUserScreen(),
-    LabourUserScreen(),
+   // MaterialsUserScreen(),
+    //LabourUserScreen(),
   ];
 
   @override
@@ -59,16 +59,16 @@ class _MainUserScreenState extends State<MainUserScreen> {
               activeIcon: Icon(Icons.domain_rounded),
               label: 'Sites',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.inventory_2_outlined),
-              activeIcon: Icon(Icons.inventory_2_rounded),
-              label: 'Materials',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.people_alt_outlined),
-              activeIcon: Icon(Icons.people_alt_rounded),
-              label: 'Labour',
-            ),
+            // BottomNavigationBarItem(
+            //   icon: Icon(Icons.inventory_2_outlined),
+            //   activeIcon: Icon(Icons.inventory_2_rounded),
+            //   label: 'Materials',
+            // ),
+            // BottomNavigationBarItem(
+            //   icon: Icon(Icons.people_alt_outlined),
+            //   activeIcon: Icon(Icons.people_alt_rounded),
+            //   label: 'Labour',
+            // ),
           ],
         ),
       ),

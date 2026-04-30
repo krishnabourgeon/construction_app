@@ -1,54 +1,74 @@
+import 'package:construction_app/models/update_stage_body.dart';
+import 'package:construction_app/provider/company_provider.dart';
 import 'package:construction_app/view/company/add_substages_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class EditStageScreen extends StatefulWidget {
+  final int siteId;
+  final int stageId;
   final String stageName;
   final String stageDesc;
   final String stageStatus;
   final List<String> subStages;
   final Function(String name, String desc, String status, List<String> subs)?
-      onStageSaved;
- 
+  onStageSaved;
+
   const EditStageScreen({
     super.key,
+    required this.siteId,
+    required this.stageId,
     required this.stageName,
     required this.stageDesc,
     required this.stageStatus,
     this.subStages = const [],
     this.onStageSaved,
   });
- 
+
   @override
   State<EditStageScreen> createState() => _EditStageScreenState();
 }
- 
+
 class _EditStageScreenState extends State<EditStageScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameCtrl;
   late TextEditingController _descCtrl;
   late String _selectedStatus;
   late List<String> _subStages;
- 
-  final _statusOptions = ['Not Started', 'Active', 'Done'];
- 
+
+  final _statusOptions = [
+    'Pending',
+    'Not Started',
+    'Active',
+    'Done',
+    'Completed',
+  ];
+
   @override
   void initState() {
     super.initState();
     _nameCtrl = TextEditingController(text: widget.stageName);
     _descCtrl = TextEditingController(text: widget.stageDesc);
-    _selectedStatus = widget.stageStatus;
+
+    // Ensure the initial status exists in our options to avoid the dropdown error
+    if (!_statusOptions.contains(widget.stageStatus)) {
+      _selectedStatus = _statusOptions.first;
+    } else {
+      _selectedStatus = widget.stageStatus;
+    }
+
     _subStages = List.from(widget.subStages);
   }
- 
+
   @override
   void dispose() {
     _nameCtrl.dispose();
     _descCtrl.dispose();
     super.dispose();
   }
- 
+
   void _save() {
     if (!_formKey.currentState!.validate()) return;
     Navigator.pop(context);
@@ -62,8 +82,10 @@ class _EditStageScreenState extends State<EditStageScreen> {
     }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Stage updated ✓',
-            style: GoogleFonts.poppins(fontSize: 13)),
+        content: Text(
+          'Stage updated ✓',
+          style: GoogleFonts.poppins(fontSize: 13),
+        ),
         backgroundColor: AppColors.green,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -71,18 +93,18 @@ class _EditStageScreenState extends State<EditStageScreen> {
       ),
     );
   }
- 
+
   void _removeSub(int index) {
     setState(() {
       _subStages.removeAt(index);
     });
   }
- 
+
   // void _addSubStage() {
   //   // Navigator.push(
   //   //   context,
   //   //   MaterialPageRoute(
-  //   //     builder: (_) => 
+  //   //     builder: (_) =>
   //       // AddSubStageScreen(
   //       //   stageName: _nameCtrl.text.isNotEmpty
   //       //       ? _nameCtrl.text
@@ -101,7 +123,7 @@ class _EditStageScreenState extends State<EditStageScreen> {
   //     ),
   //   );
   // }
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,30 +152,43 @@ class _EditStageScreenState extends State<EditStageScreen> {
                   onTap: () => Navigator.pop(context),
                   child: Row(
                     children: [
-                      const Icon(Icons.arrow_back_ios_new,
-                          size: 14, color: AppColors.greyLight),
+                      const Icon(
+                        Icons.arrow_back_ios_new,
+                        size: 14,
+                        color: AppColors.greyLight,
+                      ),
                       const SizedBox(width: 5),
-                      Text('Working Stages',
-                          style: GoogleFonts.poppins(
-                              fontSize: 11, color: AppColors.greyLight)),
+                      Text(
+                        'Working Stages',
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          color: AppColors.greyLight,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text('Edit Stage',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.white,
-                    )),
+                Text(
+                  'Edit Stage',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.white,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(widget.stageName,
-                    style: GoogleFonts.poppins(
-                        fontSize: 11, color: AppColors.grey)),
+                Text(
+                  widget.stageName,
+                  style: GoogleFonts.poppins(
+                    fontSize: 11,
+                    color: AppColors.grey,
+                  ),
+                ),
               ],
             ),
           ),
- 
+
           // ── Form Body ───────────────────────────────────────────────────
           Expanded(
             child: SingleChildScrollView(
@@ -198,24 +233,30 @@ class _EditStageScreenState extends State<EditStageScreen> {
                           DropdownButtonFormField<String>(
                             value: _selectedStatus,
                             items: _statusOptions
-                                .map((s) => DropdownMenuItem(
-                                      value: s,
-                                      child: Text(s,
-                                          style: GoogleFonts.poppins(
-                                              fontSize: 13)),
-                                    ))
+                                .map(
+                                  (s) => DropdownMenuItem(
+                                    value: s,
+                                    child: Text(
+                                      s,
+                                      style: GoogleFonts.poppins(fontSize: 13),
+                                    ),
+                                  ),
+                                )
                                 .toList(),
                             onChanged: (v) =>
                                 setState(() => _selectedStatus = v!),
                             decoration: _inputDecoration(''),
-                            icon: const Icon(Icons.keyboard_arrow_down,
-                                color: AppColors.grey, size: 20),
+                            icon: const Icon(
+                              Icons.keyboard_arrow_down,
+                              color: AppColors.grey,
+                              size: 20,
+                            ),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 12),
- 
+
                     // Sub-stages section
                     Container(
                       decoration: BoxDecoration(
@@ -230,31 +271,41 @@ class _EditStageScreenState extends State<EditStageScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('Sub-stages',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.dark,
-                                  )),
+                              Text(
+                                'Sub-stages',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.dark,
+                                ),
+                              ),
                               GestureDetector(
                                 //onTap: _addSubStage,
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 5),
+                                    horizontal: 10,
+                                    vertical: 5,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: AppColors.purpleLight,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.add,
-                                          size: 14, color: AppColors.purple),
+                                      const Icon(
+                                        Icons.add,
+                                        size: 14,
+                                        color: AppColors.purple,
+                                      ),
                                       const SizedBox(width: 3),
-                                      Text('Add',
-                                          style: GoogleFonts.poppins(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w700,
-                                              color: AppColors.purple)),
+                                      Text(
+                                        'Add',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.purple,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -263,9 +314,13 @@ class _EditStageScreenState extends State<EditStageScreen> {
                           ),
                           const SizedBox(height: 12),
                           if (_subStages.isEmpty)
-                            Text('No sub-stages yet. Tap Add to create one.',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 11, color: AppColors.greyLight))
+                            Text(
+                              'No sub-stages yet. Tap Add to create one.',
+                              style: GoogleFonts.poppins(
+                                fontSize: 11,
+                                color: AppColors.greyLight,
+                              ),
+                            )
                           else
                             ..._subStages.asMap().entries.map((entry) {
                               final i = entry.key;
@@ -277,34 +332,45 @@ class _EditStageScreenState extends State<EditStageScreen> {
                                   color: AppColors.greyFill,
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                      color: AppColors.borderLight, width: 1),
+                                    color: AppColors.borderLight,
+                                    width: 1,
+                                  ),
                                 ),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
-                                      child: Text(name,
-                                          style: GoogleFonts.poppins(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                              color: AppColors.dark)),
+                                      child: Text(
+                                        name,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: AppColors.dark,
+                                        ),
+                                      ),
                                     ),
                                     GestureDetector(
                                       onTap: () => _removeSub(i),
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 3),
+                                          horizontal: 8,
+                                          vertical: 3,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: AppColors.redLight,
-                                          borderRadius:
-                                              BorderRadius.circular(6),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
                                         ),
-                                        child: Text('Remove',
-                                            style: GoogleFonts.poppins(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w600,
-                                                color: AppColors.red)),
+                                        child: Text(
+                                          'Remove',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.red,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -315,7 +381,7 @@ class _EditStageScreenState extends State<EditStageScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
- 
+
                     // Save button
                     SizedBox(
                       width: double.infinity,
@@ -326,12 +392,17 @@ class _EditStageScreenState extends State<EditStageScreen> {
                           foregroundColor: AppColors.dark,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           elevation: 0,
                         ),
-                        child: Text('Save Changes',
-                            style: GoogleFonts.poppins(
-                                fontSize: 14, fontWeight: FontWeight.w700)),
+                        child: Text(
+                          'Save Changes',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -343,13 +414,18 @@ class _EditStageScreenState extends State<EditStageScreen> {
       ),
     );
   }
- 
+
   Widget _buildLabel(String text) {
-    return Text(text,
-        style: GoogleFonts.poppins(
-            fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.dark));
+    return Text(
+      text,
+      style: GoogleFonts.poppins(
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        color: AppColors.dark,
+      ),
+    );
   }
- 
+
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,

@@ -41,7 +41,7 @@ class _SiteCardState extends State<SiteCard> {
                 children: [
                   Expanded(
                     child: Text(
-                      widget.site.sitename,
+                      widget.site.sitename ?? 'Unnamed Site',
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -54,7 +54,7 @@ class _SiteCardState extends State<SiteCard> {
               ),
               const SizedBox(height: 4),
               Text(
-                '${"Rajan Kumar"} • ${"7457457456"}',
+                '${widget.site.contactperson ?? 'No Contact'} • ${widget.site.mobile ?? 'No Mobile'}',
                 style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF)),
               ),
               const SizedBox(height: 8),
@@ -67,7 +67,7 @@ class _SiteCardState extends State<SiteCard> {
                     ),
                   ),
                   Text(
-                    '₹${_formatAmount(4500000)}',
+                    '₹${_formatAmount(double.tryParse(widget.site.estimateAmount ?? '0') ?? 0.0)}',
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -76,20 +76,20 @@ class _SiteCardState extends State<SiteCard> {
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
-              LinearProgressIndicator(
-                value: 50 / 100,
-                backgroundColor: const Color(0xFFE5E7EB),
-                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFF59E0B)),
-              ),
-              const SizedBox(height: 3),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  '${50.toStringAsFixed(0)}% spent',
-                  style: const TextStyle(fontSize: 10, color: Color(0xFF9CA3AF)),
-                ),
-              ),
+              // const SizedBox(height: 6),
+              // LinearProgressIndicator(
+              //   value: 50 / 100,
+              //   backgroundColor: const Color(0xFFE5E7EB),
+              //   valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFF59E0B)),
+              // ),
+              // const SizedBox(height: 3),
+              // Align(
+              //   alignment: Alignment.centerRight,
+              //   child: Text(
+              //     '${50.toStringAsFixed(0)}% spent',
+              //     style: const TextStyle(fontSize: 10, color: Color(0xFF9CA3AF)),
+              //   ),
+              // ),
             ],
           ),
         ),

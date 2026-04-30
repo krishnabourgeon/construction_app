@@ -1,10 +1,14 @@
 import 'package:construction_app/models/models.dart';
+import 'package:construction_app/services/app_config.dart';
+import 'package:construction_app/view/company/site_list_screen.dart';
+import 'package:construction_app/view/company/user_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+   final Function(int)? onNavigate;
+  const DashboardScreen({super.key, this.onNavigate});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +38,7 @@ class DashboardScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Hello, Rajan 👋',
+                      Text('Hello, ${AppConfig.userName ?? "User"} 👋',
                           style: GoogleFonts.poppins(fontSize: 13, color: AppColors.greyLight)),
                       const SizedBox(height: 4),
                       Text('BuildCo Constructions',
@@ -66,14 +70,27 @@ class DashboardScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
               child: Column(
                 children: [
-                  _DashCard(count: sampleUsers.length.toString(), label: 'Supervisor',
-                    subLabel: 'Supervisors & staff', bgColor:  Color(0xFF4F46E5),
+                  _DashCard(
+                    onTap: () {
+                      //Navigator.push(context, MaterialPageRoute(builder: (_) => const UserScreen()));
+                      onNavigate?.call(1); 
+                    },
+                    //count: sampleUsers.length.toString(), 
+                    label: 'Supervisor',
+                    //subLabel: 'Supervisors & staff', 
+                    bgColor:  Color(0xFF4F46E5),
                     countColor: AppColors.white, labelColor: AppColors.white,
                     subColor: const Color(0xFFC7D2FE), icon: Icons.group_rounded, iconBgColor: Colors.white12),
                   const SizedBox(height: 24),
 
-                  _DashCard(count: sampleSites.length.toString(), label: 'Total Sites',
-                    subLabel: '${sampleSites.where((s) => s.status == "Active").length} active  ·  ${sampleSites.where((s) => s.status == "Completed").length} completed',
+                  _DashCard(
+                    onTap: () {
+                      //Navigator.push(context, MaterialPageRoute(builder: (_) => const SitesScreen()));
+                      onNavigate?.call(2); 
+                    },
+                    //count: sampleSites.length.toString(),
+                    label: 'Total Sites',
+                    //subLabel: '${sampleSites.where((s) => s.status == "Active").length} active  ·  ${sampleSites.where((s) => s.status == "Completed").length} completed',
                     bgColor: AppColors.amber, countColor: AppColors.dark, labelColor: AppColors.dark,
                     subColor: const Color(0xFF44301A), icon: Icons.domain_rounded, iconBgColor: Colors.black12),
                   const SizedBox(height: 14),
@@ -106,47 +123,49 @@ class DashboardScreen extends StatelessWidget {
 }
 
 class _DashCard extends StatelessWidget {
-  final String count;
   final String label;
-  final String subLabel;
   final Color bgColor;
   final Color countColor;
   final Color labelColor;
   final Color subColor;
   final Color iconBgColor;
   final IconData icon;
+  final VoidCallback onTap;
 
   const _DashCard({
-    required this.count, required this.label, required this.subLabel,
+   required this.label, 
     required this.bgColor, required this.countColor, required this.labelColor,
-    required this.subColor, required this.iconBgColor, required this.icon,
+    required this.subColor, required this.iconBgColor, required this.icon, required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
-      decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(22)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(count, style: GoogleFonts.poppins(fontSize: 44, fontWeight: FontWeight.w700, color: countColor, height: 1)),
-              const SizedBox(height: 6),
-              Text(label, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500, color: labelColor)),
-              const SizedBox(height: 3),
-              Text(subLabel, style: GoogleFonts.poppins(fontSize: 12, color: subColor)),
-            ],
-          ),
-          Container(
-            width: 68, height: 68,
-            decoration: BoxDecoration(color: iconBgColor, borderRadius: BorderRadius.circular(20)),
-            child: Icon(icon, color: countColor, size: 36),
-          ),
-        ],
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
+        decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(22)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                //Text(count!, style: GoogleFonts.poppins(fontSize: 44, fontWeight: FontWeight.w700, color: countColor, height: 1)),
+                //const SizedBox(height: 6),
+                Text(label, style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w500, color: labelColor)),
+                const SizedBox(height: 3),
+                //Text(subLabel!, style: GoogleFonts.poppins(fontSize: 12, color: subColor)),
+              ],
+            ),
+            Container(
+              width: 68, height: 68,
+              decoration: BoxDecoration(color: iconBgColor, borderRadius: BorderRadius.circular(20)),
+              child: Icon(icon, color: countColor, size: 36),
+            ),
+          ],
+        ),
       ),
     );
   }

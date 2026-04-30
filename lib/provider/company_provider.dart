@@ -1,4 +1,6 @@
 import 'package:construction_app/models/add-sites_model.dart';
+import 'package:construction_app/models/add_labour_body.dart';
+import 'package:construction_app/models/add_labour_model.dart';
 import 'package:construction_app/models/add_materials_body.dart';
 import 'package:construction_app/models/add_materials_model.dart';
 import 'package:construction_app/models/add_site_body.dart';
@@ -9,11 +11,19 @@ import 'package:construction_app/models/add_sub_stages_model.dart';
 import 'package:construction_app/models/create_user_body.dart';
 import 'package:construction_app/models/create_user_model.dart';
 import 'package:construction_app/models/error_response_model.dart';
+import 'package:construction_app/models/get_categories_model.dart';
 import 'package:construction_app/models/get_company.dart';
+import 'package:construction_app/models/get_labours_model.dart';
+import 'package:construction_app/models/get_materials_model.dart';
 import 'package:construction_app/models/get_stages_model.dart';
 import 'package:construction_app/models/get_sub_stages.dart';
 import 'package:construction_app/models/get_supervisor_model.dart';
+import 'package:construction_app/models/material_name_model.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
+import 'package:construction_app/models/supplier_model.dart';
+import 'package:construction_app/models/units_model.dart';
+import 'package:construction_app/models/update_stage_body.dart';
+import 'package:construction_app/models/update_stage_model.dart';
 import 'package:construction_app/services/provider_helper_class.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -43,6 +53,12 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
   int? selectedSiteId;
   List<GetStages> stagesList = [];
   List<SubStages> subStagesList = [];
+  List<Labour> laboursList = [];
+  List<Catergories> categoriesList = [];
+  List<Names> materialNamesList = [];
+  List<Units> unitsList = [];
+  List<Supplier> suppliersList = [];
+  List<GetMaterials> materialsList = [];
 
 
   
@@ -233,31 +249,31 @@ Future<void> sitesbycompanies({
 
 Future<void> addMaterials({
     Function(String errorMessage)? onFailure,
-    required int companyId,
     required int siteId,
     required String name,
     required int quantity,
     required int unitId,
     required int price,
     required int totalAmount,
-    required String supplier,
+    required int supplierId,
     required DateTime addedDate,
-    required int estimateAmount,
-    required String description,
+    required int categoryId,
+    required int substageId,
   }) async {
     updateLoadState(LoaderState.loading);
 
     var res = await serviceConfig.addMaterial(
       AddMaterialsBody(
-        companyId: companyId,
         siteId: siteId,
         name: name,
-        quantity: quantity,
         unitId: unitId,
         price: price,
         totalAmount: totalAmount,
-        supplier: supplier,
         addedDate: addedDate,
+        categoryId: categoryId,
+        qty: quantity,
+        supplierId: supplierId,
+        substageId: substageId,
       ),
     );
 
@@ -298,7 +314,7 @@ Future<int?> addStages({
     AddStagesBody(
       siteId: siteid,
       stages: [
-        Stage(
+        Stages(
           stage: stage,
           hasSubstage: hassubstage,
           status: status,
@@ -420,6 +436,249 @@ Future<void> getSubStages({required int siteId,Function(String errorMessage)? on
   }
   notifyListeners();
 }
+
+
+Future<void> addLabour({
+  Function(String errorMessage)? onFailure,
+  required int substageId,
+  required int noOfLabours,
+  required int noOfDays,
+  required int amount,
+  required String remarks,
+})async{
+  updateLoadState(LoaderState.loading);
+  var res = await serviceConfig.addLabours(
+    AddLabourBody(
+      substageId: substageId,
+      noOfLabours: noOfLabours,
+      noOfDays: noOfDays,
+      amount: amount,
+      remarks: remarks,
+    ),
+  );
+  if(!res.isError){
+    final response = res.asValue!.value as AddLabourModel;
+    updateLoadState(LoaderState.loaded);
+  } else {
+    String errorMessage = "Failed to add labour";
+    if(res.asError!.error is ErrorResponseModel){
+      errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+      errorMessage;
+    }
+    errorToast = errorMessage;
+    if(onFailure != null) onFailure(errorMessage);
+    updateLoadState(LoaderState.loaded);
+  }
+  notifyListeners();
+}
+
+
+Future<void> getLabours({
+  int? substageId,
+  Function(String errorMessage)? onFailure,
+})async{
+  updateLoadState(LoaderState.loading);
+  try {
+    var res = await serviceConfig.getLabours(substageId: substageId);
+    if(!res.isError){
+      final response = res.asValue!.value as GetLaboursModel;
+      laboursList = response.data;
+      debugPrint("CompanyProvider: Labours List updated. Count = ${laboursList.length}");
+      updateLoadState(LoaderState.loaded);
+    } else {
+      String errorMessage = "Failed to load labours";
+      if(res.asError!.error is ErrorResponseModel){
+        errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+        errorMessage;
+      }
+      errorToast = errorMessage;
+      if(onFailure != null) onFailure(errorMessage);
+      updateLoadState(LoaderState.loaded);
+    }
+  } catch (e) {
+    debugPrint("CompanyProvider: Error in getLabours: $e");
+    updateLoadState(LoaderState.loaded);
+    if(onFailure != null) onFailure(e.toString());
+  }
+  notifyListeners();
+}
+
+
+Future<void> getCategories(
+   Function(String errorMessage)? onFailure,
+)async{
+  updateLoadState(LoaderState.loading);
+  try {
+    var res = await serviceConfig.getCategories();
+    if(!res.isError){
+    final response = res.asValue!.value as GetCategoriesModel;
+    categoriesList = response.data;
+    updateLoadState(LoaderState.loaded);
+  } else {
+    String errorMessage = "Failed to load categories";
+    if(res.asError!.error is ErrorResponseModel){
+      errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+      errorMessage;
+    }
+    errorToast = errorMessage;
+      if(onFailure != null) onFailure(errorMessage);
+      updateLoadState(LoaderState.loaded);
+    }
+  } catch (e) {
+    debugPrint("CompanyProvider: Error in getCategories: $e");
+    updateLoadState(LoaderState.loaded);
+    if(onFailure != null) onFailure(e.toString());
+  }
+  notifyListeners();
+}
+
+Future<void> getMaterialNames(
+  Function(String errorMessage)? onFailure,
+  String name,
+)async{
+  updateLoadState(LoaderState.loading);
+  try {
+    var res = await serviceConfig.getMaterialNames(name);
+    if(!res.isError){
+    final response = res.asValue!.value as MaterialsNameModel;
+    materialNamesList = response.data;
+    updateLoadState(LoaderState.loaded);
+  } else {
+    String errorMessage = "Failed to load material names";
+    if(res.asError!.error is ErrorResponseModel){
+      errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+      errorMessage;
+    }
+    errorToast = errorMessage;
+      if(onFailure != null) onFailure(errorMessage);
+      updateLoadState(LoaderState.loaded);
+    }
+  } catch (e) {
+    debugPrint("CompanyProvider: Error in getMaterialNames: $e");
+    updateLoadState(LoaderState.loaded);
+    if(onFailure != null) onFailure(e.toString());
+  }
+  notifyListeners();
+}
+
+
+Future<void> getUnits(
+   Function(String errorMessage)? onFailure,
+)async{
+  updateLoadState(LoaderState.loading);
+  try {
+    var res = await serviceConfig.getUnits();
+    if(!res.isError){
+    final response = res.asValue!.value as UnitsModel;
+    unitsList = response.data;
+    updateLoadState(LoaderState.loaded);
+  } else {
+    String errorMessage = "Failed to load units";
+    if(res.asError!.error is ErrorResponseModel){
+      errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+      errorMessage;
+    }
+    errorToast = errorMessage;
+      if(onFailure != null) onFailure(errorMessage);
+      updateLoadState(LoaderState.loaded);
+    }
+  } catch (e) {
+    debugPrint("CompanyProvider: Error in getUnits: $e");
+    updateLoadState(LoaderState.loaded);
+    if(onFailure != null) onFailure(e.toString());
+  }
+  notifyListeners();
+}
+
+
+Future<void> getSupplier(
+   Function(String errorMessage)? onFailure,
+)async{
+  updateLoadState(LoaderState.loading);
+  try {
+    var res = await serviceConfig.getSuppliers();
+    if(!res.isError){
+    final response = res.asValue!.value as SupplierModel;
+    suppliersList = response.data;
+    updateLoadState(LoaderState.loaded);
+  } else {
+    String errorMessage = "Failed to load suppliers";
+    if(res.asError!.error is ErrorResponseModel){
+      errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+      errorMessage;
+    }
+    errorToast = errorMessage;
+      if(onFailure != null) onFailure(errorMessage);
+      updateLoadState(LoaderState.loaded);
+    }
+  } catch (e) {
+    debugPrint("CompanyProvider: Error in getSuppliers: $e");
+    updateLoadState(LoaderState.loaded);
+    if(onFailure != null) onFailure(e.toString());
+  }
+  notifyListeners();
+}
+
+
+Future<void> getMaterials({
+   Function(String errorMessage)? onFailure,
+   int? substageId,
+})async{
+  updateLoadState(LoaderState.loading);
+  try {
+    var res = await serviceConfig.getMaterials(substageId);
+    if(!res.isError){
+    final response = res.asValue!.value as GetMaterialsModel;
+    materialsList = response.data;
+    updateLoadState(LoaderState.loaded);
+  } else {
+    String errorMessage = "Failed to load materials";
+    if(res.asError!.error is ErrorResponseModel){
+      errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+      errorMessage;
+    }
+    errorToast = errorMessage;
+      if(onFailure != null) onFailure(errorMessage);
+      updateLoadState(LoaderState.loaded);
+    }
+  } catch (e) {
+    debugPrint("CompanyProvider: Error in getMaterials: $e");
+    updateLoadState(LoaderState.loaded);
+    if(onFailure != null) onFailure(e.toString());
+  }
+  notifyListeners();
+}
+
+
+Future<void> updateStages(
+  Function(String errorMessage)? onFailure,
+  int siteId,
+  List<Stage> stages,
+) async {
+  updateLoadState(LoaderState.loading);
+  try {
+    var res = await serviceConfig.updateStages(UpdateStageBody(siteId: siteId, stages: stages));
+    if(!res.isError){
+    final response = res.asValue!.value as UpdateStageModel;
+    updateLoadState(LoaderState.loaded);
+  } else {
+    String errorMessage = "Failed to update stages";
+    if(res.asError!.error is ErrorResponseModel){
+      errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+      errorMessage;
+    }
+    errorToast = errorMessage;
+      if(onFailure != null) onFailure(errorMessage);
+      updateLoadState(LoaderState.loaded);
+    }
+  } catch (e) {
+    debugPrint("CompanyProvider: Error in updateStages: $e");
+    updateLoadState(LoaderState.loaded);
+    if(onFailure != null) onFailure(e.toString());
+  }
+  notifyListeners();
+}
+
 
 
   @override

@@ -1,6 +1,10 @@
+
+
 // To parse this JSON data, do
 //
 //     final getSupervisorsModel = getSupervisorsModelFromJson(jsonString);
+
+
 
 import 'dart:convert';
 
@@ -31,19 +35,23 @@ class GetSupervisorsModel {
 class Supervisor {
     int id;
     String name;
+    String mobile;
 
     Supervisor({
         required this.id,
         required this.name,
+        required this.mobile,
     });
 
     factory Supervisor.fromJson(Map<String, dynamic> json) => Supervisor(
         id: json["id"],
         name: json["name"],
+        mobile: json["mobile"],
     );
 
     Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
+        "mobile": mobile,
     };
 }

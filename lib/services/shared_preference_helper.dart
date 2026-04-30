@@ -30,6 +30,13 @@ class SharedPreferenceHelper {
     AppConfig.companyId = companyId;
     log("SAVED COMPANY ID : $companyId");
   }
+
+  static Future<void> saveUserName(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("user_name", name);
+    AppConfig.userName = name;
+    log("SAVED USER NAME : $name");
+  }
  
 
   static Future<String> getUserId() async {
@@ -71,10 +78,19 @@ class SharedPreferenceHelper {
     return companyId;
   }
 
+  static Future<String> getUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    String name = prefs.getString("user_name") ?? "";
+    log('user_name $name');
+    AppConfig.userName = name;
+    return name;
+  }
+
   static Future<void> clearWholeData() async {
     AppConfig.accessToken = null;
     AppConfig.role = null;
     AppConfig.companyId = null;
+    AppConfig.userName = null;
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
   }

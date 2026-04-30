@@ -11,6 +11,7 @@ class AppConfig {
   static String? storeId;
   static String? userId;
   static String? role;
+  static String? userName;
   static String? customerName;
   static String? customerNumber;
   static String? settings;

@@ -1,16 +1,18 @@
-import 'package:construction_app/models/models.dart';
+import 'package:construction_app/models/get_labours_model.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class LabourCard extends StatelessWidget {
-  final SubStageLabour labour;
+  final Labour labour;
   final VoidCallback onDelete;
  
   const LabourCard({super.key, required this.labour, required this.onDelete});
  
   @override
   Widget build(BuildContext context) {
+    final dateFormat = DateFormat('dd MMM yyyy');
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -35,30 +37,31 @@ class LabourCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(labour.labourType,
+                Text("${labour.noOfLabours} Labours",
                     style: GoogleFonts.poppins(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: AppColors.dark)),
                 const SizedBox(height: 2),
-                if (labour.workerName.isNotEmpty)
-                  Text(labour.workerName,
+                if (labour.noOfDays != null)
+                  Text("${labour.noOfDays} Days",
                       style: GoogleFonts.poppins(
                           fontSize: 10, color: AppColors.grey)),
-                if (labour.remarks.isNotEmpty)
-                  Text(labour.remarks,
+                if (labour.remarks != null && labour.remarks!.isNotEmpty)
+                  Text(labour.remarks!,
                       style: GoogleFonts.poppins(
                           fontSize: 10, color: AppColors.greyLight)),
-                Text(labour.dateAdded,
-                    style: GoogleFonts.poppins(
-                        fontSize: 10, color: AppColors.greyLight)),
+                if (labour.addedDate != null)
+                  Text(dateFormat.format(labour.addedDate!),
+                      style: GoogleFonts.poppins(
+                          fontSize: 10, color: AppColors.greyLight)),
               ],
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text('₹${labour.amount.toInt()}',
+              Text('₹${labour.amount}',
                   style: GoogleFonts.poppins(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,

@@ -33,7 +33,7 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> with SingleTickerPr
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.site.sitename),
+        title: Text(widget.site.sitename ?? 'Site Details'),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: const Color(0xFFF59E0B),
@@ -49,7 +49,7 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> with SingleTickerPr
       body: TabBarView(
         controller: _tabController,
         children: [
-          InfoTab(),
+          InfoTab(site: widget.site,),
           WorkingStagesTab(site: widget.site,),
         ],
       ),

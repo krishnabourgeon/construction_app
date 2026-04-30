@@ -20,9 +20,12 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
    // final List<Site> sites = getSampleSites();
   int _currentIndex = 0;
+    void changeTab(int index) {
+    setState(() => _currentIndex = index);
+  }
 
   late final _screens = [
-    const DashboardScreen(),
+    DashboardScreen(onNavigate: changeTab),
     const UserScreen(),
     const SitesScreen(),
     

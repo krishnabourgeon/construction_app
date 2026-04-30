@@ -85,9 +85,9 @@ class DashboardUserScreen extends StatelessWidget {
                 children: [
                   // Sites card
                   _DashCard(
-                    count: sampleSites.length.toString(),
+                    count: '45',
                     label: 'Total Sites',
-                    subLabel: '${sampleSites.where((s) => s.status == 'Active').length} active  ·  ${sampleSites.where((s) => s.status == 'Completed').length} completed',
+                    subLabel: '20 active  ·  25 completed',
                     bgColor: AppColors.amber,
                     countColor: AppColors.dark,
                     labelColor: AppColors.dark,
@@ -100,7 +100,7 @@ class DashboardUserScreen extends StatelessWidget {
 
                   // Labour card
                   _DashCard(
-                    count: sampleLabour.length.toString(),
+                    count: '35',
                     label: 'Labour Entries',
                     subLabel: 'This month',
                     bgColor: AppColors.navy,
@@ -115,7 +115,7 @@ class DashboardUserScreen extends StatelessWidget {
 
                   // Materials card
                   _DashCard(
-                    count: sampleMaterials.length.toString(),
+                    count: '200',
                     label: 'Materials',
                     subLabel: 'Across all sites',
                     bgColor: AppColors.orange,

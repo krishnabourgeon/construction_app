@@ -1,10 +1,10 @@
-import 'package:construction_app/models/models.dart';
+import 'package:construction_app/models/get_materials_model.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MaterialCard extends StatelessWidget {
-  final SubStageMaterial material;
+  final GetMaterials material;
   final VoidCallback onDelete;
  
   const MaterialCard({super.key, required this.material, required this.onDelete});
@@ -43,14 +43,14 @@ class MaterialCard extends StatelessWidget {
                         color: AppColors.dark)),
                 const SizedBox(height: 2),
                 Text(
-                    '${material.quantity.toInt()} ${material.unit} × ₹${material.pricePerUnit.toInt()}',
+                    '${material.qty} Unit(s) × ₹${material.price}',
                     style: GoogleFonts.poppins(
                         fontSize: 10, color: AppColors.grey)),
-                if (material.supplier.isNotEmpty)
-                  Text(material.supplier,
+                if (material.supplierId != 0) // Basic fallback for supplier
+                  Text('Supplier ID: ${material.supplierId}',
                       style: GoogleFonts.poppins(
                           fontSize: 10, color: AppColors.greyLight)),
-                Text(material.dateAdded,
+                Text('${material.addedDate.day}/${material.addedDate.month}/${material.addedDate.year}',
                     style: GoogleFonts.poppins(
                         fontSize: 10, color: AppColors.greyLight)),
               ],
@@ -59,7 +59,7 @@ class MaterialCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text('₹${material.totalAmount.toInt()}',
+              Text('₹${material.amount}',
                   style: GoogleFonts.poppins(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,

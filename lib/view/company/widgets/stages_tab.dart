@@ -1,9 +1,7 @@
-import 'package:construction_app/models/get_stages_model.dart';
 import 'package:construction_app/models/get_sub_stages.dart';
 import 'package:construction_app/models/models.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
 import 'package:construction_app/provider/company_provider.dart';
-import 'package:construction_app/view/company/add_resource_screen.dart';
 import 'package:construction_app/view/company/add_stage_screen.dart';
 import 'package:construction_app/view/company/add_substages_screen.dart';
 import 'package:construction_app/view/company/edit_stage_screen.dart';
@@ -16,21 +14,21 @@ import 'package:provider/provider.dart';
 class WorkingStagesTab extends StatefulWidget {
   final SitesbyCompany site;
   const WorkingStagesTab({super.key, required this.site});
- 
+
   @override
   State<WorkingStagesTab> createState() => WorkingStagesTabState();
 }
+
 class WorkingStagesTabState extends State<WorkingStagesTab> {
   String? expandedStageId;
 
-
-   @override
+  @override
   void initState() {
     super.initState();
 
     Future.microtask(() {
-      context.read<CompanyProvider>().getStages(siteId: widget.site.id);
-      context.read<CompanyProvider>().getSubStages(siteId: widget.site.id);
+      context.read<CompanyProvider>().getStages(siteId: widget.site.id ?? 0);
+      context.read<CompanyProvider>().getSubStages(siteId: widget.site.id ?? 0);
     });
   }
 
@@ -51,11 +49,18 @@ class WorkingStagesTabState extends State<WorkingStagesTab> {
                 children: [
                   const Text(
                     'Working Stages',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF1C1917)),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1C1917),
+                    ),
                   ),
                   Text(
                     '${provider.stagesList.length} stages',
-                    style: const TextStyle(fontSize: 10, color: Color(0xFF9CA3AF)),
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Color(0xFF9CA3AF),
+                    ),
                   ),
                 ],
               ),
@@ -63,18 +68,26 @@ class WorkingStagesTabState extends State<WorkingStagesTab> {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => AddStageScreen(siteName: widget.site.sitename, siteId: widget.site.id),
+                      builder: (context) => AddStageScreen(
+                        siteName: widget.site.sitename ?? 'Unnamed Site',
+                        siteId: widget.site.id ?? 0,
+                      ),
                     ),
-                  );  
-
+                  );
                 },
                 icon: const Icon(Icons.add, size: 14),
                 label: const Text('Add Stage'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFF59E0B),
                   foregroundColor: const Color(0xFF1C1917),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                  textStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 7,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
@@ -89,14 +102,16 @@ class WorkingStagesTabState extends State<WorkingStagesTab> {
             itemBuilder: (context, index) {
               final stage = provider.subStagesList[index];
               final isExpanded = expandedStageId == stage.id.toString();
- 
+
               return _StageCard(
                 stage: stage,
-                siteName: widget.site.sitename,
+                siteName: widget.site.sitename ?? "",
                 isExpanded: isExpanded,
                 onToggle: () {
                   setState(() {
-                    expandedStageId = expandedStageId == stage.id.toString() ? null : stage.id.toString();
+                    expandedStageId = expandedStageId == stage.id.toString()
+                        ? null
+                        : stage.id.toString();
                   });
                 },
               );
@@ -107,24 +122,22 @@ class WorkingStagesTabState extends State<WorkingStagesTab> {
     );
   }
 }
- 
+
 class _StageCard extends StatelessWidget {
   final SubStages stage;
   final String siteName;
   final bool isExpanded;
   final VoidCallback onToggle;
- 
+
   const _StageCard({
     required this.stage,
     required this.siteName,
     required this.isExpanded,
     required this.onToggle,
   });
- 
+
   @override
   Widget build(BuildContext context) {
-
-    
     String getStatusLabel(int status) {
       switch (status) {
         case 0:
@@ -165,7 +178,11 @@ class _StageCard extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Text(
                       '${stage.stage[0]}',
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -175,12 +192,19 @@ class _StageCard extends StatelessWidget {
                       children: [
                         Text(
                           stage.stage,
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1C1917)),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1C1917),
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           stage.description,
-                          style: const TextStyle(fontSize: 10, color: Color(0xFF9CA3AF)),
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Color(0xFF9CA3AF),
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -193,11 +217,24 @@ class _StageCard extends StatelessWidget {
                     icon: const Icon(Icons.edit, size: 16),
                     color: const Color(0xFF9CA3AF),
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => EditStageScreen(stageName: stage.stage, stageDesc: stage.description, stageStatus: stage.statusLabel, ),));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditStageScreen(
+                            siteId: stage.siteId,
+                            stageId: stage.id,
+                            stageName: stage.stage,
+                            stageDesc: stage.description,
+                            stageStatus: stage.statusLabel,
+                          ),
+                        ),
+                      );
                     },
                   ),
                   Icon(
-                    isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    isExpanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
                     color: const Color(0xFF9CA3AF),
                   ),
                 ],
@@ -209,7 +246,7 @@ class _StageCard extends StatelessWidget {
       ),
     );
   }
- 
+
   Widget _buildExpandedBody(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
@@ -233,12 +270,20 @@ class _StageCard extends StatelessWidget {
                       children: [
                         Text(
                           '₹${(0.0 / 100000).toStringAsFixed(1)}L',
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF854D0E)),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF854D0E),
+                          ),
                         ),
                         const SizedBox(height: 1),
                         const Text(
                           'MATERIALS',
-                          style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: Color(0xFFA16207)),
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFFA16207),
+                          ),
                         ),
                       ],
                     ),
@@ -256,12 +301,20 @@ class _StageCard extends StatelessWidget {
                       children: [
                         Text(
                           '₹${(0.0 / 100000).toStringAsFixed(1)}L',
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF15803D)),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF15803D),
+                          ),
                         ),
                         const SizedBox(height: 1),
                         const Text(
                           'LABOUR',
-                          style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: Color(0xFF166534)),
+                          style: TextStyle(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF166534),
+                          ),
                         ),
                       ],
                     ),
@@ -270,7 +323,7 @@ class _StageCard extends StatelessWidget {
               ],
             ),
           ),
- 
+
           // Sub-stages or direct add buttons
           if (stage.hasSubstage == 1 || stage.subStages.isNotEmpty)
             _buildSubStages(context)
@@ -280,7 +333,7 @@ class _StageCard extends StatelessWidget {
       ),
     );
   }
- 
+
   Widget _buildSubStages(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(13, 0, 13, 13),
@@ -291,21 +344,38 @@ class _StageCard extends StatelessWidget {
             children: [
               const Text(
                 '🔀 SUB-STAGES',
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF9CA3AF)),
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF9CA3AF),
+                ),
               ),
               TextButton.icon(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (context) => AddSubStageScreen(stageName: stage.stage, siteId: stage.siteId, stageId: stage.id,),
-                  ));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddSubStageScreen(
+                        stageName: stage.stage,
+                        siteId: stage.siteId,
+                        stageId: stage.id,
+                      ),
+                    ),
+                  );
                 },
                 icon: const Icon(Icons.add, size: 10),
                 label: const Text('Add Sub-stage'),
                 style: TextButton.styleFrom(
                   backgroundColor: const Color(0xFFEDE9FE),
                   foregroundColor: const Color(0xFF6D28D9),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
@@ -316,22 +386,17 @@ class _StageCard extends StatelessWidget {
       ),
     );
   }
- 
+
   Widget _buildSubStageCard(BuildContext context, SubStage subStages) {
     return InkWell(
       onTap: () {
-        final dummySubStage = SubStageWithResources(
-          id: subStages.id.toString(),
-          stageId: subStages.stageId.toString(),
-          name: subStages.substage,
-          description: subStages.description,
-          status: subStages.statusLabel,
-        );
-
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => SubStageDetailScreen(stageName: stage.stage, subStage: dummySubStage),
+            builder: (_) => SubStageDetailScreen(
+              stageName: stage.stage,
+              subStages: subStages,
+            ),
           ),
         );
       },
@@ -351,7 +416,11 @@ class _StageCard extends StatelessWidget {
               children: [
                 Text(
                   subStages.substage,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF1C1917)),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF1C1917),
+                  ),
                 ),
                 StatusBadge(status: subStages.statusLabel),
               ],
@@ -408,33 +477,33 @@ class _StageCard extends StatelessWidget {
             //         ),
             //       ),
             //     ),
-                // const SizedBox(width: 6),
-                // Expanded(
-                //   child: ElevatedButton.icon(
-                //     onPressed: () {
-                //       Navigator.push(
-                //         context,
-                //         MaterialPageRoute(
-                //           builder: (context) => AddResourceScreen(
-                //             resourceType: 'Labour',
-                //             stageName: stage.stage,
-                //             subStageName: "", // Update this once sub-stages are available
-                //             siteName: siteName,
-                //           ),
-                //         ),
-                //       );
-                //     },
-                //     icon: const Icon(Icons.add, size: 9),
-                //     label: const Text('Add Labour'),
-                //     style: ElevatedButton.styleFrom(
-                //       backgroundColor: const Color(0xFFFEE2E2),
-                //       foregroundColor: const Color(0xFFB91C1C),
-                //       padding: const EdgeInsets.symmetric(vertical: 6),
-                //       textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
-                //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                //     ),
-                //   ),
-                // ),
+            // const SizedBox(width: 6),
+            // Expanded(
+            //   child: ElevatedButton.icon(
+            //     onPressed: () {
+            //       Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (context) => AddResourceScreen(
+            //             resourceType: 'Labour',
+            //             stageName: stage.stage,
+            //             subStageName: "", // Update this once sub-stages are available
+            //             siteName: siteName,
+            //           ),
+            //         ),
+            //       );
+            //     },
+            //     icon: const Icon(Icons.add, size: 9),
+            //     label: const Text('Add Labour'),
+            //     style: ElevatedButton.styleFrom(
+            //       backgroundColor: const Color(0xFFFEE2E2),
+            //       foregroundColor: const Color(0xFFB91C1C),
+            //       padding: const EdgeInsets.symmetric(vertical: 6),
+            //       textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+            //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            //     ),
+            //   ),
+            // ),
             //   ],
             // ),
           ],
@@ -442,7 +511,7 @@ class _StageCard extends StatelessWidget {
       ),
     );
   }
- 
+
   Widget _buildDirectAddButtons(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(13, 0, 13, 13),
@@ -453,7 +522,11 @@ class _StageCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFFF9FAFB),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFFE5E7EB), style: BorderStyle.solid, width: 1.5),
+              border: Border.all(
+                color: const Color(0xFFE5E7EB),
+                style: BorderStyle.solid,
+                width: 1.5,
+              ),
             ),
             child: Column(
               children: [
@@ -468,13 +541,21 @@ class _StageCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AddSubStageScreen(stageName: stage.stage, siteId: stage.siteId, stageId: stage.id,),
+                        builder: (context) => AddSubStageScreen(
+                          stageName: stage.stage,
+                          siteId: stage.siteId,
+                          stageId: stage.id,
+                        ),
                       ),
                     );
                   },
                   child: const Text(
                     '+ Add sub-stages instead',
-                    style: TextStyle(fontSize: 10, color: Color(0xFF7C3AED), fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Color(0xFF7C3AED),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -483,87 +564,87 @@ class _StageCard extends StatelessWidget {
           //const SizedBox(height: 8),
           // Row(
           //   children: [
-              // Expanded(
-              //   child: ElevatedButton.icon(
-              //     onPressed: () {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //           builder: (context) => AddResourceScreen(
-              //             resourceType: 'Material',
-              //             stageName: stage.stage,
-              //             siteName: siteName,
-              //           ),
-              //         ),
-              //       );
-              //     },
-              //     icon: const Icon(Icons.add, size: 10),
-              //     label: const Text('Add Material'),
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: const Color(0xFFFEF3C7),
-              //       foregroundColor: const Color(0xFFB45309),
-              //       padding: const EdgeInsets.symmetric(vertical: 8),
-              //       textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
-              //     ),
-              //   ),
-              // ),
-              // const SizedBox(width: 7),
-              // Expanded(
-              //   child: ElevatedButton.icon(
-              //     onPressed: () {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //           builder: (context) => AddResourceScreen(
-              //             resourceType: 'Labour',
-              //             stageName: stage.stage,
-              //             siteName: siteName,
-              //           ),
-              //         ),
-              //       );
-              //     },
-              //     icon: const Icon(Icons.add, size: 10),
-              //     label: const Text('Add Labour'),
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: const Color(0xFFFEE2E2),
-              //       foregroundColor: const Color(0xFFB91C1C),
-              //       padding: const EdgeInsets.symmetric(vertical: 8),
-              //       textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
-              //     ),
-              //   ),
-              // ),
-              // const SizedBox(width: 7),
-              // Expanded(
-              //   child: ElevatedButton.icon(
-              //     onPressed: () {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //           builder: (context) => AddSubStageScreen(
-              //             stageName: stage.stage,
-              //             siteId: stage.siteId,
-              //             stageId: stage.id,
-              //           ),
-              //         ),
-              //       );
-              //     },
-              //     icon: const Icon(Icons.add, size: 10),
-              //     label: const Text('Sub-stage'),
-              //     style: ElevatedButton.styleFrom(
-              //       backgroundColor: const Color(0xFFEDE9FE),
-              //       foregroundColor: const Color(0xFF6D28D9),
-              //       padding: const EdgeInsets.symmetric(vertical: 8),
-              //       textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
-              //     ),
-              //   ),
-              // ),
+          // Expanded(
+          //   child: ElevatedButton.icon(
+          //     onPressed: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => AddResourceScreen(
+          //             resourceType: 'Material',
+          //             stageName: stage.stage,
+          //             siteName: siteName,
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     icon: const Icon(Icons.add, size: 10),
+          //     label: const Text('Add Material'),
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: const Color(0xFFFEF3C7),
+          //       foregroundColor: const Color(0xFFB45309),
+          //       padding: const EdgeInsets.symmetric(vertical: 8),
+          //       textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+          //     ),
+          //   ),
+          // ),
+          // const SizedBox(width: 7),
+          // Expanded(
+          //   child: ElevatedButton.icon(
+          //     onPressed: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => AddResourceScreen(
+          //             resourceType: 'Labour',
+          //             stageName: stage.stage,
+          //             siteName: siteName,
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     icon: const Icon(Icons.add, size: 10),
+          //     label: const Text('Add Labour'),
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: const Color(0xFFFEE2E2),
+          //       foregroundColor: const Color(0xFFB91C1C),
+          //       padding: const EdgeInsets.symmetric(vertical: 8),
+          //       textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+          //     ),
+          //   ),
+          // ),
+          // const SizedBox(width: 7),
+          // Expanded(
+          //   child: ElevatedButton.icon(
+          //     onPressed: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(
+          //           builder: (context) => AddSubStageScreen(
+          //             stageName: stage.stage,
+          //             siteId: stage.siteId,
+          //             stageId: stage.id,
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //     icon: const Icon(Icons.add, size: 10),
+          //     label: const Text('Sub-stage'),
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: const Color(0xFFEDE9FE),
+          //       foregroundColor: const Color(0xFF6D28D9),
+          //       padding: const EdgeInsets.symmetric(vertical: 8),
+          //       textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+          //     ),
+          //   ),
+          // ),
           //   ],
           // ),
         ],
       ),
     );
   }
- 
+
   Color _getStageColor(int status) {
     switch (status) {
       case 2:

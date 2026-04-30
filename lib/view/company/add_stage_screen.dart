@@ -29,18 +29,18 @@ class _AddStageScreenState extends State<AddStageScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
-  String _selectedStatus = 'Not Started';
+  String _selectedStatus = 'Pending';
   bool _wantsSubStages = false;
  
-  final _statusOptions = ['Not Started', 'Active', 'Done'];
+  final _statusOptions = ['Pending', 'Progress', 'Completed'];
 
   int getStatusValue(String status) {
   switch (status) {
-    case 'Not Started':
+    case 'Pending':
       return 0;
-    case 'Active':
+    case 'Progress':
       return 1;
-    case 'Done':
+    case 'Completed':
       return 2;
     default:
       return 0;

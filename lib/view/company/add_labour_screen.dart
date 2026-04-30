@@ -1,16 +1,18 @@
+import 'package:construction_app/models/get_sub_stages.dart';
 import 'package:construction_app/models/models.dart';
+import 'package:construction_app/provider/company_provider.dart';
+import 'package:construction_app/services/provider_helper_class.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class AddLabourScreen extends StatefulWidget {
-  final SubStageWithResources subStage;
-  final Function(SubStageLabour)? onLabourAdded;
+  final SubStage subStages;
  
   const AddLabourScreen({
     super.key,
-    required this.subStage,
-    this.onLabourAdded,
+    required this.subStages,
   });
  
   @override
@@ -81,38 +83,46 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
     }
   }
  
-  void _save() async {
-    if (!_formKey.currentState!.validate()) return;
- 
-    final labour = SubStageLabour(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      subStageId: widget.subStage.id,
-      labourType: _selectedType,
-      //workerName: _workerNameCtrl.text.trim(),
-      amount: double.parse(_amountCtrl.text),
-      remarks: _remarksCtrl.text.trim(),
-      dateAdded: _dateCtrl.text,
-    );
- 
-    // Call your API here to save the labour
-    // await yourApiService.addLabour(labour);
- 
-    if (widget.onLabourAdded != null) {
-      widget.onLabourAdded!(labour);
+
+    void save()async{
+
+      if(!_formKey.currentState!.validate())return;
+      final provider = context.read<CompanyProvider>();
+      final int noOfLabours = int.tryParse(_noOfLaboursCtrl.text) ?? 0;
+      final int noOfDays = int.tryParse(_noOfDaysCtrl.text) ?? 0;
+      final int amount = int.tryParse(_amountCtrl.text) ?? 0;
+      
+      await provider.addLabour(
+    substageId: widget.subStages.id,
+    noOfLabours: noOfLabours,
+    noOfDays: noOfDays,
+    amount: amount,
+    remarks: _remarksCtrl.text.trim(),
+    onFailure: (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: Colors.red,
+        ),
+      );
+    },
+  );
+
+  if (!mounted) return;
+
+  // Success UI
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('Labour added ✓',
+          style: GoogleFonts.poppins(fontSize: 13)),
+      backgroundColor: AppColors.green,
+    ),
+  );
+
+  Navigator.pop(context);
     }
- 
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Labour added ✓',
-            style: GoogleFonts.poppins(fontSize: 13)),
-        backgroundColor: AppColors.green,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
-    Navigator.pop(context);
-  }
+
+
  
   @override
   Widget build(BuildContext context) {
@@ -145,7 +155,7 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
                       const Icon(Icons.arrow_back_ios_new,
                           size: 14, color: AppColors.greyLight),
                       const SizedBox(width: 5),
-                      Text(widget.subStage.name,
+                      Text(widget.subStages.substage,
                           style: GoogleFonts.poppins(
                               fontSize: 11, color: AppColors.greyLight)),
                     ],
@@ -172,7 +182,7 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
                       const Icon(Icons.groups,
                           size: 14, color: AppColors.red),
                       const SizedBox(width: 5),
-                      Text('For: ${widget.subStage.name}',
+                      Text('For: ${widget.subStages.substage}',
                           style: GoogleFonts.poppins(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -219,7 +229,7 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
                        TextFormField(
                         controller: _noOfLaboursCtrl,
                         style: GoogleFonts.poppins(fontSize: 13),
-                        decoration: _inputDecoration('e.g. 100'),
+                        decoration: _inputDecoration('e.g. 10'),
                       ),
                       const SizedBox(height: 14),
  
@@ -272,7 +282,7 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: _save,
+                          onPressed: save,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.red,
                             foregroundColor: AppColors.white,
@@ -281,9 +291,15 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
                                 borderRadius: BorderRadius.circular(12)),
                             elevation: 0,
                           ),
-                          child: Text('Save Labour',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14, fontWeight: FontWeight.w700)),
+                          child: Consumer<CompanyProvider>(
+                            builder: (context, provider, child) {
+                              return provider.loaderState == LoaderState.loading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : Text('Save Labour',
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 14, fontWeight: FontWeight.w700));
+                            },
+                          ),
                         ),
                       ),
                     ],

@@ -11,12 +11,20 @@ import 'package:construction_app/models/add_sub_stages_model.dart';
 import 'package:construction_app/models/create_user_body.dart';
 import 'package:construction_app/models/create_user_model.dart';
 import 'package:construction_app/models/error_response_model.dart';
+import 'package:construction_app/models/get_categories_model.dart';
 import 'package:construction_app/models/get_company.dart';
+import 'package:construction_app/models/get_labours_model.dart';
+import 'package:construction_app/models/get_materials_model.dart';
 import 'package:construction_app/models/get_stages_model.dart';
 import 'package:construction_app/models/get_sub_stages.dart';
 import 'package:construction_app/models/get_supervisor_model.dart';
 import 'package:construction_app/models/login_model.dart';
+import 'package:construction_app/models/material_name_model.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
+import 'package:construction_app/models/supplier_model.dart';
+import 'package:construction_app/models/units_model.dart';
+import 'package:construction_app/models/update_stage_body.dart';
+import 'package:construction_app/models/update_stage_model.dart';
 import 'package:construction_app/services/base_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:async/async.dart';
@@ -159,7 +167,7 @@ Future<Result> sitesByCompany(int companyId) async{
 }
 
 Future<Result> addMaterial(AddMaterialsBody addMaterialBody)async{
-  Result res = await BaseClient.post("add-materials", body: addMaterialBody.toJson());
+  Result res = await BaseClient.post("add-site-materials", body: addMaterialBody.toJson());
   if(res.isError){
     ErrorResponseModel errorResponseModel = 
     ErrorResponseModel(errorMessage: "Oops...!, Something went wrong");
@@ -258,40 +266,132 @@ Future<Result> addLabours(AddLabourBody addLabourBody)async{
   }
 }
 
-//   Future<Result> getDeities() async {
-//     Result res = await BaseClient.get('deities');
-//     if (res.isError) {
-//       ErrorResponseModel errorResponseModel =
-//           ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
-//       return Result.error(errorResponseModel);
-//     } else {
-//       var response = res.asValue!.value;
-//       debugPrint('deities response $response');
-//       DeitiesResponse deitiesResponse = DeitiesResponse.fromJson(response);
-//       return (deitiesResponse.status ?? false)
-//           ? Result.value(deitiesResponse)
-//           : Result.error(deitiesResponse);
-//     }
-//   }
+
+Future<Result> getLabours({int? substageId})async{
+  String url = "labours";
+  if (substageId != null) {
+    url += "?substage_id=$substageId";
+  }
+  Result res = await BaseClient.get(url);
+  if(res.isError){
+    ErrorResponseModel errorResponseModel =
+    ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get Labours : $response");
+    GetLaboursModel getLaboursModel = GetLaboursModel.fromJson(response);
+    return (getLaboursModel.status)
+    ?Result.value(getLaboursModel)
+    :Result.error(getLaboursModel);
+  }
+}
+
+Future<Result> getCategories()async{
+  Result res = await BaseClient.get("categories");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel = 
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get Categories : $response");
+    GetCategoriesModel getCategoriesModel = GetCategoriesModel.fromJson(response);
+    return (getCategoriesModel.status)
+    ?Result.value(getCategoriesModel)
+    :Result.error(getCategoriesModel);
+  }
+}
 
 
-//     Future<Result> getAllProduct() async {
-//     Result res = await BaseClient.post('invproducts_all');
-//     if (res.isError) {
-//       ErrorResponseModel errorResponseModel =
-//           ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
-//       return Result.error(errorResponseModel);
-//     } else {
-//       var response = res.asValue!.value;
-//       debugPrint('deities response $response');
-//       GetAllProduct getAllProduct = GetAllProduct.fromJson(response);
-//       return (getAllProduct.status ?? false)
-//           ? Result.value(getAllProduct)
-//           : Result.error(getAllProduct);
-//     }
-//   }
+Future<Result> getMaterialNames(String name) async {
+  Result res = await BaseClient.get("materials?name=$name");
+  if (res.isError) {
+    ErrorResponseModel errorResponseModel =
+        ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+    return Result.error(errorResponseModel);
+  } else {
+    var response = res.asValue!.value;
+    debugPrint("Get Material Names: $response");
+    MaterialsNameModel materialsNameModel =
+        MaterialsNameModel.fromJson(response);
+    return (materialsNameModel.status)
+        ? Result.value(materialsNameModel)
+        : Result.error(materialsNameModel);
+  }
+}
 
 
+Future<Result> getUnits()async{
+  Result res = await BaseClient.get("units");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel = 
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get Units : $response");
+    UnitsModel unitsModel = UnitsModel.fromJson(response);
+    return (unitsModel.status)
+    ?Result.value(unitsModel)
+    :Result.error(unitsModel);
+  }
+}
 
+
+Future<Result> getSuppliers()async{
+  Result res = await BaseClient.get("suppliers");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel = 
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get Suppliers : $response");
+    SupplierModel supplierModel = SupplierModel.fromJson(response);
+    return (supplierModel.status)
+    ?Result.value(supplierModel)
+    :Result.error(supplierModel);
+  }
+}
+
+
+Future<Result> getMaterials(int? substageId)async{
+  Result res = await BaseClient.get("site-materials?substage_id=$substageId");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel =
+    ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get Materials : $response");
+    GetMaterialsModel getMaterialsModel = GetMaterialsModel.fromJson(response);
+    return (getMaterialsModel.status)
+    ?Result.value(getMaterialsModel)
+    :Result.error(getMaterialsModel);
+  }
+}
+
+
+Future<Result> updateStages(UpdateStageBody updateStageBody) async {
+  Result res = await BaseClient.post(
+    "stages/update", 
+    body: updateStageBody.toJson(),
+  );
+  
+  if (res.isError) {
+    ErrorResponseModel errorResponseModel =
+        ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
+    return Result.error(errorResponseModel);
+  } else {
+    var response = res.asValue!.value;
+    debugPrint("Update Stages: $response");
+    UpdateStageModel updateStageModel =
+        UpdateStageModel.fromJson(response);
+    return (updateStageModel.status)
+        ? Result.value(updateStageModel)
+        : Result.error(updateStageModel);
+  }
+}
 
 }

@@ -10,7 +10,7 @@ String addStagesBodyToJson(AddStagesBody data) => json.encode(data.toJson());
 
 class AddStagesBody {
     int siteId;
-    List<Stage> stages;
+    List<Stages> stages;
 
     AddStagesBody({
         required this.siteId,
@@ -19,7 +19,7 @@ class AddStagesBody {
 
     factory AddStagesBody.fromJson(Map<String, dynamic> json) => AddStagesBody(
         siteId: json["site_id"],
-        stages: List<Stage>.from(json["stages"].map((x) => Stage.fromJson(x))),
+        stages: List<Stages>.from(json["stages"].map((x) => Stages.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -28,20 +28,20 @@ class AddStagesBody {
     };
 }
 
-class Stage {
+class Stages {
     String stage;
     int hasSubstage;
     String? description;
     int? status;
 
-    Stage({
+    Stages({
         required this.stage,
         required this.hasSubstage,
         this.description,
         this.status,
     });
 
-    factory Stage.fromJson(Map<String, dynamic> json) => Stage(
+    factory Stages.fromJson(Map<String, dynamic> json) => Stages(
         stage: json["stage"],
         hasSubstage: json["has_substage"],
         description: json["description"],

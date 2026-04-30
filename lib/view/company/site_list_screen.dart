@@ -7,8 +7,6 @@ import 'package:construction_app/view/company/add_site_screen.dart';
 import 'package:construction_app/view/company/site_detail_screen.dart';
 import 'package:construction_app/view/company/widgets/site_card.dart';
 import 'package:construction_app/widgets/app_theme.dart';
-import 'package:construction_app/services/provider_helper_class.dart';
-import 'package:construction_app/services/shared_preference_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -24,11 +22,11 @@ class _SitesScreenState extends State<SitesScreen> {
   String _search = '';
   //final List<Site> dummysites = getSampleSites();
 
-  List<SiteModel> get _filtered => sampleSites
-      .where((s) =>
-          s.name.toLowerCase().contains(_search.toLowerCase()) ||
-          s.contactPerson.toLowerCase().contains(_search.toLowerCase()))
-      .toList();
+  // List<SiteModel> get _filtered => sampleSites
+  //     .where((s) =>
+  //         s.name.toLowerCase().contains(_search.toLowerCase()) ||
+  //         s.contactPerson.toLowerCase().contains(_search.toLowerCase()))
+  //     .toList();
 
 
 @override

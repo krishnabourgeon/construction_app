@@ -1,3 +1,4 @@
+import 'package:construction_app/models/get_supervisor_model.dart';
 import 'package:construction_app/models/models.dart';
 import 'package:construction_app/provider/company_provider.dart';
 import 'package:construction_app/widgets/app_theme.dart';
@@ -36,13 +37,22 @@ class UserScreen extends StatefulWidget {
 }
 
 class _UserScreenState extends State<UserScreen> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CompanyProvider>().getSupervisors();
+    });
+  }
   String _search = '';
 
-  List<UserModel> get _filtered => sampleUsers
+  List<Supervisor> get _filtered =>
+      context.watch<CompanyProvider>().supervisorsList
       .where((u) =>
           u.name.toLowerCase().contains(_search.toLowerCase()) ||
-          u.role.toLowerCase().contains(_search.toLowerCase()) ||
-          u.email.toLowerCase().contains(_search.toLowerCase()))
+          u.mobile.toLowerCase().contains(_search.toLowerCase()))
       .toList();
 
   @override
@@ -169,17 +179,18 @@ class _UserScreenState extends State<UserScreen> {
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
               itemCount: _filtered.length,
               itemBuilder: (_, i) {
-                final user = _filtered[i];
+                final supervisor = _filtered[i];
                 final colorIdx = i % _avatarBgs.length;
                 return _UserCard(
-                  user: user,
+                  supervisor: supervisor,
                   avatarBg: _avatarBgs[colorIdx],
                   avatarFg: _avatarFgs[colorIdx],
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (_) => UserDetailScreen(
-                              user: user,
+                              //user: user,
+                              supervisor: supervisor,
                               avatarBg: _avatarBgs[colorIdx],
                               avatarFg: _avatarFgs[colorIdx],
                             )),
@@ -197,13 +208,15 @@ class _UserScreenState extends State<UserScreen> {
 // ── User Card ─────────────────────────────────────────────────────────────────
 
 class _UserCard extends StatelessWidget {
-  final UserModel user;
+  //final UserModel user;
+  final Supervisor supervisor;
   final Color avatarBg;
   final Color avatarFg;
   final VoidCallback onTap;
 
   const _UserCard({
-    required this.user,
+    //required this.user,
+    required this.supervisor,
     required this.avatarBg,
     required this.avatarFg,
     required this.onTap,
@@ -233,7 +246,7 @@ class _UserCard extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  user.initials!,
+                  supervisor.name.substring(0, 2),
                   style: GoogleFonts.poppins(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -248,25 +261,25 @@ class _UserCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(user.name,
+                  Text(supervisor.name,
                       style: GoogleFonts.poppins(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: AppColors.dark,
                       )),
                   const SizedBox(height: 2),
-                  Text(user.role,
+                  Text("Supervisor",
                       style: GoogleFonts.poppins(
                           fontSize: 11, color: AppColors.grey)),
                   const SizedBox(height: 1),
-                  Text(user.phone,
+                  Text(supervisor.mobile,
                       style: GoogleFonts.poppins(
                           fontSize: 11, color: AppColors.greyLight)),
                 ],
               ),
             ),
             // Status badge
-            _StatusBadge(status: user.status),
+            //_StatusBadge(status: user.status),
           ],
         ),
       ),
@@ -304,13 +317,15 @@ class _StatusBadge extends StatelessWidget {
 // ── User Detail Screen ────────────────────────────────────────────────────────
 
 class UserDetailScreen extends StatelessWidget {
-  final UserModel user;
+  //final UserModel user;
+  final Supervisor supervisor;
   final Color avatarBg;
   final Color avatarFg;
 
   const UserDetailScreen({
     super.key,
-    required this.user,
+    required this.supervisor,
+    //required this.user,
     required this.avatarBg,
     required this.avatarFg,
   });
@@ -366,7 +381,7 @@ class UserDetailScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Center(
-                    child: Text(user.initials!,
+                    child: Text(supervisor.name.substring(0, 2),
                         style: GoogleFonts.poppins(
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
@@ -375,14 +390,14 @@ class UserDetailScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text(user.name,
+                Text(supervisor.name,
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                       color: AppColors.white,
                     )),
                 const SizedBox(height: 4),
-                _StatusBadge(status: user.status),
+                //_StatusBadge(status: user.status),
               ],
             ),
           ),
@@ -399,14 +414,14 @@ class UserDetailScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _DetailRow(Icons.badge_outlined, AppColors.amberLight,
-                        AppColors.amberDark, 'Role', user.role),
+                    // _DetailRow(Icons.badge_outlined, AppColors.amberLight,
+                    //     AppColors.amberDark, 'Role', user.role),
                     _DetailRow(Icons.phone_outlined, AppColors.blueLight,
-                        AppColors.blue, 'Phone', user.phone),
-                    _DetailRow(Icons.email_outlined, AppColors.greenLight,
-                        AppColors.green, 'Email', user.email),
-                    _DetailRow(Icons.toggle_on_outlined, AppColors.greyBg,
-                        AppColors.grey, 'Status', user.status),
+                        AppColors.blue, 'Phone', supervisor.mobile),
+                    //_DetailRow(Icons.email_outlined, AppColors.greenLight,
+                        //AppColors.green, 'Email', user.email),
+                    //_DetailRow(Icons.toggle_on_outlined, AppColors.greyBg,
+                        //AppColors.grey, 'Status', user.status),
                   ],
                 ),
               ),
@@ -427,7 +442,7 @@ class UserDetailScreen extends StatelessWidget {
             style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w600, fontSize: 16)),
         content: Text(
-            'Are you sure you want to delete ${user.name}?',
+            'Are you sure you want to delete ${supervisor.name}?',
             style:
                 GoogleFonts.poppins(fontSize: 13, color: AppColors.grey)),
         actions: [
