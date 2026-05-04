@@ -78,18 +78,18 @@ class _SubStageDetailScreenState extends State<SubStageDetailScreen>
                   child: Row(
                     children: [
                       const Icon(Icons.arrow_back_ios_new,
-                          size: 14, color: Color(0xFFE9D5FF)),
-                      const SizedBox(width: 5),
+                          size: 20, color: Color(0xFFE9D5FF)),
+                      const SizedBox(width: 7),
                       Text(widget.stageName,
                           style: GoogleFonts.poppins(
-                              fontSize: 11, color: const Color(0xFFE9D5FF))),
+                              fontSize: 16, color: const Color(0xFFE9D5FF))),
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 13),
                 Text(widget.subStages.substage,
                     style: GoogleFonts.poppins(
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: AppColors.white,
                     )),
@@ -97,7 +97,7 @@ class _SubStageDetailScreenState extends State<SubStageDetailScreen>
                   const SizedBox(height: 4),
                   Text(widget.subStages.description,
                       style: GoogleFonts.poppins(
-                          fontSize: 11, color: const Color(0xFFE9D5FF))),
+                          fontSize: 14, color: const Color(0xFFE9D5FF))),
                 ],
                 const SizedBox(height: 8),
                 // Cost summary
@@ -290,7 +290,7 @@ class _MaterialsTab extends StatelessWidget {
                 children: [
                   Text('${materials.length} materials',
                       style: GoogleFonts.poppins(
-                          fontSize: 12,
+                          fontSize: 16,
                           fontWeight: FontWeight.w500,
                           color: AppColors.grey)),
 
@@ -318,11 +318,11 @@ class _MaterialsTab extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.add, size: 14, color: AppColors.amberDark),
+                          const Icon(Icons.add, size: 16, color: AppColors.amberDark),
                           const SizedBox(width: 4),
                           Text('Add Material',
                               style: GoogleFonts.poppins(
-                                  fontSize: 11,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.amberDark)),
                         ],
@@ -349,11 +349,11 @@ class _MaterialsTab extends StatelessWidget {
                               const SizedBox(height: 12),
                               Text('No materials added yet',
                                   style: GoogleFonts.poppins(
-                                      fontSize: 13, color: AppColors.grey)),
+                                      fontSize: 15, color: AppColors.grey)),
                               const SizedBox(height: 4),
                               Text('Tap "Add Material" to get started',
                                   style: GoogleFonts.poppins(
-                                      fontSize: 11, color: AppColors.greyLight)),
+                                      fontSize: 14, color: AppColors.greyLight)),
                             ],
                           ),
                         )
@@ -410,7 +410,7 @@ class _LabourTab extends StatelessWidget {
                 children: [
                   Text('${filteredLabours.length} entries',
                       style: GoogleFonts.poppins(
-                          fontSize: 12,
+                          fontSize: 15,
                           fontWeight: FontWeight.w500,
                           color: AppColors.grey)),
                   GestureDetector(
@@ -433,11 +433,11 @@ class _LabourTab extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.add, size: 14, color: AppColors.red),
+                          const Icon(Icons.add, size: 16, color: AppColors.red),
                           const SizedBox(width: 4),
                           Text('Add Labour',
                               style: GoogleFonts.poppins(
-                                  fontSize: 11,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.red)),
                         ],
@@ -521,11 +521,11 @@ class _CostChip extends StatelessWidget {
         children: [
           Text(label,
               style: GoogleFonts.poppins(
-                  fontSize: 10, fontWeight: FontWeight.w700, color: textColor)),
+                  fontSize: 15, fontWeight: FontWeight.w700, color: textColor)),
           const SizedBox(width: 6),
           Text('₹${_formatAmount(amount)}',
               style: GoogleFonts.poppins(
-                  fontSize: 11, fontWeight: FontWeight.w700, color: textColor)),
+                  fontSize: 13, fontWeight: FontWeight.w700, color: textColor)),
         ],
       ),
     );

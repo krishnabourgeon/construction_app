@@ -136,22 +136,22 @@ class _AddSubStageScreenState extends State<AddSubStageScreen> {
                   child: Row(
                     children: [
                       const Icon(Icons.arrow_back_ios_new,
-                          size: 14, color: AppColors.greyLight),
-                      const SizedBox(width: 5),
+                          size: 20, color: AppColors.greyLight),
+                      const SizedBox(width: 7),
                       Text('Add Stage',
                           style: GoogleFonts.poppins(
-                              fontSize: 11, color: AppColors.greyLight)),
+                              fontSize: 16, color: AppColors.greyLight)),
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 13),
                 Text('Add Sub-stages',
                     style: GoogleFonts.poppins(
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: AppColors.white,
                     )),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 // Context tag
                 Container(
                   margin: const EdgeInsets.only(top: 8),
@@ -165,11 +165,11 @@ class _AddSubStageScreenState extends State<AddSubStageScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(Icons.layers_outlined,
-                          size: 14, color: AppColors.purple),
+                          size: 16, color: AppColors.purple),
                       const SizedBox(width: 5),
                       Text('Under Stage: ${widget.stageName}',
                           style: GoogleFonts.poppins(
-                              fontSize: 11,
+                              fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: AppColors.purple)),
                     ],
@@ -340,7 +340,7 @@ class _AddSubStageScreenState extends State<AddSubStageScreen> {
   Widget _buildLabel(String text) {
     return Text(text,
         style: GoogleFonts.poppins(
-            fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.dark));
+            fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.dark));
   }
  
   InputDecoration _inputDecoration(String hint) {

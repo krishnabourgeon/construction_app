@@ -22,14 +22,14 @@ class MaterialCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 38,
-            height: 38,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
               color: AppColors.amberLight,
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(Icons.inventory_2,
-                size: 18, color: AppColors.amberDark),
+                size: 20, color: AppColors.amberDark),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -38,21 +38,21 @@ class MaterialCard extends StatelessWidget {
               children: [
                 Text(material.materialName,
                     style: GoogleFonts.poppins(
-                        fontSize: 12,
+                        fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: AppColors.dark)),
                 const SizedBox(height: 2),
                 Text(
                     '${material.qty} Unit(s) × ₹${material.price}',
                     style: GoogleFonts.poppins(
-                        fontSize: 10, color: AppColors.grey)),
-                if (material.supplierId != 0) // Basic fallback for supplier
-                  Text('Supplier ID: ${material.supplierId}',
-                      style: GoogleFonts.poppins(
-                          fontSize: 10, color: AppColors.greyLight)),
+                        fontSize: 15, color: AppColors.grey)),
+                // if (material.supplierId != 0) // Basic fallback for supplier
+                //   Text('Supplier ID: ${material.supplierId}',
+                //       style: GoogleFonts.poppins(
+                //           fontSize: 13, color: AppColors.greyLight)),
                 Text('${material.addedDate.day}/${material.addedDate.month}/${material.addedDate.year}',
                     style: GoogleFonts.poppins(
-                        fontSize: 10, color: AppColors.greyLight)),
+                        fontSize: 15, color: AppColors.grey)),
               ],
             ),
           ),
@@ -61,46 +61,46 @@ class MaterialCard extends StatelessWidget {
             children: [
               Text('₹${material.amount}',
                   style: GoogleFonts.poppins(
-                      fontSize: 13,
+                      fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: AppColors.orange)),
-              const SizedBox(height: 4),
-              GestureDetector(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => AlertDialog(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                      title: Text('Delete Material',
-                          style: GoogleFonts.poppins(
-                              fontSize: 15, fontWeight: FontWeight.w600)),
-                      content: Text('Remove "${material.materialName}"?',
-                          style: GoogleFonts.poppins(fontSize: 13)),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text('Cancel',
-                              style: GoogleFonts.poppins(
-                                  color: AppColors.grey)),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            onDelete();
-                          },
-                          child: Text('Delete',
-                              style: GoogleFonts.poppins(
-                                  color: AppColors.red,
-                                  fontWeight: FontWeight.w600)),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                child: Icon(Icons.delete_outline,
-                    size: 18, color: AppColors.red.withOpacity(0.6)),
-              ),
+              // const SizedBox(height: 6),
+              // GestureDetector(
+              //   onTap: () {
+              //     showDialog(
+              //       context: context,
+              //       builder: (_) => AlertDialog(
+              //         shape: RoundedRectangleBorder(
+              //             borderRadius: BorderRadius.circular(16)),
+              //         title: Text('Delete Material',
+              //             style: GoogleFonts.poppins(
+              //                 fontSize: 15, fontWeight: FontWeight.w600)),
+              //         content: Text('Remove "${material.materialName}"?',
+              //             style: GoogleFonts.poppins(fontSize: 13)),
+              //         actions: [
+              //           TextButton(
+              //             onPressed: () => Navigator.pop(context),
+              //             child: Text('Cancel',
+              //                 style: GoogleFonts.poppins(
+              //                     color: AppColors.grey)),
+              //           ),
+              //           TextButton(
+              //             onPressed: () {
+              //               Navigator.pop(context);
+              //               onDelete();
+              //             },
+              //             child: Text('Delete',
+              //                 style: GoogleFonts.poppins(
+              //                     color: AppColors.red,
+              //                     fontWeight: FontWeight.w600)),
+              //           ),
+              //         ],
+              //       ),
+              //     );
+              //   },
+              //   child: Icon(Icons.delete_outline,
+              //       size: 18, color: AppColors.red.withOpacity(0.6)),
+              // ),
             ],
           ),
         ],

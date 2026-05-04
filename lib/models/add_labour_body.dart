@@ -14,6 +14,7 @@ class AddLabourBody {
     int noOfDays;
     int amount;
     String remarks;
+    DateTime addedDate;
 
     AddLabourBody({
         required this.substageId,
@@ -21,6 +22,7 @@ class AddLabourBody {
         required this.noOfDays,
         required this.amount,
         required this.remarks,
+        required this.addedDate,
     });
 
     factory AddLabourBody.fromJson(Map<String, dynamic> json) => AddLabourBody(
@@ -29,6 +31,7 @@ class AddLabourBody {
         noOfDays: json["no_of_days"],
         amount: json["amount"],
         remarks: json["remarks"],
+        addedDate: DateTime.parse(json["added_date"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -37,5 +40,6 @@ class AddLabourBody {
         "no_of_days": noOfDays,
         "amount": amount,
         "remarks": remarks,
+        "added_date": "${addedDate.year.toString().padLeft(4, '0')}-${addedDate.month.toString().padLeft(2, '0')}-${addedDate.day.toString().padLeft(2, '0')}",
     };
 }

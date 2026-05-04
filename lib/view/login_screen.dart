@@ -102,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'BuildCo Constructions',
+                    'BuildXpert Constructions',
                     style: GoogleFonts.poppins(
                       color: AppColors.white,
                       fontSize: 26,

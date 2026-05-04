@@ -39,7 +39,7 @@ class _SiteDetailScreenState extends State<SiteDetailScreen> with SingleTickerPr
           indicatorColor: const Color(0xFFF59E0B),
           labelColor: const Color(0xFFF59E0B),
           unselectedLabelColor: const Color(0xFF9CA3AF),
-          labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+          labelStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
           tabs: const [
             Tab(text: 'Info'),
             Tab(text: 'Working Stages'),

@@ -8,6 +8,8 @@ import 'package:construction_app/models/add_stage_body.dart';
 import 'package:construction_app/models/add_stages_model.dart';
 import 'package:construction_app/models/add_sub_stages_body.dart';
 import 'package:construction_app/models/add_sub_stages_model.dart';
+import 'package:construction_app/models/add_supplier_body.dart';
+import 'package:construction_app/models/add_supplier_model.dart';
 import 'package:construction_app/models/create_user_body.dart';
 import 'package:construction_app/models/create_user_model.dart';
 import 'package:construction_app/models/error_response_model.dart';
@@ -19,6 +21,7 @@ import 'package:construction_app/models/get_stages_model.dart';
 import 'package:construction_app/models/get_sub_stages.dart';
 import 'package:construction_app/models/get_supervisor_model.dart';
 import 'package:construction_app/models/login_model.dart';
+import 'package:construction_app/models/logout_model.dart';
 import 'package:construction_app/models/material_name_model.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
 import 'package:construction_app/models/supplier_model.dart';
@@ -393,5 +396,42 @@ Future<Result> updateStages(UpdateStageBody updateStageBody) async {
         : Result.error(updateStageModel);
   }
 }
+
+
+Future<Result> logout()async{
+  Result res = await BaseClient.post('logout');
+  if(res.isError){
+    ErrorResponseModel errorResponseModel =
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Logout : $response");
+    LogoutModel logoutModel = LogoutModel.fromJson(response);
+    return (logoutModel.status)
+    ?Result.value(logoutModel)
+    :Result.error(logoutModel);
+  }
+}
+
+
+Future<Result> addSupplier(AddSupplierBody addSupplierBody)async{
+  Result res = await BaseClient.post('add-supplier',body: addSupplierBody.toJson(),);
+  if(res.isError){
+    ErrorResponseModel errorResponseModel = 
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Add Supplier : $response");
+    AddSupplierModel addSupplierModel = AddSupplierModel.fromJson(response);
+    return (addSupplierModel.status)
+    ?Result.value(addSupplierModel)
+    :Result.error(addSupplierModel);
+  }
+}
+
+
+
 
 }

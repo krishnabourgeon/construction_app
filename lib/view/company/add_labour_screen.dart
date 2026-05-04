@@ -26,6 +26,7 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
   final _amountCtrl = TextEditingController();
   final _remarksCtrl = TextEditingController();
   final _dateCtrl = TextEditingController();
+  DateTime _selectedDate = DateTime.now();
   String _selectedType = 'Mason';
  
   final _labourTypes = [
@@ -42,7 +43,7 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
   @override
   void initState() {
     super.initState();
-    _dateCtrl.text = _formatDate(DateTime.now());
+    _dateCtrl.text = _formatDate(_selectedDate);
   }
  
   @override
@@ -64,11 +65,12 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
   }
  
   Future<void> _pickDate() async {
+    final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: _selectedDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
+      lastDate: now,
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
           colorScheme: const ColorScheme.light(primary: AppColors.red),
@@ -78,6 +80,7 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
     );
     if (picked != null) {
       setState(() {
+        _selectedDate = picked;
         _dateCtrl.text = _formatDate(picked);
       });
     }
@@ -98,6 +101,7 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
     noOfDays: noOfDays,
     amount: amount,
     remarks: _remarksCtrl.text.trim(),
+    addedDate: _selectedDate,
     onFailure: (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

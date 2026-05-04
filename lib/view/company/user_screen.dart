@@ -78,7 +78,7 @@ class _UserScreenState extends State<UserScreen> {
                   children: [
                     Text('Management',
                         style: GoogleFonts.poppins(
-                            fontSize: 11, color: AppColors.greyLight)),
+                            fontSize: 15, color: AppColors.greyLight)),
                     Text('Supervisor',
                         style: GoogleFonts.poppins(
                           fontSize: 22,
@@ -111,11 +111,11 @@ class _UserScreenState extends State<UserScreen> {
                     child: Row(
                       children: [
                         const Icon(Icons.add,
-                            size: 16, color: AppColors.dark),
+                            size: 18, color: AppColors.dark),
                         const SizedBox(width: 4),
                         Text('Add',
                             style: GoogleFonts.poppins(
-                              fontSize: 12,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: AppColors.dark,
                             )),
@@ -132,7 +132,7 @@ class _UserScreenState extends State<UserScreen> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: TextField(
               onChanged: (v) => setState(() => _search = v),
-              style: GoogleFonts.poppins(fontSize: 13),
+              style: GoogleFonts.poppins(fontSize: 15),
               decoration: InputDecoration(
                 hintText: 'Search supervisor...',
                 filled: true,
@@ -165,7 +165,7 @@ class _UserScreenState extends State<UserScreen> {
                 Text(
                   '${_filtered.length} users',
                   style: GoogleFonts.poppins(
-                      fontSize: 12,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                       color: AppColors.grey),
                 ),
@@ -248,7 +248,7 @@ class _UserCard extends StatelessWidget {
                 child: Text(
                   supervisor.name.substring(0, 2),
                   style: GoogleFonts.poppins(
-                    fontSize: 15,
+                    fontSize: 17,
                     fontWeight: FontWeight.w700,
                     color: avatarFg,
                   ),
@@ -263,18 +263,18 @@ class _UserCard extends StatelessWidget {
                 children: [
                   Text(supervisor.name,
                       style: GoogleFonts.poppins(
-                        fontSize: 13,
+                        fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: AppColors.dark,
                       )),
                   const SizedBox(height: 2),
                   Text("Supervisor",
                       style: GoogleFonts.poppins(
-                          fontSize: 11, color: AppColors.grey)),
+                          fontSize: 12, color: AppColors.grey)),
                   const SizedBox(height: 1),
                   Text(supervisor.mobile,
                       style: GoogleFonts.poppins(
-                          fontSize: 11, color: AppColors.greyLight)),
+                          fontSize: 12, color: AppColors.greyLight)),
                 ],
               ),
             ),
@@ -352,23 +352,23 @@ class UserDetailScreen extends StatelessWidget {
                     IconButton(
                       onPressed: () => Navigator.pop(context),
                       icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: AppColors.white, size: 18),
+                          color: AppColors.white, size: 20),
                       padding: EdgeInsets.zero,
                     ),
                     Text('Supervisor',
                         style: GoogleFonts.poppins(
-                            fontSize: 13, color: AppColors.greyLight)),
+                            fontSize: 15, color: AppColors.greyLight)),
                     const Spacer(),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.edit_outlined,
-                          color: AppColors.amber, size: 20),
-                    ),
-                    IconButton(
-                      onPressed: () => _confirmDelete(context),
-                      icon: const Icon(Icons.delete_outline_rounded,
-                          color: Color(0xFFEF4444), size: 20),
-                    ),
+                    // IconButton(
+                    //   onPressed: () {},
+                    //   icon: const Icon(Icons.edit_outlined,
+                    //       color: AppColors.amber, size: 20),
+                    // ),
+                    // IconButton(
+                    //   onPressed: () => _confirmDelete(context),
+                    //   icon: const Icon(Icons.delete_outline_rounded,
+                    //       color: Color(0xFFEF4444), size: 20),
+                    // ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -392,7 +392,7 @@ class UserDetailScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text(supervisor.name,
                     style: GoogleFonts.poppins(
-                      fontSize: 18,
+                      fontSize: 20,
                       fontWeight: FontWeight.w600,
                       color: AppColors.white,
                     )),
@@ -499,10 +499,10 @@ class _DetailRow extends StatelessWidget {
               children: [
                 Text(label,
                     style: GoogleFonts.poppins(
-                        fontSize: 11, color: AppColors.greyLight)),
+                        fontSize: 13, color: AppColors.greyLight)),
                 Text(value,
                     style: GoogleFonts.poppins(
-                      fontSize: 13,
+                      fontSize: 15,
                       fontWeight: FontWeight.w500,
                       color: AppColors.dark,
                     )),

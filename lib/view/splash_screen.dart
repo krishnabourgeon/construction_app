@@ -65,15 +65,16 @@ class _SplashScreenState extends State<SplashScreen> {
                 color: AppColors.amber,
                 borderRadius: BorderRadius.circular(24),
               ),
-              child: const Icon(
-                Icons.domain_rounded,
-                color: AppColors.navy,
-                size: 56,
+              child: Image.asset(
+                'assets/image/construction_logo.jpeg',
+                width: 100,
+                height: 100,
+                fit: BoxFit.contain,
               ),
             ),
             const SizedBox(height: 24),
             Text(
-              'BuildCo',
+              'BuildXpert',
               style: GoogleFonts.poppins(
                 color: AppColors.white,
                 fontSize: 32,

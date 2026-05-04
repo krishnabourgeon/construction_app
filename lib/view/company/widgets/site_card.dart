@@ -43,7 +43,7 @@ class _SiteCardState extends State<SiteCard> {
                     child: Text(
                       widget.site.sitename ?? 'Unnamed Site',
                       style: const TextStyle(
-                        fontSize: 13,
+                        fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF1C1917),
                       ),
@@ -55,7 +55,7 @@ class _SiteCardState extends State<SiteCard> {
               const SizedBox(height: 4),
               Text(
                 '${widget.site.contactperson ?? 'No Contact'} • ${widget.site.mobile ?? 'No Mobile'}',
-                style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF)),
+                style: const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
               ),
               const SizedBox(height: 8),
               Row(
@@ -63,7 +63,7 @@ class _SiteCardState extends State<SiteCard> {
                   Expanded(
                     child: Text(
                       'Budget',
-                      style: const TextStyle(fontSize: 10, color: Color(0xFF9CA3AF)),
+                      style: const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
                     ),
                   ),
                   Text(
@@ -141,7 +141,7 @@ class StatusBadge extends StatelessWidget {
       child: Text(
         status,
         style: TextStyle(
-          fontSize: 9,
+          fontSize: 13,
           fontWeight: FontWeight.w700,
           color: textColor,
         ),

@@ -50,7 +50,7 @@ class WorkingStagesTabState extends State<WorkingStagesTab> {
                   const Text(
                     'Working Stages',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF1C1917),
                     ),
@@ -58,7 +58,7 @@ class WorkingStagesTabState extends State<WorkingStagesTab> {
                   Text(
                     '${provider.stagesList.length} stages',
                     style: const TextStyle(
-                      fontSize: 10,
+                      fontSize: 13,
                       color: Color(0xFF9CA3AF),
                     ),
                   ),
@@ -75,8 +75,10 @@ class WorkingStagesTabState extends State<WorkingStagesTab> {
                     ),
                   );
                 },
-                icon: const Icon(Icons.add, size: 14),
-                label: const Text('Add Stage'),
+                icon: const Icon(Icons.add, size: 15),
+                label: const Text('Add Stage',style: TextStyle(
+                  fontSize: 14,
+                ),),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFF59E0B),
                   foregroundColor: const Color(0xFF1C1917),
@@ -85,7 +87,7 @@ class WorkingStagesTabState extends State<WorkingStagesTab> {
                     vertical: 7,
                   ),
                   textStyle: const TextStyle(
-                    fontSize: 11,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -169,8 +171,8 @@ class _StageCard extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    width: 34,
-                    height: 34,
+                    width: 38,
+                    height: 38,
                     decoration: BoxDecoration(
                       color: _getStageColor(stage.status),
                       borderRadius: BorderRadius.circular(10),
@@ -179,7 +181,7 @@ class _StageCard extends StatelessWidget {
                     child: Text(
                       '${stage.stage[0]}',
                       style: const TextStyle(
-                        fontSize: 13,
+                        fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
@@ -193,7 +195,7 @@ class _StageCard extends StatelessWidget {
                         Text(
                           stage.stage,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFF1C1917),
                           ),
@@ -202,7 +204,7 @@ class _StageCard extends StatelessWidget {
                         Text(
                           stage.description,
                           style: const TextStyle(
-                            fontSize: 10,
+                            fontSize: 13,
                             color: Color(0xFF9CA3AF),
                           ),
                           maxLines: 1,
@@ -214,7 +216,7 @@ class _StageCard extends StatelessWidget {
                   StatusBadge(status: stage.statusLabel),
                   const SizedBox(width: 7),
                   IconButton(
-                    icon: const Icon(Icons.edit, size: 16),
+                    icon: const Icon(Icons.edit, size: 20),
                     color: const Color(0xFF9CA3AF),
                     onPressed: () {
                       Navigator.push(
@@ -236,6 +238,7 @@ class _StageCard extends StatelessWidget {
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
                     color: const Color(0xFF9CA3AF),
+                    size: 26,
                   ),
                 ],
               ),
@@ -345,7 +348,7 @@ class _StageCard extends StatelessWidget {
               const Text(
                 '🔀 SUB-STAGES',
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF9CA3AF),
                 ),
@@ -363,8 +366,8 @@ class _StageCard extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.add, size: 10),
-                label: const Text('Add Sub-stage'),
+                icon: const Icon(Icons.add, size: 14),
+                label: const Text('Add Sub-stage',style: TextStyle(fontSize: 14),),
                 style: TextButton.styleFrom(
                   backgroundColor: const Color(0xFFEDE9FE),
                   foregroundColor: const Color(0xFF6D28D9),
@@ -373,7 +376,7 @@ class _StageCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   textStyle: const TextStyle(
-                    fontSize: 10,
+                    fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -417,18 +420,27 @@ class _StageCard extends StatelessWidget {
                 Text(
                   subStages.substage,
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF1C1917),
                   ),
                 ),
-                StatusBadge(status: subStages.statusLabel),
+                // StatusBadge(status: subStages.statusLabel),
               ],
             ),
+            SizedBox(height: 6,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                StatusBadge(status: subStages.statusLabel),
+                const SizedBox(width: 6),
+                const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+               ],
+             ),
             const SizedBox(height: 2),
             Text(
               subStages.description,
-              style: const TextStyle(fontSize: 10, color: Color(0xFF9CA3AF)),
+              style: const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
             ),
             const SizedBox(height: 6),
             // Row(

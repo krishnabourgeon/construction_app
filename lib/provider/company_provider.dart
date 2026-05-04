@@ -8,6 +8,8 @@ import 'package:construction_app/models/add_stage_body.dart';
 import 'package:construction_app/models/add_stages_model.dart';
 import 'package:construction_app/models/add_sub_stages_body.dart';
 import 'package:construction_app/models/add_sub_stages_model.dart';
+import 'package:construction_app/models/add_supplier_body.dart';
+import 'package:construction_app/models/add_supplier_model.dart';
 import 'package:construction_app/models/create_user_body.dart';
 import 'package:construction_app/models/create_user_model.dart';
 import 'package:construction_app/models/error_response_model.dart';
@@ -18,6 +20,7 @@ import 'package:construction_app/models/get_materials_model.dart';
 import 'package:construction_app/models/get_stages_model.dart';
 import 'package:construction_app/models/get_sub_stages.dart';
 import 'package:construction_app/models/get_supervisor_model.dart';
+import 'package:construction_app/models/logout_model.dart';
 import 'package:construction_app/models/material_name_model.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
 import 'package:construction_app/models/supplier_model.dart';
@@ -25,6 +28,7 @@ import 'package:construction_app/models/units_model.dart';
 import 'package:construction_app/models/update_stage_body.dart';
 import 'package:construction_app/models/update_stage_model.dart';
 import 'package:construction_app/services/provider_helper_class.dart';
+import 'package:construction_app/services/shared_preference_helper.dart';
 import 'package:flutter/cupertino.dart';
 
 
@@ -84,6 +88,7 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
      // CreateUserModel createUserModel = res.asValue!.value;
       // if (onSuccess != null) onSuccess(createUserModel.data?.role.toLowerCase());
       updateLoadState(LoaderState.loaded);
+      await getSupervisors();
     } else {
       String errorMessage = "Failed to create user";
       if (res.asError!.error is ErrorResponseModel) {
@@ -163,6 +168,8 @@ Future<void> addSites({
     final response = res.asValue!.value as AddSitesModel;
 
     updateLoadState(LoaderState.loaded);
+    final companyId = await SharedPreferenceHelper.getCompanyId();
+    await sitesbycompanies(companyId: companyId);
   } else {
     String errorMessage = "Failed to add site";
 
@@ -281,6 +288,7 @@ Future<void> addMaterials({
     final response = res.asValue!.value as AddMaterialsModel;
 
     updateLoadState(LoaderState.loaded);
+    await getMaterials(substageId: substageId);
   } else {
     String errorMessage = "Failed to add materials";
 
@@ -445,6 +453,7 @@ Future<void> addLabour({
   required int noOfDays,
   required int amount,
   required String remarks,
+  required DateTime addedDate,
 })async{
   updateLoadState(LoaderState.loading);
   var res = await serviceConfig.addLabours(
@@ -454,11 +463,13 @@ Future<void> addLabour({
       noOfDays: noOfDays,
       amount: amount,
       remarks: remarks,
+      addedDate: addedDate,
     ),
   );
   if(!res.isError){
     final response = res.asValue!.value as AddLabourModel;
     updateLoadState(LoaderState.loaded);
+    await getLabours(substageId: substageId);
   } else {
     String errorMessage = "Failed to add labour";
     if(res.asError!.error is ErrorResponseModel){
@@ -661,6 +672,7 @@ Future<void> updateStages(
     if(!res.isError){
     final response = res.asValue!.value as UpdateStageModel;
     updateLoadState(LoaderState.loaded);
+    await getStages(siteId: siteId);
   } else {
     String errorMessage = "Failed to update stages";
     if(res.asError!.error is ErrorResponseModel){
@@ -673,6 +685,64 @@ Future<void> updateStages(
     }
   } catch (e) {
     debugPrint("CompanyProvider: Error in updateStages: $e");
+    updateLoadState(LoaderState.loaded);
+    if(onFailure != null) onFailure(e.toString());
+  }
+  notifyListeners();
+}
+
+
+Future<void> logout(
+  Function(String errorMessage)? onFailure,
+) async {
+  updateLoadState(LoaderState.loading);
+  try {
+    var res = await serviceConfig.logout();
+    if(!res.isError){
+    final response = res.asValue!.value as LogoutModel;
+    updateLoadState(LoaderState.loaded);
+  } else {
+    String errorMessage = "Failed to logout";
+    if(res.asError!.error is ErrorResponseModel){
+      errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+      errorMessage;
+    }
+    errorToast = errorMessage;
+      if(onFailure != null) onFailure(errorMessage);
+      updateLoadState(LoaderState.loaded);
+    }
+  } catch (e) {
+    debugPrint("CompanyProvider: Error in logout: $e");
+    updateLoadState(LoaderState.loaded);
+    if(onFailure != null) onFailure(e.toString());
+  }
+  notifyListeners();
+}
+
+
+Future<void> addSupplier(
+  Function(String errorMessage)? onFailure,
+  AddSupplierBody addSupplierBody,
+) async {
+  updateLoadState(LoaderState.loading);
+  try {
+    var res = await serviceConfig.addSupplier(addSupplierBody);
+    if(!res.isError){
+    final response = res.asValue!.value as AddSupplierModel;
+    updateLoadState(LoaderState.loaded);
+   
+  } else {
+    String errorMessage = "Failed to add supplier";
+    if(res.asError!.error is ErrorResponseModel){
+      errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+      errorMessage;
+    }
+    errorToast = errorMessage;
+      if(onFailure != null) onFailure(errorMessage);
+      updateLoadState(LoaderState.loaded);
+    }
+  } catch (e) {
+    debugPrint("CompanyProvider: Error in addSupplier: $e");
     updateLoadState(LoaderState.loaded);
     if(onFailure != null) onFailure(e.toString());
   }

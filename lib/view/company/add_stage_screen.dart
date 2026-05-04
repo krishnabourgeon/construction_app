@@ -183,26 +183,26 @@ int getHasSubstage(bool value) => value ? 1 : 0;
                   child: Row(
                     children: [
                       const Icon(Icons.arrow_back_ios_new,
-                          size: 15, color: AppColors.greyLight),
-                      const SizedBox(width: 5),
+                          size: 20, color: AppColors.greyLight),
+                      const SizedBox(width: 8),
                       Text('Working Stages',
                           style: GoogleFonts.poppins(
-                              fontSize: 11, color: AppColors.greyLight)),
+                              fontSize: 15, color: AppColors.greyLight)),
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 13),
                 // Title
                 Text('Add Working Stage',
                     style: GoogleFonts.poppins(
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: AppColors.white,
                     )),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text('For: ${widget.siteName}',
                     style: GoogleFonts.poppins(
-                        fontSize: 11, color: AppColors.grey)),
+                        fontSize: 14, color: AppColors.greyLight)),
               ],
             ),
           ),
@@ -287,7 +287,7 @@ int getHasSubstage(bool value) => value ? 1 : 0;
                         children: [
                           Text('Add sub-stages to this stage?',
                               style: GoogleFonts.poppins(
-                                fontSize: 14,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.dark,
                               )),
@@ -295,7 +295,7 @@ int getHasSubstage(bool value) => value ? 1 : 0;
                           Text(
                               'Sub-stages help break down work into smaller tasks',
                               style: GoogleFonts.poppins(
-                                  fontSize: 11, color: AppColors.greyLight)),
+                                  fontSize: 14, color: AppColors.greyLight)),
                           const SizedBox(height: 12),
                           Row(
                             children: [
@@ -356,7 +356,7 @@ int getHasSubstage(bool value) => value ? 1 : 0;
   Widget _buildLabel(String text) {
     return Text(text,
         style: GoogleFonts.poppins(
-            fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.dark));
+            fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.dark));
   }
  
   InputDecoration _inputDecoration(String hint) {

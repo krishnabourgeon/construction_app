@@ -72,7 +72,7 @@ void initState() {
                   children: [
                     Text('Management',
                         style: GoogleFonts.poppins(
-                            fontSize: 11, color: AppColors.greyLight)),
+                            fontSize: 15, color: AppColors.greyLight)),
                     Text('Sites',
                         style: GoogleFonts.poppins(
                           fontSize: 22,
@@ -93,11 +93,11 @@ void initState() {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.add, size: 16, color: AppColors.dark),
+                        const Icon(Icons.add, size: 18, color: AppColors.dark),
                         const SizedBox(width: 4),
                         Text('Add Site',
                             style: GoogleFonts.poppins(
-                              fontSize: 12,
+                              fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: AppColors.dark,
                             )),
@@ -114,7 +114,7 @@ void initState() {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: TextField(
               onChanged: (v) => setState(() => _search = v),
-              style: GoogleFonts.poppins(fontSize: 13),
+              style: GoogleFonts.poppins(fontSize: 15),
               decoration: InputDecoration(
                 hintText: 'Search sites...',
                 filled: true,

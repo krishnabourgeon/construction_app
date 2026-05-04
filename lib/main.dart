@@ -19,7 +19,7 @@ class ConstructProApp extends StatelessWidget {
     return MultiProvider(
       providers: MultiProviderList.providerList,
       child: MaterialApp(
-        title: 'ConstructPro',
+        title: 'BuildXpert',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
         home: const SplashScreen(),

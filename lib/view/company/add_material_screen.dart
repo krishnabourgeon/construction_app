@@ -352,22 +352,22 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                       child: Row(
                         children: [
                           const Icon(Icons.arrow_back_ios_new,
-                              size: 14, color: AppColors.greyLight),
+                              size: 20, color: AppColors.greyLight),
                           const SizedBox(width: 5),
                           Text(widget.subStages.substage,
                               style: GoogleFonts.poppins(
-                                  fontSize: 11, color: AppColors.greyLight)),
+                                  fontSize: 15, color: AppColors.greyLight)),
                         ],
                       ),
                     ),
                     const SizedBox(height: 10),
                     Text('Add Material',
                         style: GoogleFonts.poppins(
-                          fontSize: 16,
+                          fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: AppColors.white,
                         )),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Container(
                       padding:
                           const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -379,11 +379,11 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(Icons.inventory_2,
-                              size: 14, color: AppColors.amberDark),
+                              size: 16, color: AppColors.amberDark),
                           const SizedBox(width: 5),
                           Text('For: ${widget.subStages.substage}',
                               style: GoogleFonts.poppins(
-                                  fontSize: 11,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.amberDark)),
                         ],
@@ -633,7 +633,7 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
             CompositedTransformFollower(
               link: _layerLink,
               showWhenUnlinked: false,
-              offset: const Offset(0, 75), // Offset to appear below the field
+              offset: const Offset(0, 55), // Offset to appear below the field
               child: Material(
                 elevation: 8,
                 borderRadius: BorderRadius.circular(10),
