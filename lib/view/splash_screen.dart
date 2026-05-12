@@ -1,3 +1,4 @@
+import 'package:construction_app/view/registration_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,35 +21,73 @@ class _SplashScreenState extends State<SplashScreen> {
     _checkLoginState();
   }
 
+  // Future<void> _checkLoginState() async {
+  //   await Future.delayed(const Duration(seconds: 2));
+
+  //   String token = await SharedPreferenceHelper.getToken();
+  //   String role = await SharedPreferenceHelper.getRole();
+  //   await SharedPreferenceHelper.getCompanyId();
+  //   await SharedPreferenceHelper.getUserName();
+
+  //   if (!mounted) return;
+
+  //   if (token.isNotEmpty) {
+  //     if (role.toLowerCase() == 'supervisor') {
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(builder: (_) => const MainUserScreen()),
+  //       );
+  //     } else {
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(builder: (_) => const MainScreen()),
+  //       );
+  //     }
+  //   } else {
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(builder: (_) => const LoginScreen()),
+  //     );
+  //   }
+  // }
+
+
+
   Future<void> _checkLoginState() async {
-    await Future.delayed(const Duration(seconds: 2));
-    
-    String token = await SharedPreferenceHelper.getToken();
-    String role = await SharedPreferenceHelper.getRole();
-    await SharedPreferenceHelper.getCompanyId();
-    await SharedPreferenceHelper.getUserName();
+  await Future.delayed(const Duration(seconds: 2));
+  if (!mounted) return;
 
-    if (!mounted) return;
-
-    if (token.isNotEmpty) {
-      if (role.toLowerCase() == 'supervisor') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const MainUserScreen()),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const MainScreen()),
-        );
-      }
-    } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    }
+  // ── First ever launch → go to Registration ──────────────────────
+  final firstLaunch = await SharedPreferenceHelper.isFirstLaunch();
+  if (firstLaunch) {
+    await SharedPreferenceHelper.setFirstLaunchDone();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) =>  CompanyRegisterScreen()),
+    );
+    return;
   }
+
+  // ── Returning user → check token ────────────────────────────────
+  final String token = await SharedPreferenceHelper.getToken();
+  final String role  = await SharedPreferenceHelper.getRole();
+
+  if (token.isNotEmpty) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => role.toLowerCase() == 'supervisor'
+            ? const MainUserScreen()
+            : const MainScreen(),
+      ),
+    );
+  } else {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +113,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'BuildXpert',
+              'RealLine',
               style: GoogleFonts.poppins(
                 color: AppColors.white,
                 fontSize: 32,

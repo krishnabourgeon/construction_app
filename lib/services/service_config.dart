@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:construction_app/models/add-sites_model.dart';
 import 'package:construction_app/models/add_labour_body.dart';
 import 'package:construction_app/models/add_labour_model.dart';
@@ -17,14 +19,26 @@ import 'package:construction_app/models/get_categories_model.dart';
 import 'package:construction_app/models/get_company.dart';
 import 'package:construction_app/models/get_labours_model.dart';
 import 'package:construction_app/models/get_materials_model.dart';
+import 'package:construction_app/models/get_payment_model.dart';
 import 'package:construction_app/models/get_stages_model.dart';
 import 'package:construction_app/models/get_sub_stages.dart';
 import 'package:construction_app/models/get_supervisor_model.dart';
 import 'package:construction_app/models/login_model.dart';
 import 'package:construction_app/models/logout_model.dart';
 import 'package:construction_app/models/material_name_model.dart';
+import 'package:construction_app/models/payment_body.dart';
+import 'package:construction_app/models/payment_model.dart';
+import 'package:construction_app/models/payment_modes_model.dart';
+import 'package:construction_app/models/recepite_delete_model.dart';
+import 'package:construction_app/models/register_company_body.dart';
+import 'package:construction_app/models/register_company_model.dart';
+import 'package:construction_app/models/site_detail_report_model.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
+import 'package:construction_app/models/stage_wise_report_model.dart';
+import 'package:construction_app/models/supplier_detail_model.dart';
 import 'package:construction_app/models/supplier_model.dart';
+import 'package:construction_app/models/total_recevied_detail_model.dart';
+import 'package:construction_app/models/total_spent_detail_model.dart';
 import 'package:construction_app/models/units_model.dart';
 import 'package:construction_app/models/update_stage_body.dart';
 import 'package:construction_app/models/update_stage_model.dart';
@@ -40,19 +54,23 @@ class ServiceConfig {
       'password': password ?? ''
     };
 
-    Result res = await BaseClient.post('login', body: body);
-    if (res.isError) {
-      ErrorResponseModel errorResponseModel =
-          ErrorResponseModel(errorMessage: 'OOps...!, login failed');
-      return Result.error(errorResponseModel);
-    } else {
-      var response = res.asValue!.value;
-      debugPrint('login response $response');
-      LoginModel loginResponseModel =
-          LoginModel.fromJson(response);
-      return (loginResponseModel.status)
-          ? Result.value(loginResponseModel)
-          : Result.error(loginResponseModel);
+    try {
+      Result res = await BaseClient.post('login', body: body);
+      if (res.isError) {
+        ErrorResponseModel errorResponseModel =
+            ErrorResponseModel(errorMessage: 'OOps...!, login failed');
+        return Result.error(errorResponseModel);
+      } else {
+        var response = res.asValue!.value;
+        debugPrint('login response $response');
+        LoginModel loginResponseModel = LoginModel.fromJson(response);
+        return (loginResponseModel.status)
+            ? Result.value(loginResponseModel)
+            : Result.error(loginResponseModel);
+      }
+    } catch (e) {
+      debugPrint('Login Error: $e');
+      return Result.error(ErrorResponseModel(errorMessage: e.toString()));
     }
   }
 
@@ -255,6 +273,7 @@ Future<Result> getSubStages(int siteId)async{
 
 Future<Result> addLabours(AddLabourBody addLabourBody)async{
   Result res = await BaseClient.post("sites/add-labours",body: addLabourBody.toJson());
+  debugPrint("---------------addLabours : ${addLabourBody.toJson()}-----------------------");
   if(res.isError){
     ErrorResponseModel errorResponseModel = 
     ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
@@ -359,6 +378,25 @@ Future<Result> getSuppliers()async{
 }
 
 
+
+Future<Result> getSupplierDetail({required int supplierId})async{
+  Result res = await BaseClient.get("supplier?supplier_id=$supplierId");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel = ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("-----------------Get Supplier Detail : $response ---------------------");
+    SupplierDetailModel supplierDetailModel = SupplierDetailModel.fromJson(response);
+    return (supplierDetailModel.status)
+    ?Result.value(supplierDetailModel)
+    :Result.error(supplierDetailModel);
+  }
+  }
+
+
+
+
 Future<Result> getMaterials(int? substageId)async{
   Result res = await BaseClient.get("site-materials?substage_id=$substageId");
   if(res.isError){
@@ -381,7 +419,7 @@ Future<Result> updateStages(UpdateStageBody updateStageBody) async {
     "stages/update", 
     body: updateStageBody.toJson(),
   );
-  
+  debugPrint("---------------- Update stage body : ${updateStageBody.toJson()} ---------------------");
   if (res.isError) {
     ErrorResponseModel errorResponseModel =
         ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
@@ -432,6 +470,208 @@ Future<Result> addSupplier(AddSupplierBody addSupplierBody)async{
 }
 
 
+Future<Result> getPaymentModes()async{
+  Result res = await BaseClient.get("payment-modes");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel = 
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get Payment Modes : $response");
+    PaymentModesModel paymentModesModel = PaymentModesModel.fromJson(response);
+    return (paymentModesModel.status)
+    ?Result.value(paymentModesModel)
+    :Result.error(paymentModesModel);
+  }
+}
 
+
+Future<Result> addPayment(PaymentBody paymentBody) async {
+  Result res = await BaseClient.post("add-payment",body: paymentBody.toJson());
+  if(res.isError){
+    ErrorResponseModel errorResponseModel = 
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Add Payment : $response");
+    debugPrint(paymentBody.toJson().toString());
+    PaymentModel paymentModel = PaymentModel.fromJson(response);
+    return (paymentModel.status)
+    ?Result.value(paymentModel)
+    :Result.error(paymentModel);
+  }
+}
+
+Future<Result> getPayments(int siteId,int paymentType, String fromDate, String toDate) async {
+  Result res = await BaseClient.get("get-payments?site_id=$siteId&payment_type=$paymentType&from_date=$fromDate&to_date=$toDate");
+  if (res.isError) {
+    ErrorResponseModel errorResponseModel =
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  } else {
+    var response = res.asValue!.value;
+    debugPrint("Get Payments : $response");
+    GetPaymentModel getPaymentModel =
+    GetPaymentModel.fromJson(response);
+    return (getPaymentModel.status)
+    ?Result.value(getPaymentModel)
+    :Result.error(getPaymentModel);
+  }
+}
+
+
+Future<Result> getSiteDetailReport(int siteid) async {
+  Result res = await BaseClient.get("reports/site-detail?site_id=$siteid");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel =
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get Site Detail Report : $response");
+    SiteDetailReportModel siteDetailReport =
+    SiteDetailReportModel.fromJson(response);
+    return (siteDetailReport.status)
+    ?Result.value(siteDetailReport)
+    :Result.error(siteDetailReport);
+  }
+}
+
+
+Future<Result> getStageWiseReport(int siteId) async {
+  Result res = await BaseClient.get("reports/stage-wise?site_id=$siteId");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel = 
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get Stage Wise Report : $response");
+    StageWiseReportModel stageWiseReportModel = 
+    StageWiseReportModel.fromJson(response);
+    return (stageWiseReportModel.status)
+    ?Result.value(stageWiseReportModel)
+    :Result.error(stageWiseReportModel);
+  }
+}
+
+
+Future<Result> getTotalSpentDetail(int siteId) async {
+  Result res = await BaseClient.get("reports/site-spent-detail?site_id=$siteId");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel =
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get Total Spent Detail : $response");
+    TotalSpentDetailModel totalSpentDetailModel =
+    TotalSpentDetailModel.fromJson(response);
+    return (totalSpentDetailModel.status)
+    ?Result.value(totalSpentDetailModel)
+    :Result.error(totalSpentDetailModel);
+  }
+}
+
+
+Future<Result> getTotalReceivedDetail(int siteId) async {
+  Result res = await BaseClient.get("reports/site-received-detail?site_id=$siteId");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel =
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get Total Received Detail : $response");
+    TotalReceivedDetailModel totalReceivedDetailModel =
+    TotalReceivedDetailModel.fromJson(response);
+    return (totalReceivedDetailModel.status)
+    ?Result.value(totalReceivedDetailModel)
+    :Result.error(totalReceivedDetailModel);
+  }
+}
+
+  Future<Result> registerCompany(
+    RegisterCompanyBody body,
+    File logoFile,
+  ) async {
+
+    Result res = await BaseClient.multipartPost(
+      "register/company",
+
+      fields: {
+
+        "company_name": body.companyName,
+        "company_type": body.companyType,
+        "registration_number": body.registrationNumber,
+        "gst_number": body.gstNumber,
+        "company_email": body.companyEmail,
+        "phone_number": body.phoneNumber,
+        "street_address": body.streetAddress,
+        "city": body.city,
+        "state": body.state,
+        "pincode": body.pincode,
+        "admin_name": body.adminName,
+        "admin_email": body.adminEmail,
+        "password": body.password,
+        "password_confirmation":
+            body.passwordConfirmation,
+      },
+
+      file: logoFile,
+      fileField: "logo",
+    );
+
+    if (res.isError) {
+
+      ErrorResponseModel errorResponseModel =
+          ErrorResponseModel(
+        errorMessage:
+            "OOps...!, Something went wrong",
+      );
+
+      return Result.error(errorResponseModel);
+
+    } else {
+
+      var response = res.asValue!.value;
+
+      debugPrint("Register : $response");
+
+      RegisterCompanyModel model =
+          RegisterCompanyModel.fromJson(response);
+
+      return model.status
+          ? Result.value(model)
+          : Result.error(model);
+    }
+  }
+
+
+  Future<Result> deleteReceipt(int receiptid)async{
+    try {
+      Result res = await BaseClient.post("receipt/delete",body: {"id": receiptid});
+      print("-------------------Delete Receipt: $receiptid-------------------------------------");
+      if(res.isError){
+        ErrorResponseModel errorResponseModel =
+        ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+        
+        return Result.error(errorResponseModel);
+      }else{
+        var response = res.asValue!.value;
+        debugPrint("Delete Receipt : $response");
+        ReceiptDeleteModel receiptDeleteModel =
+        ReceiptDeleteModel.fromJson(response);
+        return (receiptDeleteModel.status)
+            ? Result.value(receiptDeleteModel)
+            : Result.error(receiptDeleteModel);
+      }
+    } catch (e) {
+      debugPrint("ServiceConfig: Error in deleteReceipt: $e");
+      return Result.error(ErrorResponseModel(errorMessage: e.toString()));
+    }
+  }
 
 }

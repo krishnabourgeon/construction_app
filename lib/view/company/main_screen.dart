@@ -3,6 +3,7 @@ import 'package:construction_app/view/company/dashboard_screen.dart';
 import 'package:construction_app/view/company/labour_screen.dart';
 import 'package:construction_app/view/company/materials_screen.dart';
 import 'package:construction_app/view/company/site_list_screen.dart';
+import 'package:construction_app/view/company/supplier_screen.dart';
 import 'package:construction_app/view/company/user_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class _MainScreenState extends State<MainScreen> {
 
   late final _screens = [
     DashboardScreen(onNavigate: changeTab),
+    const SupplierScreen(),
     const UserScreen(),
     const SitesScreen(),
     
@@ -62,6 +64,11 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home_rounded),
               label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person_rounded),
+              label: 'Supplier',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),

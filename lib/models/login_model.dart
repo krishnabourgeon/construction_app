@@ -11,28 +11,28 @@ String loginModelToJson(LoginModel data) => json.encode(data.toJson());
 class LoginModel {
     bool status;
     String message;
-    String token;
-    Data data;
+    String? token;
+    Data? data;
 
     LoginModel({
         required this.status,
         required this.message,
-        required this.token,
-        required this.data,
+        this.token,
+        this.data,
     });
 
     factory LoginModel.fromJson(Map<String, dynamic> json) => LoginModel(
-        status: json["status"],
-        message: json["message"],
+        status: json["status"] ?? false,
+        message: json["message"] ?? "",
         token: json["token"],
-        data: Data.fromJson(json["data"]),
+        data: json["data"] != null ? Data.fromJson(json["data"]) : null,
     );
 
     Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
         "token": token,
-        "data": data.toJson(),
+        "data": data?.toJson(),
     };
 }
 

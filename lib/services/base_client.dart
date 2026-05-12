@@ -136,6 +136,74 @@ class BaseClient {
   }
 }
 
+
+static Future<dynamic> multipartPost(
+  String api, {
+  required Map<String, String> fields,
+  File? file,
+  String fileField = 'file',
+}) async {
+
+  String bearerToken = await token;
+
+  var uri = Uri.parse(AppConfig.baseUrl + api);
+
+  bool check = await isInternetAvailable();
+
+  if (check) {
+    try {
+
+      var request = http.MultipartRequest(
+        'POST',
+        uri,
+      );
+
+      // Headers
+      request.headers.addAll({
+        HttpHeaders.authorizationHeader: 'Bearer $bearerToken',
+        "Accept": "application/json",
+      });
+
+      // Fields
+      request.fields.addAll(fields);
+
+      // File
+      if (file != null) {
+
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            fileField,
+            file.path,
+          ),
+        );
+      }
+
+      // Send request
+      var streamedResponse = await request.send()
+          .timeout(const Duration(seconds: timeDuration));
+
+      // Convert response
+      var response = await http.Response.fromStream(
+        streamedResponse,
+      );
+
+      return _processResponse(response);
+
+    } on SocketException {
+      throw FetchDataException(
+        'No Internet connection',
+        uri.toString(),
+      );
+
+    } on TimeoutException {
+      throw ApiNotRespondingException(
+        'API not responded in time',
+        uri.toString(),
+      );
+    }
+  }
+}
+
   static dynamic _processResponse(http.Response response) {
     print(response.body);
     switch (response.statusCode) {
@@ -150,6 +218,7 @@ class BaseClient {
             utf8.decode(response.bodyBytes), response.request!.url.toString());
       case 401:
       case 403:
+      case 404:
         return Result.value(jsonDecode(response.body));
       case 422:
         throw BadRequestException(

@@ -57,7 +57,7 @@ class UpdateStage {
         id: json["id"],
         siteId: json["site_id"],
         stage: json["stage"],
-        description: json["description"],
+        description: json["description"] ?? "",
         hasSubstage: json["has_substage"],
         status: json["status"],
         updatedAt: DateTime.parse(json["updated_at"]),

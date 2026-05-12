@@ -6,7 +6,9 @@ import 'package:construction_app/services/provider_helper_class.dart';
 import 'package:construction_app/view/company/add_labour_screen.dart';
 import 'package:construction_app/view/company/add_material_screen.dart';
 import 'package:construction_app/view/company/widgets/labour_chip.dart';
+import 'package:construction_app/view/company/widgets/labour_details.dart';
 import 'package:construction_app/view/company/widgets/material_card.dart';
+import 'package:construction_app/view/company/widgets/material_details.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,39 +18,43 @@ class SubStageDetailScreen extends StatefulWidget {
   final SubStage subStages;
   final String stageName;
   final VoidCallback? onUpdate;
- 
+
   const SubStageDetailScreen({
     super.key,
     required this.subStages,
     required this.stageName,
     this.onUpdate,
   });
- 
+
   @override
   State<SubStageDetailScreen> createState() => _SubStageDetailScreenState();
 }
- 
+
 class _SubStageDetailScreenState extends State<SubStageDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
- 
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    
+
     Future.microtask(() {
-      context.read<CompanyProvider>().getLabours(substageId: widget.subStages.id);
-      context.read<CompanyProvider>().getMaterials(substageId: widget.subStages.id);
+      context.read<CompanyProvider>().getLabours(
+        substageId: widget.subStages.id,
+      );
+      context.read<CompanyProvider>().getMaterials(
+        substageId: widget.subStages.id,
+      );
     });
   }
- 
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,42 +83,74 @@ class _SubStageDetailScreenState extends State<SubStageDetailScreen>
                   onTap: () => Navigator.pop(context),
                   child: Row(
                     children: [
-                      const Icon(Icons.arrow_back_ios_new,
-                          size: 20, color: Color(0xFFE9D5FF)),
+                      const Icon(
+                        Icons.arrow_back_ios_new,
+                        size: 20,
+                        color: Color(0xFFE9D5FF),
+                      ),
                       const SizedBox(width: 7),
-                      Text(widget.stageName,
-                          style: GoogleFonts.poppins(
-                              fontSize: 16, color: const Color(0xFFE9D5FF))),
+                      Text(
+                        widget.stageName,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          color: const Color(0xFFE9D5FF),
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 13),
-                Text(widget.subStages.substage,
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.white,
-                    )),
+                Text(
+                  widget.subStages.substage,
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.white,
+                  ),
+                ),
                 if (widget.subStages.description.isNotEmpty) ...[
                   const SizedBox(height: 4),
-                  Text(widget.subStages.description,
-                      style: GoogleFonts.poppins(
-                          fontSize: 14, color: const Color(0xFFE9D5FF))),
+                  Text(
+                    widget.subStages.description,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: const Color(0xFFE9D5FF),
+                    ),
+                  ),
                 ],
                 const SizedBox(height: 8),
                 // Cost summary
                 Consumer<CompanyProvider>(
                   builder: (context, provider, child) {
                     final filteredLabours = provider.laboursList;
-                    final labourTotal = filteredLabours.fold(0.0, (sum, l) => sum + (double.tryParse(l.amount) ?? 0));
+                    final labourTotal = filteredLabours.fold(
+                      0.0,
+                      (sum, l) => sum + (double.tryParse(l.amount) ?? 0),
+                    );
+                    final filteredMaterials = provider.materialsList;
+                    final materialTotal = filteredMaterials.fold(
+                      0.0,
+                      (sum, m) => sum + (double.tryParse(m.amount) ?? 0),
+                    );
 
                     return Row(
                       children: [
                         _CostChip(
                           label: 'Materials',
-                          amount: 0.0, // Materials integration pending
+                          amount: materialTotal
+                              .toDouble(), // Materials integration pending
                           color: AppColors.amberLight,
                           textColor: AppColors.amberDark,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => MaterialDetails(
+                                  materials: filteredMaterials,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                         const SizedBox(width: 8),
                         _CostChip(
@@ -120,6 +158,16 @@ class _SubStageDetailScreenState extends State<SubStageDetailScreen>
                           amount: labourTotal.toDouble(),
                           color: AppColors.greenLight,
                           textColor: AppColors.green,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => LabourDetails(
+                                  labours: filteredLabours,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     );
@@ -128,14 +176,16 @@ class _SubStageDetailScreenState extends State<SubStageDetailScreen>
               ],
             ),
           ),
- 
+
           // ── Tabs ────────────────────────────────────────────────────────
           Container(
             color: AppColors.white,
             child: TabBar(
               controller: _tabController,
               labelStyle: GoogleFonts.poppins(
-                  fontSize: 12, fontWeight: FontWeight.w600),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
               unselectedLabelColor: AppColors.grey,
               labelColor: AppColors.purple,
               indicatorColor: AppColors.purple,
@@ -145,7 +195,7 @@ class _SubStageDetailScreenState extends State<SubStageDetailScreen>
               ],
             ),
           ),
- 
+
           // ── Tab Views ───────────────────────────────────────────────────
           Expanded(
             child: TabBarView(
@@ -175,15 +225,15 @@ class _SubStageDetailScreenState extends State<SubStageDetailScreen>
     );
   }
 }
- 
+
 // ── Materials Tab ─────────────────────────────────────────────────────────────
- 
+
 // class _MaterialsTab extends StatelessWidget {
 //   final SubStage subStages;
 //   final VoidCallback onUpdate;
- 
+
 //   const _MaterialsTab({required this.subStages, required this.onUpdate});
- 
+
 //   @override
 //   Widget build(BuildContext context) {
 //     return Column(
@@ -238,7 +288,7 @@ class _SubStageDetailScreenState extends State<SubStageDetailScreen>
 //             ],
 //           ),
 //         ),
- 
+
 //         // Materials List
 //         Expanded(
 //           child: true // subStage.materials.isEmpty
@@ -266,7 +316,6 @@ class _SubStageDetailScreenState extends State<SubStageDetailScreen>
 //   }
 // }
 
-
 class _MaterialsTab extends StatelessWidget {
   final SubStage subStages;
   final VoidCallback onUpdate;
@@ -288,11 +337,14 @@ class _MaterialsTab extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('${materials.length} materials',
-                      style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.grey)),
+                  Text(
+                    '${materials.length} materials',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.grey,
+                    ),
+                  ),
 
                   /// ➕ Add Material
                   GestureDetector(
@@ -307,24 +359,34 @@ class _MaterialsTab extends StatelessWidget {
                         ),
                       );
 
-                      /// 🔥 REFRESH AFTER ADD
+                      ///  REFRESH AFTER ADD
                       provider.getMaterials(substageId: subStages.id);
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.amberLight,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.add, size: 16, color: AppColors.amberDark),
+                          const Icon(
+                            Icons.add,
+                            size: 16,
+                            color: AppColors.amberDark,
+                          ),
                           const SizedBox(width: 4),
-                          Text('Add Material',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.amberDark)),
+                          Text(
+                            'Add Material',
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.amberDark,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -335,45 +397,56 @@ class _MaterialsTab extends StatelessWidget {
 
             // ── List ─────────────────────────────
             Expanded(
-              child: provider.loaderState == LoaderState.loading && materials.isEmpty
+              child:
+                  provider.loaderState == LoaderState.loading &&
+                      materials.isEmpty
                   ? const Center(child: CircularProgressIndicator())
-
                   ///  EMPTY
                   : materials.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.inventory_2_outlined,
-                                  size: 48, color: AppColors.greyLight),
-                              const SizedBox(height: 12),
-                              Text('No materials added yet',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 15, color: AppColors.grey)),
-                              const SizedBox(height: 4),
-                              Text('Tap "Add Material" to get started',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 14, color: AppColors.greyLight)),
-                            ],
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.inventory_2_outlined,
+                            size: 48,
+                            color: AppColors.greyLight,
                           ),
-                        )
+                          const SizedBox(height: 12),
+                          Text(
+                            'No materials added yet',
+                            style: GoogleFonts.poppins(
+                              fontSize: 15,
+                              color: AppColors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Tap "Add Material" to get started',
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              color: AppColors.greyLight,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ///  LIST
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: materials.length,
+                      itemBuilder: (_, i) {
+                        final m = materials[i];
 
-                      /// ✅ LIST
-                      : ListView.builder(
-                          padding: const EdgeInsets.all(12),
-                          itemCount: materials.length,
-                          itemBuilder: (_, i) {
-                            final m = materials[i];
-
-                            return MaterialCard(
-                              material: materials[i],
-                              onDelete: () {
-                                /// TODO: implement delete API if needed
-                                onUpdate();
-                              },
-                            );
+                        return MaterialCard(
+                          material: materials[i],
+                          onDelete: () {
+                            /// TODO: implement delete API if needed
+                            onUpdate();
                           },
-                        ),
+                        );
+                      },
+                    ),
             ),
           ],
         );
@@ -381,23 +454,25 @@ class _MaterialsTab extends StatelessWidget {
     );
   }
 }
- 
+
 // ── Labour Tab ────────────────────────────────────────────────────────────────
- 
+
 class _LabourTab extends StatelessWidget {
   final SubStage subStages;
   final VoidCallback onUpdate;
- 
+
   const _LabourTab({required this.onUpdate, required this.subStages});
- 
+
   @override
   Widget build(BuildContext context) {
     return Consumer<CompanyProvider>(
       builder: (context, provider, child) {
         final filteredLabours = provider.laboursList;
-            
+
         debugPrint("SubStageDetailScreen: SubStage ID = ${subStages.id}");
-        debugPrint("SubStageDetailScreen: Labours count in Provider = ${provider.laboursList.length}");
+        debugPrint(
+          "SubStageDetailScreen: Labours count in Provider = ${provider.laboursList.length}",
+        );
 
         return Column(
           children: [
@@ -408,25 +483,31 @@ class _LabourTab extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('${filteredLabours.length} entries',
-                      style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.grey)),
+                  Text(
+                    '${filteredLabours.length} entries',
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.grey,
+                    ),
+                  ),
                   GestureDetector(
                     onTap: () async {
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => AddLabourScreen(
-                            subStages: subStages,
-                          ),
+                          builder: (_) => AddLabourScreen(subStages: subStages),
                         ),
                       );
-                      provider.getLabours(substageId: subStages.id); // Refresh after adding
+                      provider.getLabours(
+                        substageId: subStages.id,
+                      ); // Refresh after adding
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.redLight,
                         borderRadius: BorderRadius.circular(16),
@@ -435,11 +516,14 @@ class _LabourTab extends StatelessWidget {
                         children: [
                           const Icon(Icons.add, size: 16, color: AppColors.red),
                           const SizedBox(width: 4),
-                          Text('Add Labour',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.red)),
+                          Text(
+                            'Add Labour',
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.red,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -450,40 +534,53 @@ class _LabourTab extends StatelessWidget {
 
             // Labour List
             Expanded(
-              child: provider.loaderState == LoaderState.loading && filteredLabours.isEmpty
+              child:
+                  provider.loaderState == LoaderState.loading &&
+                      filteredLabours.isEmpty
                   ? const Center(child: CircularProgressIndicator())
                   : filteredLabours.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.groups_outlined,
-                                  size: 48, color: AppColors.greyLight),
-                              const SizedBox(height: 12),
-                              Text('No labour entries yet',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 13, color: AppColors.grey)),
-                              const SizedBox(height: 4),
-                              Text('Tap "Add Labour" to get started',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 11, color: AppColors.greyLight)),
-                            ],
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.groups_outlined,
+                            size: 48,
+                            color: AppColors.greyLight,
                           ),
-                        )
-                      : ListView.builder(
-                          padding: const EdgeInsets.all(12),
-                          itemCount: filteredLabours.length,
-                          itemBuilder: (_, i) {
-                            final l = filteredLabours[i];
-                            return LabourCard(
-                              labour: l,
-                              onDelete: () {
-                                // provider.deleteLabour(l.id); // Implement if needed
-                                onUpdate();
-                              },
-                            );
+                          const SizedBox(height: 12),
+                          Text(
+                            'No labour entries yet',
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              color: AppColors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Tap "Add Labour" to get started',
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              color: AppColors.greyLight,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: filteredLabours.length,
+                      itemBuilder: (_, i) {
+                        final l = filteredLabours[i];
+                        return LabourCard(
+                          labour: l,
+                          onDelete: () {
+                            // provider.deleteLabour(l.id); // Implement if needed
+                            onUpdate();
                           },
-                        ),
+                        );
+                      },
+                    ),
             ),
           ],
         );
@@ -491,46 +588,58 @@ class _LabourTab extends StatelessWidget {
     );
   }
 }
- 
-
- 
 
 class _CostChip extends StatelessWidget {
   final String label;
   final double amount;
   final Color color;
   final Color textColor;
- 
+  final VoidCallback onTap;
+
   const _CostChip({
     required this.label,
     required this.amount,
     required this.color,
     required this.textColor,
+    required this.onTap,
   });
- 
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(label,
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
               style: GoogleFonts.poppins(
-                  fontSize: 15, fontWeight: FontWeight.w700, color: textColor)),
-          const SizedBox(width: 6),
-          Text('₹${_formatAmount(amount)}',
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: textColor,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              '₹${_formatAmount(amount)}',
               style: GoogleFonts.poppins(
-                  fontSize: 13, fontWeight: FontWeight.w700, color: textColor)),
-        ],
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: textColor,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
- 
+
   String _formatAmount(double v) {
     if (v >= 10000000) return '${(v / 10000000).toStringAsFixed(1)}Cr';
     if (v >= 100000) return '${(v / 100000).toStringAsFixed(1)}L';

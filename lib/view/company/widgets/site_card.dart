@@ -49,7 +49,7 @@ class _SiteCardState extends State<SiteCard> {
                       ),
                     ),
                   ),
-                  StatusBadge(status: "Active"),
+                 // StatusBadge(status: "Active"),
                 ],
               ),
               const SizedBox(height: 4),
@@ -67,7 +67,7 @@ class _SiteCardState extends State<SiteCard> {
                     ),
                   ),
                   Text(
-                    '₹${_formatAmount(double.tryParse(widget.site.estimateAmount ?? '0') ?? 0.0)}',
+                    '${_formatAmount(double.tryParse(widget.site.estimateAmount ?? '0') ?? 0.0)}',
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -98,9 +98,10 @@ class _SiteCardState extends State<SiteCard> {
   }
 
   String _formatAmount(double amount) {
-    if (amount >= 10000000) return '${(amount / 10000000).toStringAsFixed(1)}Cr';
-    if (amount >= 100000) return '${(amount / 100000).toStringAsFixed(1)}L';
-    return amount.toStringAsFixed(0);
+    // if (amount >= 10000000) return '${(amount / 10000000).toStringAsFixed(1)}Cr';
+    // if (amount >= 100000) return '${(amount / 100000).toStringAsFixed(1)}L';
+    // return amount.toStringAsFixed(0);
+     return '₹${amount.toStringAsFixed(0)}';
   }
 }
  

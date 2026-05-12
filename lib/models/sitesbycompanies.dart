@@ -70,4 +70,14 @@ class SitesbyCompany {
         "start_date": "${startDate.year.toString().padLeft(4, '0')}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}",
         "tentative_completion_date": "${tentativeCompletionDate.year.toString().padLeft(4, '0')}-${tentativeCompletionDate.month.toString().padLeft(2, '0')}-${tentativeCompletionDate.day.toString().padLeft(2, '0')}",
     };
+
+    @override
+    bool operator ==(Object other) =>
+        identical(this, other) ||
+        other is SitesbyCompany &&
+            runtimeType == other.runtimeType &&
+            id == other.id;
+
+    @override
+    int get hashCode => id.hashCode;
 }

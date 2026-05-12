@@ -40,7 +40,7 @@ class WorkingStagesTabState extends State<WorkingStagesTab> {
         // Sticky top bar
         Container(
           color: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -155,97 +155,105 @@ class _StageCard extends StatelessWidget {
 
     bool hasSubstageBool(int value) => value == 1;
     final statusText = getStatusLabel(stage.status);
-    return Card(
-      color: AppColors.white,
-      margin: const EdgeInsets.only(bottom: 10),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: const BorderSide(color: Color(0xFFE5E7EB), width: 1.5),
-      ),
-      child: Column(
-        children: [
-          InkWell(
-            onTap: onToggle,
-            child: Padding(
-              padding: const EdgeInsets.all(13),
-              child: Row(
-                children: [
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      color: _getStageColor(stage.status),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      '${stage.stage[0]}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+      child: Card(
+        color: AppColors.white,
+        margin: const EdgeInsets.only(bottom: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: const BorderSide(color: Color(0xFFE5E7EB), width: 1.5),
+        ),
+        child: Column(
+          children: [
+            InkWell(
+              onTap: onToggle,
+              child: Padding(
+                padding: const EdgeInsets.all(13),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: _getStageColor(stage.status),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${stage.stage[0]}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          stage.stage,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF1C1917),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            stage.stage,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF1C1917),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          stage.description,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Color(0xFF9CA3AF),
+                          const SizedBox(height: 2),
+                          Text(
+                            stage.description,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF9CA3AF),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  StatusBadge(status: stage.statusLabel),
-                  const SizedBox(width: 7),
-                  IconButton(
-                    icon: const Icon(Icons.edit, size: 20),
-                    color: const Color(0xFF9CA3AF),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditStageScreen(
-                            siteId: stage.siteId,
-                            stageId: stage.id,
-                            stageName: stage.stage,
-                            stageDesc: stage.description,
-                            stageStatus: stage.statusLabel,
+                    StatusBadge(status: stage.statusLabel),
+                    const SizedBox(width: 7),
+                    IconButton(
+                      icon: const Icon(Icons.edit, size: 20),
+                      color: const Color(0xFF9CA3AF),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditStageScreen(
+                              siteId: stage.siteId,
+                              stageId: stage.id,
+                              stageName: stage.stage,
+                              stageDesc: stage.description,
+                              stageStatus: stage.statusLabel,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                  Icon(
-                    isExpanded
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: const Color(0xFF9CA3AF),
-                    size: 26,
-                  ),
-                ],
+                        ).then((_) {
+                          if (context.mounted) {
+                            context.read<CompanyProvider>().getStages(siteId: stage.siteId);
+                            context.read<CompanyProvider>().getSubStages(siteId: stage.siteId);
+                          }
+                        });
+                      },
+                    ),
+                    Icon(
+                      isExpanded
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      color: const Color(0xFF9CA3AF),
+                      size: 26,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          if (isExpanded) _buildExpandedBody(context),
-        ],
+            if (isExpanded) _buildExpandedBody(context),
+          ],
+        ),
       ),
     );
   }
@@ -432,7 +440,7 @@ class _StageCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                StatusBadge(status: subStages.statusLabel),
+                // StatusBadge(status: subStages.statusLabel),
                 const SizedBox(width: 6),
                 const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
                ],
@@ -443,6 +451,12 @@ class _StageCard extends StatelessWidget {
               style: const TextStyle(fontSize: 13, color: Color(0xFF9CA3AF)),
             ),
             const SizedBox(height: 6),
+            Text(
+              "Click here to add Materials and Labours",
+              style: const TextStyle(fontSize: 13, color: Colors.deepPurple),
+            ),
+            const SizedBox(height: 6),
+
             // Row(
             //   children: [
             //     const Text('Mat: ', style: TextStyle(fontSize: 10, color: Color(0xFF9CA3AF))),

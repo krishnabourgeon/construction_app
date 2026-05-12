@@ -5,7 +5,6 @@
 // // import 'package:flutter/services.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
-
 // // ── Site List Screen ──────────────────────────────────────────────────────────
 
 // class SitesUserScreen extends StatefulWidget {
@@ -45,7 +44,7 @@
 //                 Column(
 //                   crossAxisAlignment: CrossAxisAlignment.start,
 //                   children: [
-//                     Text('Management',
+//                     Text('Manage',
 //                         style: GoogleFonts.poppins(
 //                             fontSize: 11, color: AppColors.greyLight)),
 //                     Text('Sites',

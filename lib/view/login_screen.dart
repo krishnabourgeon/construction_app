@@ -1,3 +1,4 @@
+import 'package:construction_app/view/registration_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:construction_app/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
-    
+
     final provider = Provider.of<LoginProvider>(context, listen: false);
     provider.loginUsernameController.text = _emailController.text;
     provider.loginPasswordController.text = _passwordController.text;
@@ -54,14 +55,11 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       onFailure: (errorMessage) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
         );
       },
     );
-    
+
     if (mounted) {
       setState(() => _isLoading = false);
     }
@@ -102,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'BuildXpert Constructions',
+                    'RealLine Constructions',
                     style: GoogleFonts.poppins(
                       color: AppColors.white,
                       fontSize: 26,
@@ -147,7 +145,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       'Sign in to your account',
                       style: GoogleFonts.poppins(
-                          fontSize: 13, color: AppColors.grey),
+                        fontSize: 13,
+                        color: AppColors.grey,
+                      ),
                     ),
                     const SizedBox(height: 24),
 
@@ -178,11 +178,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: AppColors.grey,
                           size: 20,
                         ),
-                        onPressed: () =>
-                            setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
                       validator: (v) {
-                        if (v == null || v.isEmpty) return 'Password is required';
+                        if (v == null || v.isEmpty)
+                          return 'Password is required';
                         if (v.length < 6) return 'Minimum 6 characters';
                         return null;
                       },
@@ -194,9 +196,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: TextButton(
                         onPressed: () {},
                         style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                          padding: EdgeInsets.zero,
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
                         child: Text(
                           'Forgot Password?',
                           style: GoogleFonts.poppins(
@@ -214,6 +217,38 @@ class _LoginScreenState extends State<LoginScreen> {
                       label: 'Sign In',
                       onPressed: _login,
                       isLoading: _isLoading,
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Register link
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Don't have an account? ",
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: AppColors.grey,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) =>  CompanyRegisterScreen(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'Register',
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.navy,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

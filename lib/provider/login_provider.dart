@@ -1,4 +1,3 @@
-
 import 'package:construction_app/models/login_model.dart';
 import 'package:construction_app/models/error_response_model.dart';
 import 'package:construction_app/services/provider_helper_class.dart';
@@ -32,16 +31,21 @@ class LoginProvider extends ChangeNotifier with ProviderHelperClass {
         password: loginPasswordController.text);
     if (!res.isError) {
       LoginModel loginModel = res.asValue!.value;
-      if (isRememberCredentials) {
-        await SharedPreferenceHelper.saveToken(loginModel.token);
-        await SharedPreferenceHelper.saveUserID(loginModel.data.id.toString());
-        await SharedPreferenceHelper.saveRole(loginModel.data.role);
-        await SharedPreferenceHelper.saveCompanyId(loginModel.data.companyId);
-        await SharedPreferenceHelper.saveUserName(loginModel.data.name);
+      if (isRememberCredentials && loginModel.token != null && loginModel.data != null) {
+        await SharedPreferenceHelper.saveToken(loginModel.token!);
+        await SharedPreferenceHelper.saveUserID(loginModel.data!.id.toString());
+        await SharedPreferenceHelper.saveRole(loginModel.data!.role);
+        await SharedPreferenceHelper.saveCompanyId(loginModel.data!.companyId);
+        await SharedPreferenceHelper.saveUserName(loginModel.data!.name);
         //print("Saved Company ID: ${loginModel.data.companyId}");
       }
       
-      if (onSuccess != null) onSuccess(loginModel.data.role.toLowerCase());
+      if (onSuccess != null && loginModel.data != null) {
+        onSuccess(loginModel.data!.role.toLowerCase());
+      } else if (onSuccess != null && !loginModel.status) {
+        // This case should theoretically be handled by the error branch, 
+        // but adding safety just in case.
+      }
       updateLoadState(LoaderState.loaded);
     } else {
       String errorMessage = 'Login failed';

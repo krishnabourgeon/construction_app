@@ -92,6 +92,26 @@ class SharedPreferenceHelper {
     AppConfig.companyId = null;
     AppConfig.userName = null;
     final prefs = await SharedPreferences.getInstance();
-    prefs.clear();
+    
+    await prefs.remove("token");
+    await prefs.remove("user_id");
+    await prefs.remove("role");
+    await prefs.remove("company_id");
+    await prefs.remove("user_name");
   }
+
+
+
+
+
+  static Future<bool> isFirstLaunch() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('is_first_launch') ?? true;
+  }
+
+  static Future<void> setFirstLaunchDone() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('is_first_launch', false);
+  }
+
 }

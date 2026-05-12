@@ -5,11 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class LabourCard extends StatelessWidget {
-  final Labour labour;
+  final LabourData labour;
   final VoidCallback onDelete;
- 
+
   const LabourCard({super.key, required this.labour, required this.onDelete});
- 
+
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd MMM yyyy');
@@ -37,35 +37,53 @@ class LabourCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("${labour.noOfLabours} Labours",
-                    style: GoogleFonts.poppins(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.dark)),
+                Text(
+                  "${labour.noOfLabours} Labours",
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.dark,
+                  ),
+                ),
                 const SizedBox(height: 2),
                 if (labour.noOfDays != null)
-                  Text("${labour.noOfDays} Days",
-                      style: GoogleFonts.poppins(
-                          fontSize: 15, color: AppColors.grey)),
+                  Text(
+                    "${labour.noOfDays} Days",
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      color: AppColors.grey,
+                    ),
+                  ),
                 if (labour.remarks != null && labour.remarks!.isNotEmpty)
-                  Text(labour.remarks!,
-                      style: GoogleFonts.poppins(
-                          fontSize: 15, color: AppColors.greyLight)),
+                  Text(
+                    labour.remarks!,
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      color: AppColors.greyLight,
+                    ),
+                  ),
                 if (labour.addedDate != null)
-                  Text(dateFormat.format(labour.addedDate!),
-                      style: GoogleFonts.poppins(
-                          fontSize: 15, color: AppColors.greyLight)),
+                  Text(
+                    dateFormat.format(labour.addedDate!),
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      color: AppColors.greyLight,
+                    ),
+                  ),
               ],
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text('₹${labour.amount}',
-                  style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.orange)),
+              Text(
+                '₹${labour.amount}',
+                style: GoogleFonts.poppins(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.orange,
+                ),
+              ),
               // const SizedBox(height: 4),
               // GestureDetector(
               //   onTap: () {

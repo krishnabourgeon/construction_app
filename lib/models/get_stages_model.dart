@@ -74,4 +74,14 @@ class GetStages {
         "created_at": createdAt.toIso8601String(),
         "status_label": statusLabel,
     };
+
+    @override
+    bool operator ==(Object other) =>
+        identical(this, other) ||
+        other is GetStages &&
+            runtimeType == other.runtimeType &&
+            id == other.id;
+
+    @override
+    int get hashCode => id.hashCode;
 }

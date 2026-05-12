@@ -28,26 +28,25 @@ class _SitesScreenState extends State<SitesScreen> {
   //         s.contactPerson.toLowerCase().contains(_search.toLowerCase()))
   //     .toList();
 
+  @override
+  void initState() {
+    super.initState();
 
-@override
-void initState() {
-  super.initState();
+    Future.microtask(() async {
+      final companyId = await SharedPreferenceHelper.getCompanyId();
+      if (mounted) {
+        context.read<CompanyProvider>().sitesbycompanies(companyId: companyId);
+      }
+      context.read<CompanyProvider>().getSupervisors();
+    });
+  }
 
-  Future.microtask(() async {
-    final companyId = await SharedPreferenceHelper.getCompanyId();
-    if (mounted) {
-      context.read<CompanyProvider>().sitesbycompanies(companyId: companyId);
-    }
-    context.read<CompanyProvider>().getSupervisors();
-  });
-}
+  // void loadSupervisors() async {
+  //   final result = await context.read<CompanyProvider>().getSupervisors();
+  //   setState(() {
 
-// void loadSupervisors() async {
-//   final result = await context.read<CompanyProvider>().getSupervisors();
-//   setState(() {
-   
-//   });
-// }
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -70,23 +69,33 @@ void initState() {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Management',
-                        style: GoogleFonts.poppins(
-                            fontSize: 15, color: AppColors.greyLight)),
-                    Text('Sites',
-                        style: GoogleFonts.poppins(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.white,
-                        )),
+                    Text(
+                      'Manage',
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: AppColors.greyLight,
+                      ),
+                    ),
+                    Text(
+                      'Sites',
+                      style: GoogleFonts.poppins(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.white,
+                      ),
+                    ),
                   ],
                 ),
                 GestureDetector(
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const AddSiteScreen())),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AddSiteScreen()),
+                  ),
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.amber,
                       borderRadius: BorderRadius.circular(20),
@@ -95,12 +104,14 @@ void initState() {
                       children: [
                         const Icon(Icons.add, size: 18, color: AppColors.dark),
                         const SizedBox(width: 4),
-                        Text('Add Site',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.dark,
-                            )),
+                        Text(
+                          'Add Site',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.dark,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -119,8 +130,11 @@ void initState() {
                 hintText: 'Search sites...',
                 filled: true,
                 fillColor: AppColors.white,
-                prefixIcon:
-                    const Icon(Icons.search, color: AppColors.grey, size: 20),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: AppColors.grey,
+                  size: 20,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(color: AppColors.border),
@@ -131,8 +145,10 @@ void initState() {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      const BorderSide(color: AppColors.amber, width: 2),
+                  borderSide: const BorderSide(
+                    color: AppColors.amber,
+                    width: 2,
+                  ),
                 ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
@@ -143,19 +159,29 @@ void initState() {
           Expanded(
             child: Consumer<CompanyProvider>(
               builder: (context, provider, child) {
-                final sites = provider.sitesList;
-                if (provider.loaderState == LoaderState.loading && sites.isEmpty) {
+                final allSites = provider.sitesList;
+                final sites = allSites.where((s) {
+                  final query = _search.toLowerCase();
+                  return s.sitename.toLowerCase().contains(query) ||
+                      s.contactperson.toLowerCase().contains(query);
+                }).toList();
+
+                if (provider.loaderState == LoaderState.loading &&
+                    allSites.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (sites.isEmpty) {
-                  return const Center(child: Text('No sites found'));
+                  return const Center(
+                    child: Text(
+                      'No sites found',
+                      style: TextStyle(color: AppColors.grey),
+                    ),
+                  );
                 }
                 return ListView.builder(
                   padding: const EdgeInsets.all(12),
                   itemCount: sites.length,
                   itemBuilder: (context, index) {
-                    // Using index % dummysites.length to avoid range error if dummysites is shorter
-                   // final dummysite = dummysites[index % dummysites.length];
                     final site = sites[index];
                     return SiteCard(
                       site: site,
@@ -165,7 +191,6 @@ void initState() {
                           MaterialPageRoute(
                             builder: (context) => SiteDetailScreen(
                               site: site,
-                             // dummysite: dummysite,
                             ),
                           ),
                         );
@@ -181,4 +206,3 @@ void initState() {
     );
   }
 }
- 

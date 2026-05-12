@@ -27,18 +27,18 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
   final _remarksCtrl = TextEditingController();
   final _dateCtrl = TextEditingController();
   DateTime _selectedDate = DateTime.now();
-  String _selectedType = 'Mason';
+  // String _selectedType = 'Mason';
  
-  final _labourTypes = [
-    'Mason',
-    'Helper',
-    'Electrician',
-    'Plumber',
-    'Carpenter',
-    'Painter',
-    'Steel Bender',
-    'Contractor'
-  ];
+  // final _labourTypes = [
+  //   'Mason',
+  //   'Helper',
+  //   'Electrician',
+  //   'Plumber',
+  //   'Carpenter',
+  //   'Painter',
+  //   'Steel Bender',
+  //   'Contractor'
+  // ];
  
   @override
   void initState() {
@@ -157,18 +157,18 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
                   child: Row(
                     children: [
                       const Icon(Icons.arrow_back_ios_new,
-                          size: 14, color: AppColors.greyLight),
+                          size: 20, color: AppColors.greyLight),
                       const SizedBox(width: 5),
                       Text(widget.subStages.substage,
                           style: GoogleFonts.poppins(
-                              fontSize: 11, color: AppColors.greyLight)),
+                              fontSize: 15, color: AppColors.greyLight)),
                     ],
                   ),
                 ),
                 const SizedBox(height: 10),
                 Text('Add Labour',
                     style: GoogleFonts.poppins(
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: AppColors.white,
                     )),
@@ -184,11 +184,11 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(Icons.groups,
-                          size: 14, color: AppColors.red),
+                          size: 18, color: AppColors.red),
                       const SizedBox(width: 5),
                       Text('For: ${widget.subStages.substage}',
                           style: GoogleFonts.poppins(
-                              fontSize: 11,
+                              fontSize: 15,
                               fontWeight: FontWeight.w600,
                               color: AppColors.red)),
                     ],
@@ -320,7 +320,7 @@ class _AddLabourScreenState extends State<AddLabourScreen> {
   Widget _buildLabel(String text) {
     return Text(text,
         style: GoogleFonts.poppins(
-            fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.dark));
+            fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.dark));
   }
  
   InputDecoration _inputDecoration(String hint) {

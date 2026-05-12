@@ -6,6 +6,7 @@ import 'package:construction_app/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ── Avatar color palette by index ─────────────────────────────────────────────
 
@@ -37,22 +38,24 @@ class UserScreen extends StatefulWidget {
 }
 
 class _UserScreenState extends State<UserScreen> {
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CompanyProvider>().getSupervisors();
     });
   }
+
   String _search = '';
 
-  List<Supervisor> get _filtered =>
-      context.watch<CompanyProvider>().supervisorsList
-      .where((u) =>
-          u.name.toLowerCase().contains(_search.toLowerCase()) ||
-          u.mobile.toLowerCase().contains(_search.toLowerCase()))
+  List<Supervisor> get _filtered => context
+      .watch<CompanyProvider>()
+      .supervisorsList
+      .where(
+        (u) =>
+            u.name.toLowerCase().contains(_search.toLowerCase()) ||
+            u.mobile.toLowerCase().contains(_search.toLowerCase()),
+      )
       .toList();
 
   @override
@@ -76,49 +79,58 @@ class _UserScreenState extends State<UserScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Management',
-                        style: GoogleFonts.poppins(
-                            fontSize: 15, color: AppColors.greyLight)),
-                    Text('Supervisor',
-                        style: GoogleFonts.poppins(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.white,
-                        )),
+                    Text(
+                      'Manage',
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: AppColors.greyLight,
+                      ),
+                    ),
+                    Text(
+                      'Supervisor',
+                      style: GoogleFonts.poppins(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.white,
+                      ),
+                    ),
                   ],
                 ),
                 GestureDetector(
                   onTap: () async {
                     final result = await Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => const AddUserScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const AddUserScreen()),
                     );
 
                     if (result == true) {
-                      // ✅ Refresh the list when user is added
-                      setState(() {});
+                      //  Refresh the list when user is added
+                      setState(() {
+                        context.read<CompanyProvider>().getSupervisors();
+                      });
                     }
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.amber,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.add,
-                            size: 18, color: AppColors.dark),
+                        const Icon(Icons.add, size: 18, color: AppColors.dark),
                         const SizedBox(width: 4),
-                        Text('Add',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.dark,
-                            )),
+                        Text(
+                          'Add',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.dark,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -137,8 +149,11 @@ class _UserScreenState extends State<UserScreen> {
                 hintText: 'Search supervisor...',
                 filled: true,
                 fillColor: AppColors.white,
-                prefixIcon: const Icon(Icons.search,
-                    color: AppColors.grey, size: 20),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: AppColors.grey,
+                  size: 20,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(color: AppColors.border),
@@ -149,8 +164,10 @@ class _UserScreenState extends State<UserScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      const BorderSide(color: AppColors.amber, width: 2),
+                  borderSide: const BorderSide(
+                    color: AppColors.amber,
+                    width: 2,
+                  ),
                 ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
@@ -165,9 +182,10 @@ class _UserScreenState extends State<UserScreen> {
                 Text(
                   '${_filtered.length} users',
                   style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grey),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.grey,
+                  ),
                 ),
               ],
             ),
@@ -188,12 +206,13 @@ class _UserScreenState extends State<UserScreen> {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => UserDetailScreen(
-                              //user: user,
-                              supervisor: supervisor,
-                              avatarBg: _avatarBgs[colorIdx],
-                              avatarFg: _avatarFgs[colorIdx],
-                            )),
+                      builder: (_) => UserDetailScreen(
+                        //user: user,
+                        supervisor: supervisor,
+                        avatarBg: _avatarBgs[colorIdx],
+                        avatarFg: _avatarFgs[colorIdx],
+                      ),
+                    ),
                   ),
                 );
               },
@@ -224,6 +243,9 @@ class _UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _call(String phone) async {
+    await launchUrl(Uri(scheme: 'tel', path: phone));
+  }
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -261,20 +283,30 @@ class _UserCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(supervisor.name,
-                      style: GoogleFonts.poppins(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.dark,
-                      )),
+                  Text(
+                    supervisor.name,
+                    style: GoogleFonts.poppins(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.dark,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text("Supervisor",
-                      style: GoogleFonts.poppins(
-                          fontSize: 12, color: AppColors.grey)),
+                  Text(
+                    "Supervisor",
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: AppColors.grey,
+                    ),
+                  ),
                   const SizedBox(height: 1),
-                  Text(supervisor.mobile,
-                      style: GoogleFonts.poppins(
-                          fontSize: 12, color: AppColors.greyLight)),
+                  Text(
+                    supervisor.mobile,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: AppColors.greyLight,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -332,6 +364,9 @@ class UserDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _call(String phone) async {
+    await launchUrl(Uri(scheme: 'tel', path: phone));
+  }
     return Scaffold(
       backgroundColor: AppColors.greyBg,
       body: Column(
@@ -351,13 +386,20 @@ class UserDetailScreen extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                          color: AppColors.white, size: 20),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: AppColors.white,
+                        size: 20,
+                      ),
                       padding: EdgeInsets.zero,
                     ),
-                    Text('Supervisor',
-                        style: GoogleFonts.poppins(
-                            fontSize: 15, color: AppColors.greyLight)),
+                    Text(
+                      'Supervisor',
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: AppColors.greyLight,
+                      ),
+                    ),
                     const Spacer(),
                     // IconButton(
                     //   onPressed: () {},
@@ -381,21 +423,25 @@ class UserDetailScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Center(
-                    child: Text(supervisor.name.substring(0, 2),
-                        style: GoogleFonts.poppins(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                          color: avatarFg,
-                        )),
+                    child: Text(
+                      supervisor.name.substring(0, 2),
+                      style: GoogleFonts.poppins(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: avatarFg,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text(supervisor.name,
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.white,
-                    )),
+                Text(
+                  supervisor.name,
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.white,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 //_StatusBadge(status: user.status),
               ],
@@ -406,23 +452,31 @@ class UserDetailScreen extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Column(
-                  children: [
-                    // _DetailRow(Icons.badge_outlined, AppColors.amberLight,
-                    //     AppColors.amberDark, 'Role', user.role),
-                    _DetailRow(Icons.phone_outlined, AppColors.blueLight,
-                        AppColors.blue, 'Phone', supervisor.mobile),
-                    //_DetailRow(Icons.email_outlined, AppColors.greenLight,
-                        //AppColors.green, 'Email', user.email),
-                    //_DetailRow(Icons.toggle_on_outlined, AppColors.greyBg,
-                        //AppColors.grey, 'Status', user.status),
-                  ],
+              child: InkWell(
+                onTap: () => _call(supervisor.mobile),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Column(
+                    children: [
+                      // _DetailRow(Icons.badge_outlined, AppColors.amberLight,
+                      //     AppColors.amberDark, 'Role', user.role),
+                      _DetailRow(
+                        Icons.phone_outlined,
+                        AppColors.blueLight,
+                        AppColors.blue,
+                        'Phone',
+                        supervisor.mobile,
+                      ),
+                      //_DetailRow(Icons.email_outlined, AppColors.greenLight,
+                      //AppColors.green, 'Email', user.email),
+                      //_DetailRow(Icons.toggle_on_outlined, AppColors.greyBg,
+                      //AppColors.grey, 'Status', user.status),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -436,29 +490,35 @@ class UserDetailScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text('Delete Supervisor',
-            style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w600, fontSize: 16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Text(
+          'Delete Supervisor',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 16),
+        ),
         content: Text(
-            'Are you sure you want to delete ${supervisor.name}?',
-            style:
-                GoogleFonts.poppins(fontSize: 13, color: AppColors.grey)),
+          'Are you sure you want to delete ${supervisor.name}?',
+          style: GoogleFonts.poppins(fontSize: 13, color: AppColors.grey),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel',
-                style: GoogleFonts.poppins(color: AppColors.grey)),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: AppColors.grey),
+            ),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: Text('Delete',
-                style: GoogleFonts.poppins(
-                    color: AppColors.red, fontWeight: FontWeight.w600)),
+            child: Text(
+              'Delete',
+              style: GoogleFonts.poppins(
+                color: AppColors.red,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -474,7 +534,12 @@ class _DetailRow extends StatelessWidget {
   final String value;
 
   const _DetailRow(
-      this.icon, this.iconBg, this.iconColor, this.label, this.value);
+    this.icon,
+    this.iconBg,
+    this.iconColor,
+    this.label,
+    this.value,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -489,7 +554,9 @@ class _DetailRow extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-                color: iconBg, borderRadius: BorderRadius.circular(10)),
+              color: iconBg,
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Icon(icon, color: iconColor, size: 18),
           ),
           const SizedBox(width: 12),
@@ -497,15 +564,21 @@ class _DetailRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: GoogleFonts.poppins(
-                        fontSize: 13, color: AppColors.greyLight)),
-                Text(value,
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.dark,
-                    )),
+                Text(
+                  label,
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    color: AppColors.greyLight,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.dark,
+                  ),
+                ),
               ],
             ),
           ),
@@ -558,7 +631,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
   //     email: _emailCtrl.text.trim(),
   //     role: _selectedRole ?? 'Supervisor',
   //     status: _selectedStatus,
-      
+
   //   ));
 
   //   setState(() => _saving = false);
@@ -578,45 +651,42 @@ class _AddUserScreenState extends State<AddUserScreen> {
   // }
 
   void _save() async {
-  if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
-  final provider = context.read<CompanyProvider>();
+    final provider = context.read<CompanyProvider>();
 
-  setState(() => _saving = true);
+    setState(() => _saving = true);
 
-  await provider.createUser(
-    name: _nameCtrl.text.trim(),
-    mobile: _phoneCtrl.text.trim(),
-    email: _emailCtrl.text.trim(),
-    password: _passwordCtrl.text.trim(),
-    passwordConfirmation: _confirmPasswordCtrl.text.trim(),
-    onFailure: (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error),
-          backgroundColor: Colors.red,
-        ),
-      );
-    },
-  );
-
-  setState(() => _saving = false);
-
-  if (provider.errorToast == null) {
-    //  SUCCESS
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Supervisor added successfully!',
-          style: GoogleFonts.poppins(fontSize: 13),
-        ),
-        backgroundColor: AppColors.green,
-      ),
+    await provider.createUser(
+      name: _nameCtrl.text.trim(),
+      mobile: _phoneCtrl.text.trim(),
+      email: _emailCtrl.text.trim(),
+      password: _passwordCtrl.text.trim(),
+      passwordConfirmation: _confirmPasswordCtrl.text.trim(),
+      onFailure: (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error), backgroundColor: Colors.red),
+        );
+      },
     );
 
-    Navigator.pop(context, true); // return success
+    setState(() => _saving = false);
+
+    if (provider.errorToast == null) {
+      //  SUCCESS
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Supervisor added successfully!',
+            style: GoogleFonts.poppins(fontSize: 13),
+          ),
+          backgroundColor: AppColors.green,
+        ),
+      );
+
+      Navigator.pop(context, true); // return success
+    }
   }
-}
 
   @override
   void dispose() {
@@ -647,15 +717,20 @@ class _AddUserScreenState extends State<AddUserScreen> {
               children: [
                 IconButton(
                   onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                      color: AppColors.white, size: 18),
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: AppColors.white,
+                    size: 18,
+                  ),
                 ),
-                Text('Add New Supervisor',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.white,
-                    )),
+                Text(
+                  'Add New Supervisor',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.white,
+                  ),
+                ),
               ],
             ),
           ),
@@ -725,11 +800,14 @@ class _AddUserScreenState extends State<AddUserScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Password *',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.dark)),
+                          Text(
+                            'Password *',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.dark,
+                            ),
+                          ),
                           const SizedBox(height: 6),
                           TextFormField(
                             controller: _passwordCtrl,
@@ -742,7 +820,9 @@ class _AddUserScreenState extends State<AddUserScreen> {
                               return null;
                             },
                             style: GoogleFonts.poppins(
-                                fontSize: 14, color: AppColors.dark),
+                              fontSize: 14,
+                              color: AppColors.dark,
+                            ),
                             decoration: InputDecoration(
                               hintText: 'Set a password',
                               suffixIcon: IconButton(
@@ -766,11 +846,14 @@ class _AddUserScreenState extends State<AddUserScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Confirm Password *',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.dark)),
+                          Text(
+                            'Confirm Password *',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.dark,
+                            ),
+                          ),
                           const SizedBox(height: 6),
                           TextFormField(
                             controller: _confirmPasswordCtrl,
@@ -785,7 +868,9 @@ class _AddUserScreenState extends State<AddUserScreen> {
                               return null;
                             },
                             style: GoogleFonts.poppins(
-                                fontSize: 14, color: AppColors.dark),
+                              fontSize: 14,
+                              color: AppColors.dark,
+                            ),
                             decoration: InputDecoration(
                               hintText: 'Re-enter password',
                               suffixIcon: IconButton(
@@ -797,7 +882,8 @@ class _AddUserScreenState extends State<AddUserScreen> {
                                   size: 20,
                                 ),
                                 onPressed: () => setState(
-                                    () => _showConfirmPw = !_showConfirmPw),
+                                  () => _showConfirmPw = !_showConfirmPw,
+                                ),
                               ),
                             ),
                           ),
@@ -859,11 +945,11 @@ class _AddUserScreenState extends State<AddUserScreen> {
                       //     const SizedBox(height: 14),
                       //   ],
                       // ),
-
                       AppButton(
-                          label: 'Save Supervisor',
-                          onPressed: _save,
-                          isLoading: _saving),
+                        label: 'Save Supervisor',
+                        onPressed: _save,
+                        isLoading: _saving,
+                      ),
                     ],
                   ),
                 ),
