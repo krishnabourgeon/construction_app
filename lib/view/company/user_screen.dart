@@ -146,7 +146,7 @@ class _UserScreenState extends State<UserScreen> {
               onChanged: (v) => setState(() => _search = v),
               style: GoogleFonts.poppins(fontSize: 15),
               decoration: InputDecoration(
-                hintText: 'Search supervisor...',
+                hintText: 'Search supervisor using name',
                 filled: true,
                 fillColor: AppColors.white,
                 prefixIcon: const Icon(

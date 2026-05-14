@@ -154,7 +154,7 @@ class _SupplierScreenState extends State<SupplierScreen> {
               onChanged: (v) => setState(() => _search = v),
               style: GoogleFonts.poppins(fontSize: 15),
               decoration: InputDecoration(
-                hintText: 'Search supplier...',
+                hintText: 'Search supplier using name',
                 filled: true,
                 fillColor: AppColors.white,
                 prefixIcon: const Icon(

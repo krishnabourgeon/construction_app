@@ -127,7 +127,7 @@ class _SitesScreenState extends State<SitesScreen> {
               onChanged: (v) => setState(() => _search = v),
               style: GoogleFonts.poppins(fontSize: 15),
               decoration: InputDecoration(
-                hintText: 'Search sites...',
+                hintText: 'Search site using site name',
                 filled: true,
                 fillColor: AppColors.white,
                 prefixIcon: const Icon(

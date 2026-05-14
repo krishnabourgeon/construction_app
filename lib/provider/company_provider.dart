@@ -28,9 +28,14 @@ import 'package:construction_app/models/material_name_model.dart';
 import 'package:construction_app/models/payment_body.dart';
 import 'package:construction_app/models/payment_model.dart';
 import 'package:construction_app/models/payment_modes_model.dart';
+import 'package:construction_app/models/phone_verification_body.dart';
+import 'package:construction_app/models/phone_verification_screen.dart';
+import 'package:construction_app/models/profile_model.dart';
 import 'package:construction_app/models/recepite_delete_model.dart';
 import 'package:construction_app/models/register_company_body.dart';
 import 'package:construction_app/models/register_company_model.dart';
+import 'package:construction_app/models/set_password_body.dart';
+import 'package:construction_app/models/set_password_model.dart';
 import 'package:construction_app/models/site_detail_report_model.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
 import 'package:construction_app/models/stage_wise_report_model.dart';
@@ -41,6 +46,8 @@ import 'package:construction_app/models/total_spent_detail_model.dart';
 import 'package:construction_app/models/units_model.dart';
 import 'package:construction_app/models/update_stage_body.dart';
 import 'package:construction_app/models/update_stage_model.dart';
+import 'package:construction_app/models/verify_otp_body.dart';
+import 'package:construction_app/models/verify_otp_model.dart';
 import 'package:construction_app/services/provider_helper_class.dart';
 import 'package:construction_app/services/shared_preference_helper.dart';
 import 'package:flutter/cupertino.dart';
@@ -83,6 +90,7 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
   TotalSpent? totalSpentDetail;
   TotalReceived? totalReceived;
   SupplierDetailData? supplierDetail;
+  ProfileData? profileData;
 
 
   Future<void> createUser(
@@ -1026,7 +1034,7 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
   Future<void> registerCompany({
     Function(String errorMessage)? onFailure,
     required RegisterCompanyBody registerCompanyBody,
-    required File logoFile,
+    File? logoFile,
   }) async {
     updateLoadState(LoaderState.loading);
     try {
@@ -1090,6 +1098,148 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       if (onFailure != null) onFailure(e.toString());
     }
     notifyListeners();
+  }
+
+
+  Future<void> phoneNumberVerification({
+       Function(String message)? onSuccess,
+       Function(String errorMessage)? onFailure,
+       required int phoneNumber,
+       required String contactperson,
+       required String companyName
+  })async {
+    updateLoadState(LoaderState.loading);
+    try {
+      var res = await serviceConfig.phoneNumberVerification(PhoneNumberVerficationBody(contactPerson: contactperson, companyName: companyName, phoneNumber: phoneNumber));
+      debugPrint("res: ${res.asValue!.value}");
+      debugPrint("isError: ${res.isError}");
+      if (!res.isError) {
+        final response = res.asValue!.value as PhoneNumberVerficationModel;
+        if (onSuccess != null) onSuccess(response.message);
+        updateLoadState(LoaderState.loaded);
+      } else {
+        String errorMessage = "Failed to verify phone number";
+        if (res.asError!.error is ErrorResponseModel) {
+          errorMessage =
+              (res.asError!.error as ErrorResponseModel).errorMessage ??
+              errorMessage;
+        }
+        errorToast = errorMessage;
+        if (onFailure != null) onFailure(errorMessage);
+        updateLoadState(LoaderState.loaded);
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in phoneNumberVerification: $e");
+      updateLoadState(LoaderState.loaded);
+      if (onFailure != null) onFailure(e.toString());
+    }
+    notifyListeners();
+  }
+
+  Future<VerifyOtpModel> verifyOtp({
+    Function(String errorMessage)? onFailure,
+    required int phoneNumber,
+    required int otp
+  }) async {
+    updateLoadState(LoaderState.loading);
+    try{
+      var res = await serviceConfig.verifyOtp(VerifyOtpBody(otp: otp, phoneNumber: phoneNumber));
+      if(!res.isError){
+        final response = res.asValue!.value as VerifyOtpModel;
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return response;
+      }else{
+        String errorMessage = "Failed to verify otp";
+        if(res.asError!.error is ErrorResponseModel){
+          errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+        }else if(res.asError!.error is VerifyOtpModel){
+          errorMessage = (res.asError!.error as VerifyOtpModel).message;
+        }
+        errorToast = errorMessage;
+        if(onFailure != null) onFailure(errorMessage);
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        throw Exception(errorMessage);
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in verifyOtp: $e");
+      updateLoadState(LoaderState.loaded);
+      if(onFailure != null) {
+      onFailure(e.toString());
+      }
+      notifyListeners();
+      throw Exception(e.toString());
+    }
+  }
+
+ 
+  
+
+
+  Future<void> setPassword({
+    Function(String errorMessage)? onFailure,
+    required int companyId,
+    required String password,
+    required String confirmPassword
+  }) async {
+    updateLoadState(LoaderState.loading);
+    try{
+      var res = await serviceConfig.setPassword(SetPasswordBody(companyId: companyId, password: password, passwordConfirmation: confirmPassword));
+      if(!res.isError){
+        final response = res.asValue!.value as SetPasswordModel;
+        updateLoadState(LoaderState.loaded);
+      }else{
+        String errorMessage = "Failed to set password";
+        if(res.asError!.error is ErrorResponseModel){
+          errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+        }else if(res.asError!.error is SetPasswordModel){
+          errorMessage = (res.asError!.error as SetPasswordModel).message;
+        }
+        errorToast = errorMessage;
+        if(onFailure != null) onFailure(errorMessage);
+        updateLoadState(LoaderState.loaded);
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in setPassword: $e");
+      updateLoadState(LoaderState.loaded);
+      if(onFailure != null) onFailure(e.toString());
+    }
+    notifyListeners();
+  }
+
+
+
+  Future<ProfileData?> getProfile(
+      Function(String errorMessage)? onFailure,
+  ) async {
+    updateLoadState(LoaderState.loading);
+    try {
+      var res = await serviceConfig.profile();
+      if(!res.isError){
+        final response = res.asValue!.value as ProfileModel;
+        profileData = response.data;
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return profileData;
+      }else{
+        String errorMessage = "Failed to get profile";
+        if(res.asError!.error is ErrorResponseModel){
+          errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+        }
+        errorToast = errorMessage;
+        if(onFailure != null) onFailure(errorMessage);
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in getProfile: $e");
+      updateLoadState(LoaderState.loaded);
+      if(onFailure != null) onFailure(e.toString());
+      notifyListeners();
+      return null;
+    }
   }
 
   @override

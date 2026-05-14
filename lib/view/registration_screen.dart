@@ -77,11 +77,11 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
     if (_currentPage < 2) {
       if (!_formKey.currentState!.validate()) return;
 
-      // Special check for logo on Page 1
-      if (_currentPage == 0 && _logoImage == null) {
-        _showSnack('Please upload your company logo', AppColors.orange);
-        return;
-      }
+      // // Special check for logo on Page 1
+      // if (_currentPage == 0 && _logoImage == null) {
+      //   _showSnack('Please upload your company logo', AppColors.orange);
+      //   return;
+      // }
 
       _pageCtrl.nextPage(
           duration: const Duration(milliseconds: 350), curve: Curves.easeInOut);
@@ -116,10 +116,11 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   void _submit() async {
     if (!_formKey.currentState!.validate()) return;
     
-    if (_logoImage == null) {
-      _showSnack('Please upload your company logo', AppColors.orange);
-      return;
-    }
+    // // Safety check for company type which is required by model
+    // if (_selectedType == null) {
+    //   _showSnack('Please select a company type', AppColors.orange);
+    //   return;
+    // }
 
     if (!_agreed) {
       _showSnack('Please accept the Terms & Conditions', AppColors.orange);
@@ -130,8 +131,8 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
 
   final RegisterCompanyBody registerCompanyBody = RegisterCompanyBody(
     companyName: _companyNameCtrl.text.trim(),
-    companyType: _selectedType!,
-    registrationNumber: _regNumberCtrl.text.trim(),
+    companyType: _selectedType ?? '',
+    registrationNumber: _regNumberCtrl.text.trim() ,
     gstNumber: _gstCtrl.text.trim(),
     companyEmail: _emailCtrl.text.trim(),
     phoneNumber: _phoneCtrl.text.trim(),
@@ -144,11 +145,11 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
     password: _pwCtrl.text.trim(),
     passwordConfirmation: _confirmPwCtrl.text.trim(),
   );
-  final File logoFile = _logoImage!;
+  
   final companyProvider = Provider.of<CompanyProvider>(context,listen: false);
   companyProvider.registerCompany(
     registerCompanyBody: registerCompanyBody,
-    logoFile: logoFile,
+    logoFile: _logoImage,
     onFailure: (errorMessage) {
       setState(() => _saving = false);
       _showSnack(errorMessage, AppColors.orange);
@@ -291,7 +292,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
                 children: [
                   _buildPage1(),
                   _buildPage2(),
-                  _buildPage3(),
+                  //_buildPage3(),
                 ],
               ),
             ),
@@ -367,7 +368,7 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
   // ── Stepper ─────────────────────────────────────────────────────────────────
 
   Widget _buildStepper() {
-    final steps = ['Company', 'Contact', 'Account'];
+    final steps = ['Company', 'Contact',];
     return Container(
       color: AppColors.white,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
@@ -438,66 +439,78 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
 
   // ── Page 1 – Company Info ────────────────────────────────────────────────────
 
-  Widget _buildPage1() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _sectionLabel('Company Information'),
-          _card(children: [
-            _field(
-              ctrl: _companyNameCtrl,
-              label: 'Company Name *',
-              hint: 'e.g. BuildXpert Constructions Pvt. Ltd.',
-              icon: Icons.business_outlined,
-              validator: (v) => v!.isEmpty ? 'Company name is required' : null,
-            ),
-            // Company Type dropdown
-            _dropdownField(
-              label: 'Company Type *',
-              hint: 'Select company type',
-              icon: Icons.category_outlined,
-              value: _selectedType,
-              items: _companyTypes,
-              onChanged: (v) => setState(() => _selectedType = v),
-              validator: (v) => v == null ? 'Please select a type' : null,
-            ),
-            _field(
-              ctrl: _regNumberCtrl,
-              label: 'Registration Number',
-              hint: 'e.g. CIN / LLPIN',
-              icon: Icons.numbers_outlined,
-            ),
-            _field(
-              ctrl: _gstCtrl,
-              label: 'GST Number',
-              hint: 'e.g. 27AAPFU0939F1ZV',
-              icon: Icons.receipt_long_outlined,
-              isLast: true,
-              validator: (v) {
-                if (v != null && v.isNotEmpty) {
-                  final gstRegex = RegExp(
-                       r'^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$');
-                  if (!gstRegex.hasMatch(v)) {
-                    return 'Enter a valid GST number';
-                  }
-                }
-                return null;
-              },
-            ),
-          ]),
-          const SizedBox(height: 14),
-          _sectionLabel('Company Logo'),
-          _logoUploadCard(),
-        ],
-      ),
-    );
-  }
+  // Widget _buildPage1() {
+  //   return SingleChildScrollView(
+  //     padding: const EdgeInsets.all(16),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         _sectionLabel('Admin Section'),
+  //         _card(children: [
+  //           // _field(
+  //           //   ctrl: _companyNameCtrl,
+  //           //   label: 'Company Name *',
+  //           //   hint: 'e.g. BuildXpert Constructions Pvt. Ltd.',
+  //           //   icon: Icons.business_outlined,
+  //           //   validator: (v) => v!.isEmpty ? 'Company name is required' : null,
+  //           // ),
+  //           // _field(
+  //           //   ctrl: _adminNameCtrl,
+  //           //   label: 'Full Name *',
+  //           //   hint: 'Admin full name',
+  //           //   icon: Icons.person_outline,
+  //           //   validator: (v) => v!.isEmpty ? 'Name is required' : null,
+  //           // ),
+  //         //   _field(
+  //         //     ctrl: _adminEmailCtrl,
+  //         //     label: 'Admin Email *',
+  //         //     hint: 'admin@company.com',
+  //         //     icon: Icons.email_outlined,
+  //         //     keyboardType: TextInputType.emailAddress,
+  //         //     validator: (v) {
+  //         //       if (v!.isEmpty) return 'Email is required';
+  //         //       if (!v.contains('@')) return 'Enter a valid email';
+  //         //       return null;
+  //         //     },
+  //         //   ),
+  //         //   // Password
+  //         //   _passwordField(
+  //         //     ctrl: _pwCtrl,
+  //         //     label: 'Password *',
+  //         //     hint: 'Min. 8 characters',
+  //         //     show: _showPw,
+  //         //     onToggle: () => setState(() => _showPw = !_showPw),
+  //         //     validator: (v) {
+  //         //       if (v!.isEmpty) return 'Password is required';
+  //         //       if (v.length < 8) return 'Minimum 8 characters';
+  //         //       return null;
+  //         //     },
+  //         //   ),
+  //         //   _passwordField(
+  //         //     ctrl: _confirmPwCtrl,
+  //         //     label: 'Confirm Password *',
+  //         //     hint: 'Re-enter password',
+  //         //     show: _showConfirmPw,
+  //         //     isLast: true,
+  //         //     onToggle: () => setState(() => _showConfirmPw = !_showConfirmPw),
+  //         //     validator: (v) {
+  //         //       if (v!.isEmpty) return 'Please confirm password';
+  //         //       if (v != _pwCtrl.text) return 'Passwords do not match';
+  //         //       return null;
+  //         //     },
+  //         //   ),
+  //         // ]),
+  //         // const SizedBox(height: 14),
+  //         // _sectionLabel('Company Logo'),
+  //         // _logoUploadCard(),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // ── Page 2 – Contact & Address ───────────────────────────────────────────────
 
-  Widget _buildPage2() {
+  Widget _buildPage1() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -511,11 +524,11 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
               hint: 'company@example.com',
               icon: Icons.email_outlined,
               keyboardType: TextInputType.emailAddress,
-              validator: (v) {
-                if (v!.isEmpty) return 'Email is required';
-                if (!v.contains('@')) return 'Enter a valid email';
-                return null;
-              },
+              // validator: (v) {
+              //   if (v!.isEmpty) return 'Email is required';
+              //   if (!v.contains('@')) return 'Enter a valid email';
+              //   return null;
+              // },
             ),
             _field(
               ctrl: _phoneCtrl,
@@ -524,12 +537,12 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
               icon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
               isLast: true,
-              validator: (v) {
-                if (v!.isEmpty) return 'Phone is required';
-                String digits = v.replaceAll(RegExp(r'\D'), '');
-                if (digits.length != 10) return 'Enter a valid 10-digit number';
-                return null;
-              },
+              // validator: (v) {
+              //   if (v!.isEmpty) return 'Phone is required';
+              //   String digits = v.replaceAll(RegExp(r'\D'), '');
+              //   if (digits.length != 10) return 'Enter a valid 10-digit number';
+              //   return null;
+              // },
             ),
           ]),
           const SizedBox(height: 14),
@@ -537,49 +550,49 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
           _card(children: [
             _field(
               ctrl: _addressCtrl,
-              label: 'Street Address *',
+              label: 'Street Address',
               hint: 'Building, Street, Area',
               icon: Icons.location_on_outlined,
               maxLines: 2,
-              validator: (v) => v!.isEmpty ? 'Address is required' : null,
+              //validator: (v) => v!.isEmpty ? 'Address is required' : null,
             ),
             Row(
               children: [
                 Expanded(
                   child: _field(
                     ctrl: _cityCtrl,
-                    label: 'City *',
+                    label: 'City',
                     hint: 'e.g. Kochi',
                     icon: Icons.location_city_outlined,
-                    validator: (v) => v!.isEmpty ? 'Required' : null,
+                    //validator: (v) => v!.isEmpty ? 'Required' : null,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: _field(
                     ctrl: _stateCtrl,
-                    label: 'State *',
+                    label: 'State',
                     hint: 'e.g. Kerala',
                     icon: Icons.map_outlined,
-                    validator: (v) => v!.isEmpty ? 'Required' : null,
+                    //validator: (v) => v!.isEmpty ? 'Required' : null,
                   ),
                 ),
               ],
             ),
             _field(
               ctrl: _pincodeCtrl,
-              label: 'Pincode *',
+              label: 'Pincode',
               hint: '6 digit pincode',
               icon: Icons.pin_drop_outlined,
               keyboardType: TextInputType.number,
               isLast: true,
-              validator: (v) {
-                if (v!.isEmpty) return 'Pincode is required';
-                if (v.length != 6 || !RegExp(r'^[0-9]+$').hasMatch(v)) {
-                  return 'Must be exactly 6 digits';
-                }
-                return null;
-              },
+              // validator: (v) {
+              //   if (v!.isEmpty) return 'Pincode is required';
+              //   if (v.length != 6 || !RegExp(r'^[0-9]+$').hasMatch(v)) {
+              //     return 'Must be exactly 6 digits';
+              //   }
+              //   return null;
+              // },
             ),
           ]),
         ],
@@ -589,60 +602,51 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
 
   // ── Page 3 – Admin Account ───────────────────────────────────────────────────
 
-  Widget _buildPage3() {
+  Widget _buildPage2() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _sectionLabel('Admin Account'),
+          _sectionLabel('Company Information'),
           _card(children: [
-            _field(
-              ctrl: _adminNameCtrl,
-              label: 'Full Name *',
-              hint: 'Admin full name',
-              icon: Icons.person_outline,
-              validator: (v) => v!.isEmpty ? 'Name is required' : null,
+            _dropdownField(
+              label: 'Company Type',
+              hint: 'Select company type',
+              icon: Icons.category_outlined,
+              value: _selectedType,
+              items: _companyTypes,
+              onChanged: (v) => setState(() => _selectedType = v),
+              //validator: (v) => v == null ? 'Please select a type' : null,
             ),
             _field(
-              ctrl: _adminEmailCtrl,
-              label: 'Admin Email *',
-              hint: 'admin@company.com',
-              icon: Icons.email_outlined,
-              keyboardType: TextInputType.emailAddress,
-              validator: (v) {
-                if (v!.isEmpty) return 'Email is required';
-                if (!v.contains('@')) return 'Enter a valid email';
-                return null;
-              },
+              ctrl: _regNumberCtrl,
+              label: 'Registration Number',
+              hint: 'e.g. CIN / LLPIN',
+              icon: Icons.numbers_outlined,
             ),
-            // Password
-            _passwordField(
-              ctrl: _pwCtrl,
-              label: 'Password *',
-              hint: 'Min. 8 characters',
-              show: _showPw,
-              onToggle: () => setState(() => _showPw = !_showPw),
-              validator: (v) {
-                if (v!.isEmpty) return 'Password is required';
-                if (v.length < 8) return 'Minimum 8 characters';
-                return null;
-              },
-            ),
-            _passwordField(
-              ctrl: _confirmPwCtrl,
-              label: 'Confirm Password *',
-              hint: 'Re-enter password',
-              show: _showConfirmPw,
+            _field(
+              ctrl: _gstCtrl,
+              label: 'GST Number',
+              hint: 'e.g. 27AAPFU0939F1ZV',
+              icon: Icons.receipt_long_outlined,
               isLast: true,
-              onToggle: () => setState(() => _showConfirmPw = !_showConfirmPw),
-              validator: (v) {
-                if (v!.isEmpty) return 'Please confirm password';
-                if (v != _pwCtrl.text) return 'Passwords do not match';
-                return null;
-              },
+              // validator: (v) {
+              //   if (v != null && v.isNotEmpty) {
+              //     final gstRegex = RegExp(
+              //          r'^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$');
+              //     if (!gstRegex.hasMatch(v)) {
+              //       return 'Enter a valid GST number';
+              //     }
+              //   }
+              //   return null;
+              // },
             ),
+            
           ]),
+          const SizedBox(height: 14),
+          _sectionLabel('Company Logo'),
+          _logoUploadCard(),
           const SizedBox(height: 14),
           // Terms
           GestureDetector(
@@ -794,6 +798,9 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
       ),
     );
   }
+
+
+
 
   // ── Logo Upload Card ─────────────────────────────────────────────────────────
 
@@ -1190,3 +1197,6 @@ class _CompanyRegisterScreenState extends State<CompanyRegisterScreen> {
     );
   }
 }
+
+
+

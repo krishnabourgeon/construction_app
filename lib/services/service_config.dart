@@ -29,9 +29,14 @@ import 'package:construction_app/models/material_name_model.dart';
 import 'package:construction_app/models/payment_body.dart';
 import 'package:construction_app/models/payment_model.dart';
 import 'package:construction_app/models/payment_modes_model.dart';
+import 'package:construction_app/models/phone_verification_body.dart';
+import 'package:construction_app/models/phone_verification_screen.dart';
+import 'package:construction_app/models/profile_model.dart';
 import 'package:construction_app/models/recepite_delete_model.dart';
 import 'package:construction_app/models/register_company_body.dart';
 import 'package:construction_app/models/register_company_model.dart';
+import 'package:construction_app/models/set_password_body.dart';
+import 'package:construction_app/models/set_password_model.dart';
 import 'package:construction_app/models/site_detail_report_model.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
 import 'package:construction_app/models/stage_wise_report_model.dart';
@@ -42,15 +47,17 @@ import 'package:construction_app/models/total_spent_detail_model.dart';
 import 'package:construction_app/models/units_model.dart';
 import 'package:construction_app/models/update_stage_body.dart';
 import 'package:construction_app/models/update_stage_model.dart';
+import 'package:construction_app/models/verify_otp_body.dart';
+import 'package:construction_app/models/verify_otp_model.dart';
 import 'package:construction_app/services/base_client.dart';
 import 'package:flutter/foundation.dart';
 import 'package:async/async.dart';
 
 
 class ServiceConfig {
-  Future<Result> login({String? email, String? password}) async {
+  Future<Result> login({String? phone, String? password}) async {
     Map<String, dynamic> body = {
-      'email': email ?? '',
+      'mobile': phone ?? '',
       'password': password ?? ''
     };
 
@@ -378,7 +385,6 @@ Future<Result> getSuppliers()async{
 }
 
 
-
 Future<Result> getSupplierDetail({required int supplierId})async{
   Result res = await BaseClient.get("supplier?supplier_id=$supplierId");
   if(res.isError){
@@ -393,8 +399,6 @@ Future<Result> getSupplierDetail({required int supplierId})async{
     :Result.error(supplierDetailModel);
   }
   }
-
-
 
 
 Future<Result> getMaterials(int? substageId)async{
@@ -595,7 +599,7 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
 
   Future<Result> registerCompany(
     RegisterCompanyBody body,
-    File logoFile,
+    File? logoFile,
   ) async {
 
     Result res = await BaseClient.multipartPost(
@@ -604,15 +608,15 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
       fields: {
 
         "company_name": body.companyName,
-        "company_type": body.companyType,
-        "registration_number": body.registrationNumber,
-        "gst_number": body.gstNumber,
-        "company_email": body.companyEmail,
-        "phone_number": body.phoneNumber,
-        "street_address": body.streetAddress,
-        "city": body.city,
-        "state": body.state,
-        "pincode": body.pincode,
+        "company_type": body.companyType ?? "",
+        "registration_number": body.registrationNumber ?? "",
+        "gst_number": body.gstNumber ?? "",
+        "company_email": body.companyEmail ?? "",
+        "phone_number": body.phoneNumber ?? "",
+        "street_address": body.streetAddress ?? "",
+        "city": body.city ?? "",
+        "state": body.state ?? "",
+        "pincode": body.pincode ?? "",
         "admin_name": body.adminName,
         "admin_email": body.adminEmail,
         "password": body.password,
@@ -673,5 +677,72 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
       return Result.error(ErrorResponseModel(errorMessage: e.toString()));
     }
   }
+
+  Future<Result> phoneNumberVerification(PhoneNumberVerficationBody body) async {
+    Result res = await BaseClient.post('register/initiate',body: body.toJson());
+    if(res.isError){
+      ErrorResponseModel errorResponseModel =ErrorResponseModel(errorMessage: "OOps..!, Something went wrong");
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint("Phone Number Verification : $response");
+      PhoneNumberVerficationModel phoneNumberVerificationModel =
+      PhoneNumberVerficationModel.fromJson(response);
+      return (phoneNumberVerificationModel.status)
+      ?Result.value(phoneNumberVerificationModel)
+      :Result.error(phoneNumberVerificationModel);
+    }
+  }
+
+
+  Future<Result> verifyOtp(VerifyOtpBody body) async {
+    Result res = await BaseClient.post('register/verify-otp', body: body.toJson());
+    if(res.isError){
+      ErrorResponseModel errorResponseModel = ErrorResponseModel(errorMessage: "OOps..!, Something went wrong");
+      return Result.error(errorResponseModel);
+    }else{
+      var response = res.asValue!.value;
+      debugPrint("Verify Otp : $response");
+      VerifyOtpModel verifyOtpModel =
+      VerifyOtpModel.fromJson(response);
+      return (verifyOtpModel.status)
+      ?Result.value(verifyOtpModel)
+      :Result.error(verifyOtpModel);
+    }
+  }
+
+
+  Future<Result> setPassword(SetPasswordBody body) async {
+    Result res = await BaseClient.post("register/set-password",body: body.toJson());
+    if(res.isError){
+      ErrorResponseModel errorResponseModel = ErrorResponseModel(errorMessage: "OOps..!, Something went wrong");
+      return Result.error(errorResponseModel);
+    }else{
+      var response = res.asValue!.value;
+      debugPrint("Set Password : $response");
+      SetPasswordModel setPasswordModel =
+      SetPasswordModel.fromJson(response);
+      return (setPasswordModel.status)
+      ?Result.value(setPasswordModel)
+      :Result.error(setPasswordModel);
+    }
+  }
+
+  Future<Result> profile() async{
+    Result res = await BaseClient.get("profile");
+    if(res.isError){
+      ErrorResponseModel errorResponseModel = ErrorResponseModel(errorMessage: "OOps..!, Something went wrong");
+      return Result.error(errorResponseModel);
+    }else{
+      var response = res.asValue!.value;
+      debugPrint("Profile : $response");
+      ProfileModel profileModel =
+      ProfileModel.fromJson(response);
+      return (profileModel.status)
+      ?Result.value(profileModel)
+      :Result.error(profileModel);
+    }
+  }
+
 
 }

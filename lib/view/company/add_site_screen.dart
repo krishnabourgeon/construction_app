@@ -26,6 +26,16 @@ class _AddSiteScreenState extends State<AddSiteScreen> {
   DateTime? _selectedStartDate;
   DateTime? _selectedEndDate;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<CompanyProvider>();
+      provider.selectedSupervisorId = null;
+      provider.getSupervisors();
+    });
+  }
+
   Future<void> _pickDate(TextEditingController ctrl, bool isStartDate) async {
     final picked = await showDatePicker(
       context: context,
@@ -192,27 +202,56 @@ class _AddSiteScreenState extends State<AddSiteScreen> {
                       //   onChanged: (v) =>
                       //       setState(() => _selectedSupervisor = v),
                       // ),
-                      AppDropdown(
-                        label: 'Supervisor *',
-                        value: provider.selectedSupervisorId == null
-                        ? null
-                        : provider.supervisorsList
-                            .firstWhere(
-                              (e) => e.id == provider.selectedSupervisorId,
+                      provider.supervisorsList.isEmpty
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Supervisor *',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.dark,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'No Supervisor Found',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    color: AppColors.red,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                              ],
                             )
-                            .name,
-                        items: provider.supervisorsList
-                        .map((e) => e.name)
-                        .toList(),
-                         onChanged: (v) {
-                          final selected = provider.supervisorsList
-                              .firstWhere((e) => e.name == v);
+                          : AppDropdown(
+                              label: 'Supervisor *',
+                              value: provider.selectedSupervisorId == null
+                                  ? null
+                                  : provider.supervisorsList.any((e) =>
+                                          e.id == provider.selectedSupervisorId)
+                                      ? provider.supervisorsList
+                                          .firstWhere(
+                                            (e) =>
+                                                e.id ==
+                                                provider.selectedSupervisorId,
+                                          )
+                                          .name
+                                      : null,
+                              items: provider.supervisorsList
+                                  .map((e) => e.name)
+                                  .toList(),
+                              onChanged: (v) {
+                                final selected = provider.supervisorsList
+                                    .firstWhere((e) => e.name == v);
 
-                          provider.selectedSupervisorId = selected.id;
-                          provider.notifyListeners();
-                          print("Selected ID: ${selected.id}");
-                        },
-                      ),
+                                provider.selectedSupervisorId = selected.id;
+                                provider.notifyListeners();
+                                print("Selected ID: ${selected.id}");
+                              },
+                            ),
                       Row(
                         children: [
                           Expanded(
