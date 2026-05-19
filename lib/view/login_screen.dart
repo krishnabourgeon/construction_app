@@ -1,3 +1,4 @@
+import 'package:construction_app/view/forgot_password_screen.dart';
 import 'package:construction_app/view/registration_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:construction_app/widgets/common_widgets.dart';
@@ -7,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:construction_app/provider/login_provider.dart';
 import 'package:construction_app/services/helpers.dart';
+import 'package:construction_app/view/company/payment_subscription_screen.dart';
 import 'user/main_userscreen.dart';
 import 'company/main_screen.dart';
 
@@ -40,18 +42,26 @@ class _LoginScreenState extends State<LoginScreen> {
     provider.loginPasswordController.text = _passwordController.text;
 
     await provider.login(
-      onSuccess: (role) {
+      onSuccess: (role, trialExpired) {
         Helpers.successToast('Login Successful');
-        if (role == 'supervisor') {
+        
+        if (trialExpired) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const MainUserScreen()),
+            MaterialPageRoute(builder: (_) => const PaymentScreen()),
           );
         } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const MainScreen()),
-          );
+          if (role == 'supervisor') {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const MainUserScreen()),
+            );
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const MainScreen()),
+            );
+          }
         }
       },
       onFailure: (errorMessage) {
@@ -201,7 +211,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ForgotPasswordScreen(),
+                            ),
+                          );
+                        },
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
                           minimumSize: Size.zero,
@@ -228,35 +245,35 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 12),
 
                     // Register link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Don't have an account? ",
-                          style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            color: AppColors.grey,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) =>  CompanyRegisterScreen(),
-                              ),
-                            );
-                          },
-                          child: Text(
-                            'Register',
-                            style: GoogleFonts.poppins(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.navy,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Text(
+                    //       "Don't have an account? ",
+                    //       style: GoogleFonts.poppins(
+                    //         fontSize: 13,
+                    //         color: AppColors.grey,
+                    //       ),
+                    //     ),
+                    //     GestureDetector(
+                    //       onTap: () {
+                    //         Navigator.of(context).push(
+                    //           MaterialPageRoute(
+                    //             builder: (_) =>  CompanyRegisterScreen(),
+                    //           ),
+                    //         );
+                    //       },
+                    //       child: Text(
+                    //         'Register',
+                    //         style: GoogleFonts.poppins(
+                    //           fontSize: 13,
+                    //           fontWeight: FontWeight.w600,
+                    //           color: AppColors.navy,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),

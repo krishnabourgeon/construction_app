@@ -663,29 +663,28 @@ class _AddUserScreenState extends State<AddUserScreen> {
       email: _emailCtrl.text.trim(),
       password: _passwordCtrl.text.trim(),
       passwordConfirmation: _confirmPasswordCtrl.text.trim(),
+      onSuccess: () {
+        if (!mounted) return;
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Supervisor added successfully!',
+              style: GoogleFonts.poppins(fontSize: 13),
+            ),
+            backgroundColor: AppColors.green,
+          ),
+        );
+        Navigator.pop(context, true); // return success
+      },
       onFailure: (error) {
+        if (!mounted) return;
+        setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error), backgroundColor: Colors.red),
         );
       },
     );
-
-    setState(() => _saving = false);
-
-    if (provider.errorToast == null) {
-      //  SUCCESS
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Supervisor added successfully!',
-            style: GoogleFonts.poppins(fontSize: 13),
-          ),
-          backgroundColor: AppColors.green,
-        ),
-      );
-
-      Navigator.pop(context, true); // return success
-    }
   }
 
   @override
@@ -760,16 +759,35 @@ class _AddUserScreenState extends State<AddUserScreen> {
                       ),
 
                       // Phone
+                      // AppTextField(
+                      //   label: 'Phone Number *',
+                      //   hint: '+91 00000 00000',
+                      //   controller: _phoneCtrl,
+                      //   keyboardType: TextInputType.phone,
+                      //   validator: (v) {
+                      //     if (v!.isEmpty) return 'Phone is required';
+                      //     if (v.replaceAll(RegExp(r'\D'), '').length < 10) {
+                      //       return 'Enter a valid phone number';
+                      //     }
+                      //     return null;
+                      //   },
+                      // ),
                       AppTextField(
-                        label: 'Phone Number *',
+                        label: 'Contact Number *',
                         hint: '+91 00000 00000',
                         controller: _phoneCtrl,
                         keyboardType: TextInputType.phone,
                         validator: (v) {
-                          if (v!.isEmpty) return 'Phone is required';
-                          if (v.replaceAll(RegExp(r'\D'), '').length < 10) {
-                            return 'Enter a valid phone number';
+                          if (v == null || v.isEmpty) {
+                            return 'Phone is required';
                           }
+
+                          final digits = v.replaceAll(RegExp(r'\D'), '');
+
+                          if (digits.length != 10) {
+                            return 'Phone number must be exactly 10 digits';
+                          }
+
                           return null;
                         },
                       ),
@@ -814,8 +832,8 @@ class _AddUserScreenState extends State<AddUserScreen> {
                             obscureText: !_showPw,
                             validator: (v) {
                               if (v!.isEmpty) return 'Password is required';
-                              if (v.length < 6) {
-                                return 'Minimum 6 characters';
+                              if (v.length < 8) {
+                                return 'Minimum 8 characters';
                               }
                               return null;
                             },

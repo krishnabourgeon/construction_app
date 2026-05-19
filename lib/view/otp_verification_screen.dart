@@ -807,7 +807,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => CreatePasswordScreen(phoneNumber: widget.phoneNumber,companyId:verifyOtpResponse.companyId ),
+          builder: (_) => CreatePasswordScreen(phoneNumber: widget.phoneNumber,companyId:verifyOtpResponse.companyId,regtoken: verifyOtpResponse.regToken, ),
         ),
       );
     } catch (e) {

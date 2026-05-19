@@ -42,8 +42,8 @@ class Catergories {
     });
 
     factory Catergories.fromJson(Map<String, dynamic> json) => Catergories(
-        id: json["id"],
-        name: json["name"],
+        id: json["id"] ?? 0,
+        name: json["name"] ?? "",
     );
 
     Map<String, dynamic> toJson() => {

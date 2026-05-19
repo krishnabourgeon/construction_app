@@ -184,7 +184,14 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
                 onPressed: () {
                   _submit(provider);
                 },
-                child: const Text("Save"),
+                child:  Consumer<CompanyProvider>(
+                  builder: (context,provider,child) {
+                    if(provider.loaderState == LoaderState.loading){
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return Text("Save");
+                  }
+                ),
               ),
             ),
           ],

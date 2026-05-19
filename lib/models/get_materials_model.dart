@@ -56,15 +56,15 @@ class GetMaterials {
     });
 
     factory GetMaterials.fromJson(Map<String, dynamic> json) => GetMaterials(
-        id: json["id"],
-        materialId: json["material_id"],
-        materialName: json["material_name"],
-        qty: json["qty"],
-        unitId: json["unit_id"],
-        price: json["price"],
-        amount: json["amount"],
-        supplierId: json["supplier_id"],
-        addedDate: DateTime.parse(json["added_date"]),
+        id: json["id"] ?? 0,
+        materialId: json["material_id"] ?? 0,
+        materialName: json["material_name"] ?? "",
+        qty: json["qty"]?.toString() ?? "",
+        unitId: json["unit_id"] ?? 0,
+        price: json["price"]?.toString() ?? "",
+        amount: json["amount"]?.toString() ?? "",
+        supplierId: json["supplier_id"] ?? 0,
+        addedDate: json["added_date"] != null ? (DateTime.tryParse(json["added_date"].toString()) ?? DateTime.now()) : DateTime.now(),
     );
 
     Map<String, dynamic> toJson() => {

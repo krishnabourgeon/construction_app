@@ -1,25 +1,25 @@
 // To parse this JSON data, do
 //
-//     final profileModel = profileModelFromJson(jsonString);
+//     final editProfileModel = editProfileModelFromJson(jsonString);
 
 import 'dart:convert';
 
-ProfileModel profileModelFromJson(String str) => ProfileModel.fromJson(json.decode(str));
+EditProfileModel editProfileModelFromJson(String str) => EditProfileModel.fromJson(json.decode(str));
 
-String profileModelToJson(ProfileModel data) => json.encode(data.toJson());
+String editProfileModelToJson(EditProfileModel data) => json.encode(data.toJson());
 
-class ProfileModel {
+class EditProfileModel {
     bool status;
-    ProfileData data;
+    EditProfileData data;
 
-    ProfileModel({
+    EditProfileModel({
         required this.status,
         required this.data,
     });
 
-    factory ProfileModel.fromJson(Map<String, dynamic> json) => ProfileModel(
+    factory EditProfileModel.fromJson(Map<String, dynamic> json) => EditProfileModel(
         status: json["status"],
-        data: ProfileData.fromJson(json["data"]),
+        data: EditProfileData.fromJson(json["data"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -28,7 +28,7 @@ class ProfileModel {
     };
 }
 
-class ProfileData {
+class EditProfileData {
     int id;
     String name;
     dynamic email;
@@ -40,7 +40,7 @@ class ProfileData {
     Registration registration;
     App app;
 
-    ProfileData({
+    EditProfileData({
         required this.id,
         required this.name,
         required this.email,
@@ -53,7 +53,7 @@ class ProfileData {
         required this.app,
     });
 
-    factory ProfileData.fromJson(Map<String, dynamic> json) => ProfileData(
+    factory EditProfileData.fromJson(Map<String, dynamic> json) => EditProfileData(
         id: json["id"],
         name: json["name"],
         email: json["email"],
@@ -99,16 +99,16 @@ class App {
 class Company {
     int id;
     String name;
-    dynamic email;
+    String email;
     String phone;
     dynamic logo;
-    dynamic companyType;
-    dynamic registrationNumber;
-    dynamic gstNumber;
-    dynamic address;
-    dynamic city;
-    dynamic state;
-    dynamic pincode;
+    String companyType;
+    String registrationNumber;
+    String gstNumber;
+    String address;
+    String city;
+    String state;
+    String pincode;
     int status;
     String statusLabel;
 
@@ -166,7 +166,7 @@ class Company {
 
 class Registration {
     String status;
-    List<RegistrationStep> steps;
+    List<Step> steps;
 
     Registration({
         required this.status,
@@ -175,7 +175,7 @@ class Registration {
 
     factory Registration.fromJson(Map<String, dynamic> json) => Registration(
         status: json["status"],
-        steps: List<RegistrationStep>.from(json["steps"].map((x) => RegistrationStep.fromJson(x))),
+        steps: List<Step>.from(json["steps"].map((x) => Step.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -184,18 +184,18 @@ class Registration {
     };
 }
 
-class RegistrationStep {
+class Step {
     String key;
     String label;
     bool completed;
 
-    RegistrationStep({
+    Step({
         required this.key,
         required this.label,
         required this.completed,
     });
 
-    factory RegistrationStep.fromJson(Map<String, dynamic> json) => RegistrationStep(
+    factory Step.fromJson(Map<String, dynamic> json) => Step(
         key: json["key"],
         label: json["label"],
         completed: json["completed"],

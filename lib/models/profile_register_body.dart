@@ -1,12 +1,10 @@
-class RegisterCompanyBody {
+class ProfileRegisterBody {
 
   // final String companyName;
   final String? companyType;
   final String? registrationNumber;
   final String? gstNumber;
   final String? companyEmail;
-  final int? companyId;
-  final String? regtoken;
   // final String? phoneNumber;
   final String? streetAddress;
   final String? city;
@@ -17,10 +15,8 @@ class RegisterCompanyBody {
   // final String password;
   // final String passwordConfirmation;
 
-  RegisterCompanyBody({
+  ProfileRegisterBody({
     //required this.companyName,
-    this.companyId,
-    this.regtoken,
     this.companyType,
     this.registrationNumber,
     this.gstNumber,

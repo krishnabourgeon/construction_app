@@ -1,5 +1,6 @@
 import 'package:construction_app/models/update_stage_body.dart';
 import 'package:construction_app/provider/company_provider.dart';
+import 'package:construction_app/services/provider_helper_class.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -101,30 +102,31 @@ class _EditStageScreenState extends State<EditStageScreen> {
     );
 
     await provider.updateStages(
-      (error) {
+      siteId: widget.siteId,
+      stages: [stage],
+      onSuccess: () {
+        if (!mounted) return;
+        setState(() => _isSaving = false);
+        Navigator.pop(context);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Stage updated ✓',
+              style: GoogleFonts.poppins(fontSize: 13),
+            ),
+            backgroundColor: AppColors.green,
+          ),
+        );
+      },
+      onFailure: (error) {
+        if (!mounted) return;
+        setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error)),
         );
       },
-      widget.siteId,
-      [stage],
     );
-
-    setState(() => _isSaving = false);
-
-    if (mounted) {
-      Navigator.pop(context);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Stage updated ✓',
-            style: GoogleFonts.poppins(fontSize: 13),
-          ),
-          backgroundColor: AppColors.green,
-        ),
-      );
-    }
   }
 
   void _removeSub(int index) {
@@ -445,9 +447,20 @@ class _EditStageScreenState extends State<EditStageScreen> {
                                   color: Colors.black,
                                 ),
                               )
-                            : Text('Save Changes',
-                                style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.w700)),
+                            : Consumer<CompanyProvider>(
+                              builder: (context, provider, child) {
+                                if(provider.loaderState == LoaderState.loading){
+                                  return const Center(
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.white,
+                                    ),
+                                  );
+                                }
+                                return Text('Save Changes',
+                                    style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.w700));
+                              }
+                            ),
                       ),
                     ),
                   ],

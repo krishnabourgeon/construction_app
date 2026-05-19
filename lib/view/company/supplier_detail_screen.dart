@@ -6,6 +6,7 @@ import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SupplierDetailScreen extends StatefulWidget {
   final Supplier supplier;
@@ -57,6 +58,9 @@ class _SupplierDetailScreenState extends State<SupplierDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _call(String phone) async {
+    await launchUrl(Uri(scheme: 'tel', path: phone));
+  }
     return Scaffold(
       backgroundColor: AppColors.greyBg,
       body: Column(
@@ -183,6 +187,9 @@ class _SupplierDetailScreenState extends State<SupplierDetailScreen> {
 
   // ── Contact Card ─────────────────────────────────────────────────────────────
   Widget _buildContactCard(SupplierDetailData? supplierDetail) {
+    Future<void> _call(String phone) async {
+    await launchUrl(Uri(scheme: 'tel', path: phone));
+  }
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -197,6 +204,7 @@ class _SupplierDetailScreenState extends State<SupplierDetailScreen> {
             iconColor: AppColors.blue,
             label: 'Contact Number',
             value: supplierDetail?.contactNo ?? '',
+            onTap: () => _call(supplierDetail?.contactNo ?? ''),
           ),
           const Divider(height: 1, color: Color(0xFFF3F4F6)),
           _infoRow(
@@ -219,37 +227,41 @@ class _SupplierDetailScreenState extends State<SupplierDetailScreen> {
     required String label,
     required String value,
     bool isLast = false,
+    VoidCallback? onTap,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Row(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-                color: iconBg, borderRadius: BorderRadius.circular(10)),
-            child: Icon(icon, color: iconColor, size: 18),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label,
-                    style: GoogleFonts.poppins(
-                        fontSize: 11, color: AppColors.greyLight)),
-                const SizedBox(height: 2),
-                Text(value,
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.dark,
-                    )),
-              ],
+      child: InkWell(
+        onTap: onTap,
+        child: Row(
+          children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                  color: iconBg, borderRadius: BorderRadius.circular(10)),
+              child: Icon(icon, color: iconColor, size: 18),
             ),
-          ),
-        ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label,
+                      style: GoogleFonts.poppins(
+                          fontSize: 11, color: AppColors.greyLight)),
+                  const SizedBox(height: 2),
+                  Text(value,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.dark,
+                      )),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

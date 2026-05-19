@@ -50,14 +50,14 @@ class SitesbyCompany {
     });
 
     factory SitesbyCompany.fromJson(Map<String, dynamic> json) => SitesbyCompany(
-        id: json["id"],
-        sitename: json["sitename"],
-        contactperson: json["contactperson"],
-        mobile: json["mobile"],
-        estimateAmount: json["estimate_amount"],
-        supervisorId: json["supervisor_id"],
-        startDate: DateTime.parse(json["start_date"]),
-        tentativeCompletionDate: DateTime.parse(json["tentative_completion_date"]),
+        id: json["id"] ?? 0,
+        sitename: json["sitename"] ?? "",
+        contactperson: json["contactperson"] ?? "",
+        mobile: json["mobile"] ?? "",
+        estimateAmount: json["estimate_amount"]?.toString() ?? "",
+        supervisorId: json["supervisor_id"] ?? 0,
+        startDate: json["start_date"] != null ? (DateTime.tryParse(json["start_date"].toString()) ?? DateTime.now()) : DateTime.now(),
+        tentativeCompletionDate: json["tentative_completion_date"] != null ? (DateTime.tryParse(json["tentative_completion_date"].toString()) ?? DateTime.now()) : DateTime.now(),
     );
 
     Map<String, dynamic> toJson() => {

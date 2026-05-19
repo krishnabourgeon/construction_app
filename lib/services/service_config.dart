@@ -12,9 +12,16 @@ import 'package:construction_app/models/add_sub_stages_body.dart';
 import 'package:construction_app/models/add_sub_stages_model.dart';
 import 'package:construction_app/models/add_supplier_body.dart';
 import 'package:construction_app/models/add_supplier_model.dart';
+import 'package:construction_app/models/change_password_body.dart';
+import 'package:construction_app/models/change_password_model.dart';
 import 'package:construction_app/models/create_user_body.dart';
 import 'package:construction_app/models/create_user_model.dart';
+import 'package:construction_app/models/edit_profile_body.dart';
+import 'package:construction_app/models/edit_profile_model.dart';
 import 'package:construction_app/models/error_response_model.dart';
+import 'package:construction_app/models/forgot_pass_reset_model.dart';
+import 'package:construction_app/models/forgot_pass_verify_otp_model.dart';
+import 'package:construction_app/models/forgot_password_send_otp_Model.dart';
 import 'package:construction_app/models/get_categories_model.dart';
 import 'package:construction_app/models/get_company.dart';
 import 'package:construction_app/models/get_labours_model.dart';
@@ -27,11 +34,14 @@ import 'package:construction_app/models/login_model.dart';
 import 'package:construction_app/models/logout_model.dart';
 import 'package:construction_app/models/material_name_model.dart';
 import 'package:construction_app/models/payment_body.dart';
+import 'package:construction_app/models/payment_details_model.dart';
 import 'package:construction_app/models/payment_model.dart';
 import 'package:construction_app/models/payment_modes_model.dart';
 import 'package:construction_app/models/phone_verification_body.dart';
 import 'package:construction_app/models/phone_verification_screen.dart';
 import 'package:construction_app/models/profile_model.dart';
+import 'package:construction_app/models/profile_register_body.dart';
+import 'package:construction_app/models/profile_register_model.dart';
 import 'package:construction_app/models/recepite_delete_model.dart';
 import 'package:construction_app/models/register_company_body.dart';
 import 'package:construction_app/models/register_company_model.dart';
@@ -146,9 +156,7 @@ Future<Result> getSupervisors() async{
 Future<Result> addSite(AddSitesBody addSiteBody)async{
   Result res = await BaseClient.post("add-sites",body: addSiteBody.toJson());
   if(res.isError){
-    ErrorResponseModel errorResponseModel = 
-    ErrorResponseModel(errorMessage: "Oops...!, Something went wrong");
-    return Result.error(errorResponseModel);
+    return Result.error(res.asError!.error);
   }else{
     var response = res.asValue!.value;
     debugPrint("Add Site : $response");
@@ -197,9 +205,7 @@ Future<Result> sitesByCompany(int companyId) async{
 Future<Result> addMaterial(AddMaterialsBody addMaterialBody)async{
   Result res = await BaseClient.post("add-site-materials", body: addMaterialBody.toJson());
   if(res.isError){
-    ErrorResponseModel errorResponseModel = 
-    ErrorResponseModel(errorMessage: "Oops...!, Something went wrong");
-    return Result.error(errorResponseModel);
+    return Result.error(res.asError!.error);
   }else{
     var response = res.asValue!.value;
     debugPrint("Add Materials : $response");
@@ -214,9 +220,7 @@ Future<Result> addMaterial(AddMaterialsBody addMaterialBody)async{
 Future<Result> addStages(AddStagesBody addStagesBody)async{
   Result res = await BaseClient.post("sites/add-stages",body: addStagesBody.toJson());
   if(res.isError){
-    ErrorResponseModel errorResponseModel = 
-    ErrorResponseModel(errorMessage: "Ooops something went wrong.....!");
-    return Result.error(errorResponseModel);
+    return Result.error(res.asError!.error);
   }else{
     var response = res.asValue!.value;
     debugPrint("Add Stages : $response");
@@ -231,9 +235,7 @@ Future<Result> addStages(AddStagesBody addStagesBody)async{
 Future<Result> addSubStages(AddSubStagesBody addSubStagesBody)async {
   Result res = await BaseClient.post('sites/add-sub-stages',body: addSubStagesBody.toJson(),);
   if(res.isError){
-    ErrorResponseModel errorResponseModel = 
-    ErrorResponseModel(errorMessage: "oops something went wrong...!");
-    return Result.error(errorResponseModel);
+    return Result.error(res.asError!.error);
   } else {
     var response = res.asValue!.value;
     debugPrint("Add Sub Stages : $response");
@@ -282,9 +284,7 @@ Future<Result> addLabours(AddLabourBody addLabourBody)async{
   Result res = await BaseClient.post("sites/add-labours",body: addLabourBody.toJson());
   debugPrint("---------------addLabours : ${addLabourBody.toJson()}-----------------------");
   if(res.isError){
-    ErrorResponseModel errorResponseModel = 
-    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
-    return Result.error(errorResponseModel);
+    return Result.error(res.asError!.error);
   }else{
     var response = res.asValue!.value;
     debugPrint("Add Labours : $response");
@@ -425,9 +425,7 @@ Future<Result> updateStages(UpdateStageBody updateStageBody) async {
   );
   debugPrint("---------------- Update stage body : ${updateStageBody.toJson()} ---------------------");
   if (res.isError) {
-    ErrorResponseModel errorResponseModel =
-        ErrorResponseModel(errorMessage: 'OOps...!, Something went wrong');
-    return Result.error(errorResponseModel);
+    return Result.error(res.asError!.error);
   } else {
     var response = res.asValue!.value;
     debugPrint("Update Stages: $response");
@@ -603,25 +601,26 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
   ) async {
 
     Result res = await BaseClient.multipartPost(
-      "register/company",
+      "register/complete-guest",
 
       fields: {
 
-        "company_name": body.companyName,
+        "company_id": body.companyId.toString(),
+        "reg_token": body.regtoken ?? "",
         "company_type": body.companyType ?? "",
         "registration_number": body.registrationNumber ?? "",
         "gst_number": body.gstNumber ?? "",
         "company_email": body.companyEmail ?? "",
-        "phone_number": body.phoneNumber ?? "",
+       // "phone_number": body.phoneNumber ?? "",
         "street_address": body.streetAddress ?? "",
         "city": body.city ?? "",
         "state": body.state ?? "",
         "pincode": body.pincode ?? "",
-        "admin_name": body.adminName,
-        "admin_email": body.adminEmail,
-        "password": body.password,
-        "password_confirmation":
-            body.passwordConfirmation,
+        // "admin_name": body.adminName,
+        // "admin_email": body.adminEmail,
+        // "password": body.password,
+        // "password_confirmation":
+        //     body.passwordConfirmation,
       },
 
       file: logoFile,
@@ -629,23 +628,19 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
     );
 
     if (res.isError) {
-
-      ErrorResponseModel errorResponseModel =
-          ErrorResponseModel(
-        errorMessage:
-            "OOps...!, Something went wrong",
-      );
-
-      return Result.error(errorResponseModel);
-
+      return Result.error(res.asError!.error);
     } else {
 
       var response = res.asValue!.value;
 
       debugPrint("Register : $response");
 
-      RegisterCompanyModel model =
-          RegisterCompanyModel.fromJson(response);
+      if (response['status'] == false) {
+        return Result.error(ErrorResponseModel(
+          errorMessage: response['message'] ?? "Registration failed",
+        ));
+      }
+      RegisterCompanyModel model = RegisterCompanyModel.fromJson(response);
 
       return model.status
           ? Result.value(model)
@@ -659,10 +654,7 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
       Result res = await BaseClient.post("receipt/delete",body: {"id": receiptid});
       print("-------------------Delete Receipt: $receiptid-------------------------------------");
       if(res.isError){
-        ErrorResponseModel errorResponseModel =
-        ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
-        
-        return Result.error(errorResponseModel);
+        return Result.error(res.asError!.error);
       }else{
         var response = res.asValue!.value;
         debugPrint("Delete Receipt : $response");
@@ -681,8 +673,7 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
   Future<Result> phoneNumberVerification(PhoneNumberVerficationBody body) async {
     Result res = await BaseClient.post('register/initiate',body: body.toJson());
     if(res.isError){
-      ErrorResponseModel errorResponseModel =ErrorResponseModel(errorMessage: "OOps..!, Something went wrong");
-      return Result.error(errorResponseModel);
+      return Result.error(res.asError!.error);
     } else {
       var response = res.asValue!.value;
       debugPrint("Phone Number Verification : $response");
@@ -698,8 +689,7 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
   Future<Result> verifyOtp(VerifyOtpBody body) async {
     Result res = await BaseClient.post('register/verify-otp', body: body.toJson());
     if(res.isError){
-      ErrorResponseModel errorResponseModel = ErrorResponseModel(errorMessage: "OOps..!, Something went wrong");
-      return Result.error(errorResponseModel);
+      return Result.error(res.asError!.error);
     }else{
       var response = res.asValue!.value;
       debugPrint("Verify Otp : $response");
@@ -715,8 +705,7 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
   Future<Result> setPassword(SetPasswordBody body) async {
     Result res = await BaseClient.post("register/set-password",body: body.toJson());
     if(res.isError){
-      ErrorResponseModel errorResponseModel = ErrorResponseModel(errorMessage: "OOps..!, Something went wrong");
-      return Result.error(errorResponseModel);
+      return Result.error(res.asError!.error);
     }else{
       var response = res.asValue!.value;
       debugPrint("Set Password : $response");
@@ -731,8 +720,7 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
   Future<Result> profile() async{
     Result res = await BaseClient.get("profile");
     if(res.isError){
-      ErrorResponseModel errorResponseModel = ErrorResponseModel(errorMessage: "OOps..!, Something went wrong");
-      return Result.error(errorResponseModel);
+      return Result.error(res.asError!.error);
     }else{
       var response = res.asValue!.value;
       debugPrint("Profile : $response");
@@ -743,6 +731,181 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
       :Result.error(profileModel);
     }
   }
+
+
+  Future<Result> getPaymentDetails()async{
+    Result res = await BaseClient.get("plans");
+    if(res.isError){
+      return Result.error(res.asError!.error);
+    }else{
+      var response = res.asValue!.value;
+      debugPrint("Get Payment Details : $response");
+      PaymentDetailsModel paymentDetailsModel = 
+      PaymentDetailsModel.fromJson(response);
+      return (paymentDetailsModel.status)
+      ?Result.value(paymentDetailsModel)
+      :Result.error(paymentDetailsModel);
+    }
+  }
+
+
+    Future<Result> registerProfile(
+    ProfileRegisterBody body,
+    File? logoFile,
+  ) async {
+
+    Result res = await BaseClient.multipartPost(
+      "register/complete",
+
+      fields: {
+
+        //"company_name": body.companyName,
+        "company_type": body.companyType ?? "",
+        "registration_number": body.registrationNumber ?? "",
+        "gst_number": body.gstNumber ?? "",
+        "company_email": body.companyEmail ?? "",
+       // "phone_number": body.phoneNumber ?? "",
+        "street_address": body.streetAddress ?? "",
+        "city": body.city ?? "",
+        "state": body.state ?? "",
+        "pincode": body.pincode ?? "",
+        // "admin_name": body.adminName,
+        // "admin_email": body.adminEmail,
+        // "password": body.password,
+        // "password_confirmation":
+        //     body.passwordConfirmation,
+      },
+
+      file: logoFile,
+      fileField: "logo",
+    );
+
+    if (res.isError) {
+      return Result.error(res.asError!.error);
+    } else {
+
+      var response = res.asValue!.value;
+
+      debugPrint("Register : $response");
+
+      if (response['status'] == false) {
+        return Result.error(ErrorResponseModel(
+          errorMessage: response['message'] ?? "Registration failed",
+        ));
+      }
+      ProfileRegisterModel model = ProfileRegisterModel.fromJson(response);
+
+      return model.status
+          ? Result.value(model)
+          : Result.error(model);
+    }
+  }
+
+
+
+  Future<Result> editProfile(
+  EditProfileBody body
+) async {
+
+  Result res = await BaseClient.post(
+    "profile/update",
+    body: body.toJson(),
+  );
+
+  if (res.isError) {
+    ErrorResponseModel errorResponseModel = ErrorResponseModel(
+      errorMessage: "OOps...!, Something went wrong",
+    );
+    return Result.error(errorResponseModel);
+  } else {
+    var response = res.asValue!.value;
+    debugPrint("Edit Profile: $response");
+
+    if (response['status'] == false) {
+      return Result.error(
+        ErrorResponseModel(
+          errorMessage: response['message'] ?? "Update failed",
+        ),
+      );
+    }
+
+    EditProfileModel model = EditProfileModel.fromJson(response);
+    return Result.value(model);
+  }
+}
+
+  Future<Result> changePassword(ChangePasswordBody body) async {
+    Result res = await BaseClient.post("profile/change-password", body: body.toJson());
+
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel = ErrorResponseModel(
+        errorMessage: "OOps...!, Something went wrong",
+      );
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint("Change Password : $response");
+      ChangePasswordModel changePasswordModel = ChangePasswordModel.fromJson(response);
+      return (changePasswordModel.status)
+          ? Result.value(changePasswordModel)
+          : Result.error(changePasswordModel);
+    }
+  }
+
+
+
+  Future<Result> forgotPassword(String phone) async {
+    Result res = await BaseClient.post("forgot-password/send-otp", body:{"mobile":phone});
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel = ErrorResponseModel(
+        errorMessage: "OOps...!, Something went wrong",
+      );
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint("Forgot Password : $response");
+      ForgotPasswordSendOtpModel forgotPasswordModel = ForgotPasswordSendOtpModel.fromJson(response);
+      return Result.value(forgotPasswordModel);
+    }
+  }
+
+
+  Future<Result> forgotPassVerifyOtp(String mobile, String otp) async {
+    Result res = await BaseClient.post("forgot-password/verify-otp", body: {"mobile":mobile,"otp":otp});
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel = ErrorResponseModel(
+        errorMessage: "OOps...!, Something went wrong",
+      );
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint("Forgot Password verify otp: $response");
+      ForgotPassVerifyOtpModel forgotPasswordModel = ForgotPassVerifyOtpModel.fromJson(response);
+      return Result.value(forgotPasswordModel);
+    }
+  }
+
+
+  Future<Result> forgotPassReset(String mobile, String password,String confirmPassword,String resetToken) async {
+    Result res = await BaseClient.post("forgot-password/reset", body: {"mobile":mobile,"password":password,"password_confirmation":confirmPassword,"reset_token":resetToken});
+    if (res.isError) {
+      ErrorResponseModel errorResponseModel = ErrorResponseModel(
+        errorMessage: "OOps...!, Something went wrong",
+      );
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint("Forgot Password reset: $response");
+      ForgotPassResetModel forgotPasswordModel = ForgotPassResetModel.fromJson(response);
+      return Result.value(forgotPasswordModel);
+    }
+  }
+
+
+
+
+
+
 
 
 }

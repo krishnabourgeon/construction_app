@@ -12,9 +12,14 @@ import 'package:construction_app/models/add_sub_stages_body.dart';
 import 'package:construction_app/models/add_sub_stages_model.dart';
 import 'package:construction_app/models/add_supplier_body.dart';
 import 'package:construction_app/models/add_supplier_model.dart';
+import 'package:construction_app/models/change_password_body.dart';
 import 'package:construction_app/models/create_user_body.dart';
 import 'package:construction_app/models/create_user_model.dart';
+import 'package:construction_app/models/edit_profile_body.dart';
 import 'package:construction_app/models/error_response_model.dart';
+import 'package:construction_app/models/forgot_pass_reset_model.dart';
+import 'package:construction_app/models/forgot_pass_verify_otp_model.dart';
+import 'package:construction_app/models/forgot_password_send_otp_Model.dart';
 import 'package:construction_app/models/get_categories_model.dart';
 import 'package:construction_app/models/get_company.dart';
 import 'package:construction_app/models/get_labours_model.dart';
@@ -26,11 +31,14 @@ import 'package:construction_app/models/get_supervisor_model.dart';
 import 'package:construction_app/models/logout_model.dart';
 import 'package:construction_app/models/material_name_model.dart';
 import 'package:construction_app/models/payment_body.dart';
+import 'package:construction_app/models/payment_details_model.dart';
 import 'package:construction_app/models/payment_model.dart';
 import 'package:construction_app/models/payment_modes_model.dart';
 import 'package:construction_app/models/phone_verification_body.dart';
 import 'package:construction_app/models/phone_verification_screen.dart';
 import 'package:construction_app/models/profile_model.dart';
+import 'package:construction_app/models/profile_register_body.dart';
+import 'package:construction_app/models/profile_register_model.dart';
 import 'package:construction_app/models/recepite_delete_model.dart';
 import 'package:construction_app/models/register_company_body.dart';
 import 'package:construction_app/models/register_company_model.dart';
@@ -50,6 +58,7 @@ import 'package:construction_app/models/verify_otp_body.dart';
 import 'package:construction_app/models/verify_otp_model.dart';
 import 'package:construction_app/services/provider_helper_class.dart';
 import 'package:construction_app/services/shared_preference_helper.dart';
+import 'package:construction_app/services/app_exceptions.dart';
 import 'package:flutter/cupertino.dart';
 
 class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
@@ -91,11 +100,11 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
   TotalReceived? totalReceived;
   SupplierDetailData? supplierDetail;
   ProfileData? profileData;
+  PaymentDetailsModel? paymentDetailsModel;
 
 
-  Future<void> createUser(
-  // {Function(String? role)? onSuccess,
-  {
+  Future<void> createUser({
+    VoidCallback? onSuccess,
     Function(String errorMessage)? onFailure,
     required String name,
     required String mobile,
@@ -103,6 +112,7 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
     required String password,
     required String passwordConfirmation,
   }) async {
+    errorToast = null;
     updateLoadState(LoaderState.loading);
     var res = await serviceConfig.createUser(
       CreateUserBody(
@@ -114,19 +124,12 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       ),
     );
     if (!res.isError) {
-      // CreateUserModel createUserModel = res.asValue!.value;
-      // if (onSuccess != null) onSuccess(createUserModel.data?.role.toLowerCase());
       updateLoadState(LoaderState.loaded);
       await getSupervisors();
+      if (onSuccess != null) onSuccess();
     } else {
-      String errorMessage = "Failed to create user";
-      if (res.asError!.error is ErrorResponseModel) {
-        errorMessage =
-            (res.asError!.error as ErrorResponseModel).errorMessage ??
-            errorMessage;
-      } else if (res.asError!.error is CreateUserModel) {
-        errorMessage = (res.asError!.error as CreateUserModel).message;
-      }
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+          res.asError!.error, "Failed to create user");
       errorToast = errorMessage;
       if (onFailure != null) onFailure(errorMessage);
       updateLoadState(LoaderState.loaded);
@@ -148,7 +151,10 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
 
       updateLoadState(LoaderState.loaded);
     } else {
-      String errorMessage = "Failed to get supervisors";
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+          res.asError!.error, "Failed to get supervisors");
+      
+      
 
       if (res.asError!.error is ErrorResponseModel) {
         errorMessage =
@@ -166,6 +172,7 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
   }
 
   Future<void> addSites({
+    VoidCallback? onSuccess,
     Function(String errorMessage)? onFailure,
     required String sitename,
     required String contactperson,
@@ -176,6 +183,7 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
     required int estimateAmount,
     required String description,
   }) async {
+    errorToast = null;
     updateLoadState(LoaderState.loading);
 
     var res = await serviceConfig.addSite(
@@ -197,8 +205,11 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       updateLoadState(LoaderState.loaded);
       final companyId = await SharedPreferenceHelper.getCompanyId();
       await sitesbycompanies(companyId: companyId);
+      if (onSuccess != null) onSuccess();
     } else {
-      String errorMessage = "Failed to add site";
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+          res.asError!.error, "Failed to add site");
+      
 
       if (res.asError!.error is ErrorResponseModel) {
         errorMessage =
@@ -225,7 +236,10 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
 
       updateLoadState(LoaderState.loaded);
     } else {
-      String errorMessage = "Failed to get company";
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+          res.asError!.error, "Failed to get company");
+      
+      
 
       if (res.asError!.error is ErrorResponseModel) {
         errorMessage =
@@ -257,7 +271,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
 
       updateLoadState(LoaderState.loaded);
     } else {
-      String errorMessage = "Failed to get Sites";
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+          res.asError!.error, "Failed to get Sites");
 
       if (res.asError!.error is ErrorResponseModel) {
         errorMessage =
@@ -310,7 +325,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       updateLoadState(LoaderState.loaded);
       await getMaterials(substageId: substageId);
     } else {
-      String errorMessage = "Failed to add materials";
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+          res.asError!.error, "Failed to add materials");
 
       if (res.asError!.error is ErrorResponseModel) {
         errorMessage =
@@ -359,7 +375,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       notifyListeners();
       return response.data.first.id;
     } else {
-      String errorMessage = "Failed to add stage";
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+          res.asError!.error, "Failed to add stage");
 
       if (res.asError!.error is ErrorResponseModel) {
         errorMessage =
@@ -397,7 +414,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
 
       updateLoadState(LoaderState.loaded);
     } else {
-      String errorMessage = "Failed to add sub stages";
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+          res.asError!.error, "Failed to add sub stages");
 
       if (res.asError!.error is ErrorResponseModel) {
         errorMessage =
@@ -425,7 +443,9 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       stagesList = response.data;
       updateLoadState(LoaderState.loaded);
     } else {
-      String errorMessage = "Failed to load stages";
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+          res.asError!.error, "Failed to load stages");
+
       if (res.asError!.error is ErrorResponseModel) {
         errorMessage =
             (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -449,7 +469,9 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       subStagesList = response.data;
       updateLoadState(LoaderState.loaded);
     } else {
-      String errorMessage = "Failed to load sub stages";
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+          res.asError!.error, "Failed to load sub stages");
+
       if (res.asError!.error is ErrorResponseModel) {
         errorMessage =
             (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -487,7 +509,9 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       updateLoadState(LoaderState.loaded);
       await getLabours(substageId: substageId);
     } else {
-      String errorMessage = "Failed to add labour";
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+          res.asError!.error, "Failed to add labour");
+
       if (res.asError!.error is ErrorResponseModel) {
         errorMessage =
             (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -515,7 +539,9 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         );
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load labours";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load labours");
+
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -542,7 +568,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         categoriesList = response.data;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load categories";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load categories");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -572,7 +599,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         materialNamesList = response.data;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load material names";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load material names");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -599,7 +627,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         unitsList = response.data;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load units";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load units");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -626,7 +655,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         suppliersList = response.data;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load suppliers";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load suppliers");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -655,7 +685,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         supplierDetail = response.data;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load suppliers";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load suppliers");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -685,7 +716,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         materialsList = response.data;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load materials";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load materials");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -703,22 +735,25 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
     notifyListeners();
   }
 
-  Future<void> updateStages(
+  Future<void> updateStages({
+    VoidCallback? onSuccess,
     Function(String errorMessage)? onFailure,
-    int siteId,
-    List<Stage> stages,
-  ) async {
+    required int siteId,
+    required List<Stage> stages,
+  }) async {
+    errorToast = null;
     updateLoadState(LoaderState.loading);
     try {
       var res = await serviceConfig.updateStages(
         UpdateStageBody(siteId: siteId, stages: stages),
       );
       if (!res.isError) {
-        final response = res.asValue!.value as UpdateStageModel;
         updateLoadState(LoaderState.loaded);
         await getStages(siteId: siteId);
+        if (onSuccess != null) onSuccess();
       } else {
-        String errorMessage = "Failed to update stages";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to update stages");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -745,7 +780,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         await SharedPreferenceHelper.clearWholeData();
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to logout";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to logout");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -780,8 +816,9 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       if (!res.isError) {
         final response = res.asValue!.value as AddSupplierModel;
         updateLoadState(LoaderState.loaded);
-      } else {
-        String errorMessage = "Failed to add supplier";
+      } else {  
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to add supplier");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -808,7 +845,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         paymentModesList = response.data;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load payment modes";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load payment modes");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -852,7 +890,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         final response = res.asValue!.value as PaymentModel;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to add payment";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to add payment");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -890,7 +929,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         paymentsList = response.data;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load payments";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load payments");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -920,7 +960,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         siteDetailReport = response.data;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load site detail report";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load site detail report");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -951,7 +992,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         stageWiseReport = response.data;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load stage wise report";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load stage wise report");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -981,7 +1023,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         totalSpentDetail = response.data;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load total spent detail";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load total spent detail");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -1012,7 +1055,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         totalReceived = response.data;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to load total received detail";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to load total received detail");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -1040,15 +1084,16 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
     try {
       var res = await serviceConfig.registerCompany(registerCompanyBody, logoFile);
 
-      debugPrint("res: ${res.asValue!.value}");
       debugPrint("isError: ${res.isError}");
       debugPrint("body: ${registerCompanyBody}");
 
       if (!res.isError) {
+        debugPrint("res: ${res.asValue!.value}");
         final response = res.asValue!.value as RegisterCompanyModel;
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to register company";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to register company");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -1067,6 +1112,46 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
   }
 
 
+  Future<void> registerProfile({
+    Function(String errorMessage)? onFailure,
+    required ProfileRegisterBody profileRegisterBody,
+    File? logoFile,
+  }) async {
+    updateLoadState(LoaderState.loading);
+    try {
+      var res = await serviceConfig.registerProfile(profileRegisterBody, logoFile);
+
+      debugPrint("isError: ${res.isError}");
+      debugPrint("body: ${profileRegisterBody}");
+
+      if (!res.isError) {
+        debugPrint("res: ${res.asValue!.value}");
+        final response = res.asValue!.value as ProfileRegisterModel;
+        updateLoadState(LoaderState.loaded);
+      } else {
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to register profile");
+        if (res.asError!.error is ErrorResponseModel) {
+          errorMessage =
+              (res.asError!.error as ErrorResponseModel).errorMessage ??
+              errorMessage;
+        }
+        errorToast = errorMessage;
+        if (onFailure != null) onFailure(errorMessage);
+        updateLoadState(LoaderState.loaded);
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in registerCompany: $e");
+      updateLoadState(LoaderState.loaded);
+      if (onFailure != null) onFailure(e.toString());
+    }
+    notifyListeners();
+  }
+
+
+
+
+
   Future<void> deleteReceipt({
     VoidCallback? onSuccess,
     Function(String errorMessage)? onFailure,
@@ -1080,7 +1165,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         updateLoadState(LoaderState.loaded);
         if (onSuccess != null) onSuccess();
       } else {
-        String errorMessage = "Failed to delete receipt";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to delete receipt");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
@@ -1111,18 +1197,22 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
     updateLoadState(LoaderState.loading);
     try {
       var res = await serviceConfig.phoneNumberVerification(PhoneNumberVerficationBody(contactPerson: contactperson, companyName: companyName, phoneNumber: phoneNumber));
-      debugPrint("res: ${res.asValue!.value}");
       debugPrint("isError: ${res.isError}");
       if (!res.isError) {
+        debugPrint("res: ${res.asValue!.value}");
         final response = res.asValue!.value as PhoneNumberVerficationModel;
         if (onSuccess != null) onSuccess(response.message);
         updateLoadState(LoaderState.loaded);
       } else {
-        String errorMessage = "Failed to verify phone number";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to verify phone number");
         if (res.asError!.error is ErrorResponseModel) {
           errorMessage =
               (res.asError!.error as ErrorResponseModel).errorMessage ??
               errorMessage;
+        } else if (res.asError!.error is PhoneNumberVerficationModel) {
+          errorMessage =
+              (res.asError!.error as PhoneNumberVerficationModel).message;
         }
         errorToast = errorMessage;
         if (onFailure != null) onFailure(errorMessage);
@@ -1150,7 +1240,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         notifyListeners();
         return response;
       }else{
-        String errorMessage = "Failed to verify otp";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to verify otp");
         if(res.asError!.error is ErrorResponseModel){
           errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
         }else if(res.asError!.error is VerifyOtpModel){
@@ -1173,10 +1264,6 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
     }
   }
 
- 
-  
-
-
   Future<void> setPassword({
     Function(String errorMessage)? onFailure,
     required int companyId,
@@ -1190,7 +1277,8 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
         final response = res.asValue!.value as SetPasswordModel;
         updateLoadState(LoaderState.loaded);
       }else{
-        String errorMessage = "Failed to set password";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to set password");
         if(res.asError!.error is ErrorResponseModel){
           errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
         }else if(res.asError!.error is SetPasswordModel){
@@ -1219,11 +1307,20 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       if(!res.isError){
         final response = res.asValue!.value as ProfileModel;
         profileData = response.data;
+        if (profileData != null) {
+          await SharedPreferenceHelper.saveUserName(profileData!.name);
+          await SharedPreferenceHelper.savePhone(profileData!.mobile);
+          await SharedPreferenceHelper.saveTrialInfo(
+            daysLeft: profileData!.subscription.trialDaysLeft,
+            expired: profileData!.subscription.trialExpired,
+          );
+        }
         updateLoadState(LoaderState.loaded);
         notifyListeners();
         return profileData;
       }else{
-        String errorMessage = "Failed to get profile";
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to get profile");
         if(res.asError!.error is ErrorResponseModel){
           errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
         }
@@ -1241,6 +1338,244 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       return null;
     }
   }
+
+
+  Future<PaymentDetailsModel?> getPaymentDetails(
+    Function(String errorMessage)? onFailure,
+  )async{
+    updateLoadState(LoaderState.loading);
+    try {
+      var res = await serviceConfig.getPaymentDetails();
+      if(!res.isError){
+        final response = res.asValue!.value as PaymentDetailsModel;
+        paymentDetailsModel = response;
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return paymentDetailsModel;
+      }else{
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to get payment details");
+        if(res.asError!.error is ErrorResponseModel){
+          errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+        }
+        errorToast = errorMessage;
+        if(onFailure != null) onFailure(errorMessage);
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in getPaymentDetails: $e");
+      updateLoadState(LoaderState.loaded);
+      if(onFailure != null) onFailure(e.toString());
+      notifyListeners();
+      return null;
+    }
+  }
+
+
+
+  Future<void> editProfile(
+  {required EditProfileBody body,
+  Function(String errorMessage)? onFailure,
+  Function()? onSuccess,}) async {
+
+  updateLoadState(LoaderState.loading);
+
+  try {
+
+    var res = await serviceConfig.editProfile(body);
+
+    if (!res.isError) {
+
+      updateLoadState(LoaderState.loaded);
+
+      await getProfile(null);
+
+      if (onSuccess != null) onSuccess();
+
+    } else {
+
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to update profile");
+      if (res.asError!.error is ErrorResponseModel) {
+        errorMessage = (res.asError!.error as ErrorResponseModel)
+            .errorMessage ??
+            errorMessage;
+      }
+
+      errorToast = errorMessage;
+      updateLoadState(LoaderState.loaded);
+      if (onFailure != null) onFailure(errorMessage);
+    }
+
+  } catch (e) {
+
+    debugPrint("CompanyProvider: Error in editProfile: $e");
+
+    updateLoadState(LoaderState.loaded);
+
+    if (onFailure != null) onFailure(e.toString());
+  }
+
+  notifyListeners();
+}
+
+
+
+  Future<void> changePassword({
+  required ChangePasswordBody body,
+  Function(String errorMessage)? onFailure,
+  Function()? onSuccess,
+}) async {
+
+  updateLoadState(LoaderState.loading);
+
+  try {
+
+    var res = await serviceConfig.changePassword(body);
+
+    if (!res.isError) {
+
+      updateLoadState(LoaderState.loaded);
+      if (onSuccess != null) onSuccess();
+
+    } else {
+
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to change password");
+
+      if (res.asError!.error is ErrorResponseModel) {
+        errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ??
+            errorMessage;
+      }
+
+      errorToast = errorMessage;
+      updateLoadState(LoaderState.loaded);
+      if (onFailure != null) onFailure(errorMessage);
+    }
+
+  } catch (e) {
+
+    debugPrint("CompanyProvider: Error in changePassword: $e");
+    updateLoadState(LoaderState.loaded);
+    if (onFailure != null) onFailure(e.toString());
+  }
+
+  notifyListeners();
+}
+
+
+Future<ForgotPasswordSendOtpModel?> forgotPasswordSendOtp(
+  {Function(String errorMessage)? onFailure,
+  required String mobile,
+  }
+) async {
+    updateLoadState(LoaderState.loading);
+    try {
+      var res = await serviceConfig.forgotPassword(mobile);
+      if(!res.isError){
+        final response = res.asValue!.value as ForgotPasswordSendOtpModel;
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return response;
+      }else{
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to send otp");
+        if(res.asError!.error is ErrorResponseModel){
+          errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+        }
+        errorToast = errorMessage;
+        updateLoadState(LoaderState.loaded);
+        if(onFailure != null) onFailure(errorMessage);
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in forgotPasswordSendOtp: $e");
+      updateLoadState(LoaderState.loaded);
+      if(onFailure != null) onFailure(e.toString());
+      notifyListeners();
+      return null;
+    }
+}
+
+
+Future<ForgotPassVerifyOtpModel?> forgotPasswordVerifyOtp(
+  {Function(String errorMessage)? onFailure,
+  required String mobile,
+  required String otp,
+  }
+) async {
+    updateLoadState(LoaderState.loading);
+    try {
+      var res = await serviceConfig.forgotPassVerifyOtp(mobile, otp);
+      if(!res.isError){
+        final response = res.asValue!.value as ForgotPassVerifyOtpModel;
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return response;
+      }else{
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to verify otp");
+        if(res.asError!.error is ErrorResponseModel){
+          errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+        }
+        errorToast = errorMessage;
+        updateLoadState(LoaderState.loaded);
+        if(onFailure != null) onFailure(errorMessage);
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in forgotPasswordVerifyOtp: $e");
+      updateLoadState(LoaderState.loaded);
+      if(onFailure != null) onFailure(e.toString());
+      notifyListeners();
+      return null;
+    }
+}
+
+
+
+  Future<ForgotPassResetModel?> forgotPasswordReset(
+    {Function(String errorMessage)? onFailure,
+    required String mobile,
+    required String password,
+    required String confirmPassword,
+    required String regToken,
+    } 
+  )async{
+    updateLoadState(LoaderState.loading);
+    try {
+      var res = await serviceConfig.forgotPassReset(mobile, password, confirmPassword, regToken);
+      if(!res.isError){
+        final response = res.asValue!.value as ForgotPassResetModel;
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return response;
+      }else{
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to reset password");
+        if(res.asError!.error is ErrorResponseModel){
+          errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+        }
+        errorToast = errorMessage;
+        updateLoadState(LoaderState.loaded);
+        if(onFailure != null) onFailure(errorMessage);
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in forgotPasswordReset: $e");
+      updateLoadState(LoaderState.loaded);
+      if(onFailure != null) onFailure(e.toString());
+      notifyListeners();
+      return null;
+    }
+  }
+
+
 
   @override
   void updateLoadState(LoaderState state) {

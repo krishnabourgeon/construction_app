@@ -913,36 +913,36 @@ class _Header extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         // Logout chip
-                        GestureDetector(
-                          onTap: onLogout,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.09),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.12),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.logout_rounded,
-                                    size: 14, color: Colors.white),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Logout',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        // GestureDetector(
+                        //   onTap: onLogout,
+                        //   child: Container(
+                        //     padding: const EdgeInsets.symmetric(
+                        //         horizontal: 16, vertical: 8),
+                        //     decoration: BoxDecoration(
+                        //       color: Colors.white.withOpacity(0.09),
+                        //       borderRadius: BorderRadius.circular(12),
+                        //       border: Border.all(
+                        //         color: Colors.white.withOpacity(0.12),
+                        //       ),
+                        //     ),
+                        //     child: Row(
+                        //       mainAxisSize: MainAxisSize.min,
+                        //       children: [
+                        //         const Icon(Icons.logout_rounded,
+                        //             size: 14, color: Colors.white),
+                        //         const SizedBox(width: 6),
+                        //         Text(
+                        //           'Logout',
+                        //           style: GoogleFonts.poppins(
+                        //             fontSize: 13,
+                        //             fontWeight: FontWeight.w700,
+                        //             color: Colors.white,
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
                         const SizedBox(height: 10),
 
                         // Avatar

@@ -1,10 +1,10 @@
 import 'package:construction_app/view/user/dashboard_userscreen.dart';
-import 'package:construction_app/view/user/labour_userscreen.dart';
-import 'package:construction_app/view/user/materials_userscreen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:construction_app/services/shared_preference_helper.dart';
+import 'package:construction_app/view/company/payment_subscription_screen.dart';
 
 
 class MainUserScreen extends StatefulWidget {
@@ -23,6 +23,26 @@ class _MainUserScreenState extends State<MainUserScreen> {
    // MaterialsUserScreen(),
     //LabourUserScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _checkTrial();
+  }
+
+  Future<void> _checkTrial() async {
+    final expired = await SharedPreferenceHelper.getTrialExpired();
+    final hasSub = await SharedPreferenceHelper.hasSubscription();
+    if (expired && !hasSub) {
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const PaymentScreen()),
+          (route) => false,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

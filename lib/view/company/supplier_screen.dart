@@ -8,6 +8,7 @@ import 'package:construction_app/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ── Avatar color palette by index ─────────────────────────────────────────────
 
@@ -41,7 +42,6 @@ class SupplierScreen extends StatefulWidget {
 class _SupplierScreenState extends State<SupplierScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CompanyProvider>().getSupplier((error) {
@@ -68,6 +68,9 @@ class _SupplierScreenState extends State<SupplierScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> _call(String phone) async {
+    await launchUrl(Uri(scheme: 'tel', path: phone));
+  }
     return Scaffold(
       backgroundColor: AppColors.greyBg,
       body: Column(
@@ -737,16 +740,36 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
                       ),
 
                       // Phone
+                      // AppTextField(
+                      //   label: 'Contact Number *',
+                      //   hint: '+91 00000 00000',
+                      //   controller: _phoneCtrl,
+                      //   keyboardType: TextInputType.phone,
+                      //   validator: (v) {
+                      //     if (v!.isEmpty) return 'Phone is required';
+                      //     if (v.replaceAll(RegExp(r'\D'), '').length < 10) {
+                      //       return 'Enter a valid phone number';
+                      //     }
+                      //     return null;
+                      //   },
+                      // ),
+
                       AppTextField(
                         label: 'Contact Number *',
                         hint: '+91 00000 00000',
                         controller: _phoneCtrl,
                         keyboardType: TextInputType.phone,
                         validator: (v) {
-                          if (v!.isEmpty) return 'Phone is required';
-                          if (v.replaceAll(RegExp(r'\D'), '').length < 10) {
-                            return 'Enter a valid phone number';
+                          if (v == null || v.isEmpty) {
+                            return 'Phone is required';
                           }
+
+                          final digits = v.replaceAll(RegExp(r'\D'), '');
+
+                          if (digits.length != 10) {
+                            return 'Phone number must be exactly 10 digits';
+                          }
+
                           return null;
                         },
                       ),

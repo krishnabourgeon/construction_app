@@ -1,5 +1,8 @@
+import 'package:construction_app/provider/company_provider.dart';
+import 'package:construction_app/services/provider_helper_class.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AddResourceScreen extends StatefulWidget {
   final String resourceType;
@@ -110,7 +113,14 @@ class _AddResourceScreenState extends State<AddResourceScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
               ),
-              child: Text('Save ${widget.resourceType}'),
+              child: Consumer<CompanyProvider>(
+                builder: (context,provider,child) {
+                  if(provider.loaderState == LoaderState.loading){
+                    return const CircularProgressIndicator();
+                  }
+                  return Text('Save ${widget.resourceType}');
+                }
+              ),
             ),
             const SizedBox(height: 8),
             OutlinedButton(

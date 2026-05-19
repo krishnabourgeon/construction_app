@@ -10,37 +10,37 @@ String registerCompanyModelToJson(RegisterCompanyModel data) => json.encode(data
 
 class RegisterCompanyModel {
     bool status;
-    String message;
-    Data data;
+    String? message;
+    Data? data;
 
     RegisterCompanyModel({
         required this.status,
-        required this.message,
-        required this.data,
+        this.message,
+        this.data,
     });
 
     factory RegisterCompanyModel.fromJson(Map<String, dynamic> json) => RegisterCompanyModel(
-        status: json["status"],
+        status: json["status"] ?? false,
         message: json["message"],
-        data: Data.fromJson(json["data"]),
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
     );
 
     Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
-        "data": data.toJson(),
+        "data": data?.toJson(),
     };
 }
 
 class Data {
-    int companyId;
-    String companyName;
-    String adminEmail;
+    int? companyId;
+    String? companyName;
+    String? adminEmail;
 
     Data({
-        required this.companyId,
-        required this.companyName,
-        required this.adminEmail,
+        this.companyId,
+        this.companyName,
+        this.adminEmail,
     });
 
     factory Data.fromJson(Map<String, dynamic> json) => Data(

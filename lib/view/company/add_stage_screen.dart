@@ -1,4 +1,5 @@
 import 'package:construction_app/provider/company_provider.dart';
+import 'package:construction_app/services/provider_helper_class.dart';
 import 'package:construction_app/view/company/add_substages_screen.dart';
 import 'package:construction_app/view/company/widgets/yes_no_button.dart';
 import 'package:construction_app/widgets/app_theme.dart';
@@ -336,10 +337,21 @@ int getHasSubstage(bool value) => value ? 1 : 0;
                               borderRadius: BorderRadius.circular(12)),
                           elevation: 0,
                         ),
-                        child: Text(
-                          _wantsSubStages ? 'Continue to Sub-stages' : 'Save Stage',
-                          style: GoogleFonts.poppins(
-                              fontSize: 14, fontWeight: FontWeight.w700),
+                        child: Consumer<CompanyProvider>(
+                          builder: (context, provider, child) {
+                            if(provider.loaderState == LoaderState.loading){
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.dark,
+                                ),
+                              );
+                            }
+                            return Text(
+                              _wantsSubStages ? 'Continue to Sub-stages' : 'Save Stage',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 14, fontWeight: FontWeight.w700),
+                            );
+                          }
                         ),
                       ),
                     ),

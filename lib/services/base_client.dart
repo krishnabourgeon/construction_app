@@ -41,16 +41,20 @@ class BaseClient {
           uri,
           headers: {
             HttpHeaders.contentTypeHeader: _appJson,
+            HttpHeaders.acceptHeader: _appJson,
             HttpHeaders.authorizationHeader: 'Bearer $bearerToken'
           },
         ).timeout(const Duration(seconds: timeDuration));
         return _processResponse(response);
       } on SocketException {
-        throw FetchDataException('No Internet connection', uri.toString());
+        return Result.error(FetchDataException('No Internet connection', uri.toString()));
       } on TimeoutException {
-        throw ApiNotRespondingException(
-            'API not responded in time', uri.toString());
+        return Result.error(ApiNotRespondingException('API not responded in time', uri.toString()));
+      } catch (e) {
+        return Result.error(FetchDataException('Unexpected error: $e', uri.toString()));
       }
+    } else {
+      return Result.error(FetchDataException('No Internet connection', uri?.toString()));
     }
   }
 
@@ -63,16 +67,21 @@ class BaseClient {
       try {
         var request = http.Request('GET', uri);
         request.headers[HttpHeaders.contentTypeHeader] = _appJson;
+        request.headers[HttpHeaders.acceptHeader] = _appJson;
         request.headers[HttpHeaders.authorizationHeader] = 'Bearer $bearerToken';
         request.body = json.encode(body);
         var streamedResponse = await request.send().timeout(const Duration(seconds: timeDuration));
         var response = await http.Response.fromStream(streamedResponse);
         return _processResponse(response);
       } on SocketException {
-        throw FetchDataException('No Internet connection', uri.toString());
+        return Result.error(FetchDataException('No Internet connection', uri.toString()));
       } on TimeoutException {
-        throw ApiNotRespondingException('API not responded in time', uri.toString());
+        return Result.error(ApiNotRespondingException('API not responded in time', uri.toString()));
+      } catch (e) {
+        return Result.error(FetchDataException('Unexpected error: $e', uri.toString()));
       }
+    } else {
+      return Result.error(FetchDataException('No Internet connection', uri.toString()));
     }
   }
 
@@ -89,6 +98,7 @@ class BaseClient {
               uri,
               headers: {
                 HttpHeaders.contentTypeHeader: _appJson,
+                HttpHeaders.acceptHeader: _appJson,
                 HttpHeaders.authorizationHeader: 'Bearer $bearerToken'
               },
               body: body != null ? json.encode(body) : null,
@@ -98,11 +108,14 @@ class BaseClient {
         // print(response.body);
         return _processResponse(response);
       } on SocketException {
-        throw FetchDataException('No Internet connection', uri.toString());
+        return Result.error(FetchDataException('No Internet connection', uri.toString()));
       } on TimeoutException {
-        throw ApiNotRespondingException(
-            'API not responded in time', uri.toString());
+        return Result.error(ApiNotRespondingException('API not responded in time', uri.toString()));
+      } catch (e) {
+        return Result.error(FetchDataException('Unexpected error: $e', uri.toString()));
       }
+    } else {
+      return Result.error(FetchDataException('No Internet connection', uri.toString()));
     }
   }
 
@@ -120,6 +133,7 @@ class BaseClient {
             uri,
             headers: {
               HttpHeaders.contentTypeHeader: _appJson,
+              HttpHeaders.acceptHeader: _appJson,
               HttpHeaders.authorizationHeader: 'Bearer $bearerToken',
             },
             body: body != null ? json.encode(body) : null,
@@ -128,11 +142,14 @@ class BaseClient {
 
       return _processResponse(response);
     } on SocketException {
-      throw FetchDataException('No Internet connection', uri.toString());
+      return Result.error(FetchDataException('No Internet connection', uri.toString()));
     } on TimeoutException {
-      throw ApiNotRespondingException(
-          'API not responded in time', uri.toString());
+      return Result.error(ApiNotRespondingException('API not responded in time', uri.toString()));
+    } catch (e) {
+      return Result.error(FetchDataException('Unexpected error: $e', uri.toString()));
     }
+  } else {
+    return Result.error(FetchDataException('No Internet connection', uri.toString()));
   }
 }
 
@@ -190,44 +207,60 @@ static Future<dynamic> multipartPost(
       return _processResponse(response);
 
     } on SocketException {
-      throw FetchDataException(
-        'No Internet connection',
-        uri.toString(),
-      );
-
+      return Result.error(FetchDataException('No Internet connection', uri.toString()));
     } on TimeoutException {
-      throw ApiNotRespondingException(
-        'API not responded in time',
-        uri.toString(),
-      );
+      return Result.error(ApiNotRespondingException('API not responded in time', uri.toString()));
+    } catch (e) {
+      return Result.error(FetchDataException('Unexpected error: $e', uri.toString()));
     }
+  } else {
+    return Result.error(FetchDataException('No Internet connection', uri.toString()));
   }
 }
 
   static dynamic _processResponse(http.Response response) {
     print(response.body);
+    final bodyTrimmed = response.body.trim().toLowerCase();
+    final isHtml = bodyTrimmed.startsWith('<!doctype html>') || 
+                   bodyTrimmed.startsWith('<html') || 
+                   bodyTrimmed.contains('<html') || 
+                   bodyTrimmed.contains('<!doctype');
+
+    if (isHtml) {
+      return Result.error(FetchDataException(
+          'HTML response returned instead of JSON. The server might be redirecting to a login page.',
+          response.request!.url.toString()));
+    }
+
+    dynamic decoded;
+    try {
+      decoded = jsonDecode(response.body);
+    } catch (e) {
+      return Result.error(FetchDataException(
+          'Failed to parse JSON response: $e',
+          response.request!.url.toString()));
+    }
+
     switch (response.statusCode) {
       case 200:
-        // var responseJson = utf8.decode(response.bodyBytes);
-        return Result.value(jsonDecode(response.body));
       case 201:
-        // var responseJson = utf8.decode(response.bodyBytes);
-        return Result.value(jsonDecode(response.body));
+        return Result.value(decoded);
       case 400:
-        throw BadRequestException(
-            utf8.decode(response.bodyBytes), response.request!.url.toString());
+      case 409:
+        return Result.error(BadRequestException(
+            utf8.decode(response.bodyBytes), response.request!.url.toString()));
       case 401:
       case 403:
       case 404:
-        return Result.value(jsonDecode(response.body));
+        return Result.value(decoded);
       case 422:
-        throw BadRequestException(
-            utf8.decode(response.bodyBytes), response.request!.url.toString());
+        return Result.error(BadRequestException(
+            utf8.decode(response.bodyBytes), response.request!.url.toString()));
       case 500:
       default:
-        throw FetchDataException(
+        return Result.error(FetchDataException(
             'Error occured with code : ${response.statusCode}',
-            response.request!.url.toString());
+            response.request!.url.toString()));
     }
   }
 

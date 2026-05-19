@@ -212,6 +212,10 @@ class SharedPreferenceHelper {
     await prefs.remove("role");
     await prefs.remove("company_id");
     await prefs.remove("user_name");
+    await prefs.remove("trial_days_left");
+    await prefs.remove("trial_expired");
+    await prefs.remove("sub_expiry");
+    await prefs.remove("has_subscription");
   }
 
   static Future<bool> isFirstLaunch() async {

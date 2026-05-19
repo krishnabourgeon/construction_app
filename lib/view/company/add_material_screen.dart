@@ -614,9 +614,16 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                                     borderRadius: BorderRadius.circular(12)),
                                 elevation: 0,
                               ),
-                              child: Text('Save Material',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 14, fontWeight: FontWeight.w700)),
+                              child: Consumer<CompanyProvider>(
+                                builder: (context,provider,child) {
+                                  if(provider.loaderState == LoaderState.loading){
+                                    return const Center(child: CircularProgressIndicator());
+                                  }
+                                  return Text('Save Material',
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 14, fontWeight: FontWeight.w700));
+                                }
+                              ),
                             ),
                           ),
                         ],

@@ -92,7 +92,24 @@ class _AddSiteScreenState extends State<AddSiteScreen> {
       tentativeCompletionDate: _selectedEndDate!,
       estimateAmount: int.tryParse(_amountController.text) ?? 0,
       description: _descController.text,
+      onSuccess: () {
+        if (!mounted) return;
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Site saved successfully!',
+                style: GoogleFonts.poppins(fontSize: 13)),
+            backgroundColor: AppColors.green,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+        Navigator.pop(context);
+      },
       onFailure: (errorMessage) {
+        if (!mounted) return;
+        setState(() => _saving = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage, style: GoogleFonts.poppins(fontSize: 13)),
@@ -102,25 +119,6 @@ class _AddSiteScreenState extends State<AddSiteScreen> {
         );
       },
     );
-
-    setState(() => _saving = false);
-
-    if (!mounted) return;
-
-    // Check if the operation was successful (provider didn't set errorToast)
-    if (provider.errorToast == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Site saved successfully!',
-              style: GoogleFonts.poppins(fontSize: 13)),
-          backgroundColor: AppColors.green,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      );
-      Navigator.pop(context);
-    }
   }
 
   @override

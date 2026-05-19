@@ -12,23 +12,27 @@ class AddSubStagesBody {
     int siteId;
     int stageId;
     List<Substage> substages;
+    String? message;
 
     AddSubStagesBody({
         required this.siteId,
         required this.stageId,
         required this.substages,
+        this.message,
     });
 
     factory AddSubStagesBody.fromJson(Map<String, dynamic> json) => AddSubStagesBody(
         siteId: json["site_id"],
         stageId: json["stage_id"],
         substages: List<Substage>.from(json["substages"].map((x) => Substage.fromJson(x))),
+        message: json["message"],
     );
 
     Map<String, dynamic> toJson() => {
         "site_id": siteId,
         "stage_id": stageId,
         "substages": List<dynamic>.from(substages.map((x) => x.toJson())),
+        "message": message,
     };
 }
 

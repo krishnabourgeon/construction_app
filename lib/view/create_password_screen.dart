@@ -738,7 +738,8 @@ import 'package:provider/provider.dart';
 class CreatePasswordScreen extends StatefulWidget {
   final String phoneNumber;
   final int companyId;
-  const CreatePasswordScreen({super.key, required this.phoneNumber, required this.companyId});
+  final String regtoken;
+  const CreatePasswordScreen({super.key, required this.phoneNumber, required this.companyId, required this.regtoken});
 
   @override
   State<CreatePasswordScreen> createState() => _CreatePasswordScreenState();
@@ -902,7 +903,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => CompanyRegisterScreen()),
+                              builder: (_) => CompanyRegisterScreen(companyID: widget.companyId,regtoken: widget.regtoken,)),
                         );
                       },
                       style: ElevatedButton.styleFrom(

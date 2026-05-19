@@ -1,5 +1,6 @@
 import 'package:construction_app/models/add_sub_stages_body.dart';
 import 'package:construction_app/provider/company_provider.dart';
+import 'package:construction_app/services/provider_helper_class.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -235,12 +236,23 @@ class _AddSubStageScreenState extends State<AddSubStageScreen> {
                               borderRadius: BorderRadius.circular(12)),
                           elevation: 0,
                         ),
-                        child: Text(
-                          _savedSubStages.isEmpty
-                              ? 'Save Sub-stage'
-                              : 'Save Another Sub-stage',
-                          style: GoogleFonts.poppins(
-                              fontSize: 14, fontWeight: FontWeight.w700),
+                        child: Consumer<CompanyProvider>(
+                          builder: (context, provider, child) {
+                            if(provider.loaderState == LoaderState.loading){
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.white,
+                                ),
+                              );
+                            }
+                            return Text(
+                              _savedSubStages.isEmpty
+                                  ? 'Save Sub-stage'
+                                  : 'Save Another Sub-stage',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 14, fontWeight: FontWeight.w700),
+                            );
+                          }
                         ),
                       ),
                     ),
@@ -319,11 +331,22 @@ class _AddSubStageScreenState extends State<AddSubStageScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12)),
                           ),
-                          child: Text('Finish & Save All',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.amberDark)),
+                          child: Consumer<CompanyProvider>(
+                            builder: (context, provider, child) {
+                              if(provider.loaderState == LoaderState.loading){
+                                return const Center(
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.white,
+                                  ),
+                                );
+                              }
+                              return Text('Finish & Save All',
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.amberDark));
+                            }
+                          ),
                         ),
                       ),
                     ],
