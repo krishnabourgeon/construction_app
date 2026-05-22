@@ -1,7 +1,6 @@
 import 'package:construction_app/models/get_stages_model.dart';
 import 'package:construction_app/models/payment_modes_model.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
-import 'package:construction_app/models/update_stage_body.dart';
 import 'package:construction_app/provider/company_provider.dart';
 import 'package:construction_app/services/provider_helper_class.dart';
 import 'package:construction_app/services/shared_preference_helper.dart';
@@ -26,6 +25,7 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
   PaymentModes? selectedPaymentMode;
   SitesbyCompany? selectedSite;
   GetStages? selectedStage;
+  String? selectedLedger;
 
   @override
   void initState() {
@@ -110,6 +110,62 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
                     },
                     decoration: _inputDecoration(),
                   ),
+            const SizedBox(height: 12),
+
+            _label("Select Site"),
+            provider.sitesList.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : DropdownButtonFormField<SitesbyCompany>(
+                    value: selectedSite,
+                    hint: const Text("Select Site"),
+                    items: provider.sitesList.map((site) {
+                      return DropdownMenuItem(
+                        value: site,
+                        child: Text(site.sitename),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedSite = value;
+                        selectedStage = null;
+                      });
+                      if (value != null) {
+                        provider.getStages(siteId: value.id);
+                      }
+                    },
+                    decoration: _inputDecoration(),
+                  ),
+                  const SizedBox(height: 12),
+            //       _label("Select Ledger"),
+            // provider.loaderState == LoaderState.loading && selectedSite != null
+            //     ? const Center(child: CircularProgressIndicator())
+            //     : provider.stagesList.isEmpty && selectedSite != null
+            //         ? const Padding(
+            //             padding: EdgeInsets.symmetric(vertical: 8.0),
+            //             child: Text("No ledger found",
+            //                 style: TextStyle(color: Colors.red)),
+            //           )
+            //         : DropdownButtonFormField<GetStages>(
+            //             isExpanded: true,
+            //             value: selectedStage,
+            //             hint: const Text("Select Ledger"),
+            //             items: provider.stagesList.map((stage) {
+            //               return DropdownMenuItem(
+            //                 value: stage,
+            //                 child: Text(
+            //                   stage.stage,
+            //                   overflow: TextOverflow.ellipsis,
+            //                 ),
+            //               );
+            //             }).toList(),
+            //             onChanged: (value) {
+            //           setState(() {
+            //             selectedStage = value;
+            //           });
+            //         },
+            //         decoration: _inputDecoration(),
+            //       ),
+
             const SizedBox(height: 12),
 
             /// AMOUNT
@@ -210,6 +266,11 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
     }
     if (selectedStage == null) {
       _showError("Select stage");
+      return;
+    }
+
+     if (selectedLedger == null) {
+      _showError("Select ledger");
       return;
     }
     if (amountController.text.isEmpty) {

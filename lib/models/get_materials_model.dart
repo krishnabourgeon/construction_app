@@ -35,6 +35,8 @@ class GetMaterialsModel {
 class GetMaterials {
     int id;
     int materialId;
+    int siteId;
+    int substageId;
     String materialName;
     String qty;
     int unitId;
@@ -42,9 +44,13 @@ class GetMaterials {
     String amount;
     int supplierId;
     DateTime addedDate;
+    int categoryId;
 
     GetMaterials({
         required this.id,
+        required this.siteId,
+        required this.substageId,
+        required this.categoryId,
         required this.materialId,
         required this.materialName,
         required this.qty,
@@ -57,6 +63,9 @@ class GetMaterials {
 
     factory GetMaterials.fromJson(Map<String, dynamic> json) => GetMaterials(
         id: json["id"] ?? 0,
+        siteId: json["site_id"] ?? 0,
+        substageId: json["substage_id"] ?? 0,
+        categoryId: json["category_id"] ?? 0,
         materialId: json["material_id"] ?? 0,
         materialName: json["material_name"] ?? "",
         qty: json["qty"]?.toString() ?? "",

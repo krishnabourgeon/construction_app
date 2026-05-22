@@ -258,10 +258,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-// ══════════════════════════════════════════════════════════════════════════════
-// MATERIAL EXPENSE CARD - USER FRIENDLY VERSION
-// ══════════════════════════════════════════════════════════════════════════════
-
 class MaterialExpenseCard extends StatelessWidget {
   final TotalMaterials materials;
 
@@ -663,9 +659,7 @@ class _MiniInfoChip extends StatelessWidget {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// HELPER FUNCTIONS
-// ══════════════════════════════════════════════════════════════════════════════
+
 
 String _formatAmt(double v) {
   if (v >= 10000000) return '₹${(v / 10000000).toStringAsFixed(1)}Cr';

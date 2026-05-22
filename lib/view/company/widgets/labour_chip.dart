@@ -1,4 +1,5 @@
 import 'package:construction_app/models/get_labours_model.dart';
+import 'package:construction_app/view/company/edit_labour_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -84,43 +85,21 @@ class LabourCard extends StatelessWidget {
                   color: AppColors.orange,
                 ),
               ),
-              // const SizedBox(height: 4),
-              // GestureDetector(
-              //   onTap: () {
-              //     showDialog(
-              //       context: context,
-              //       builder: (_) => AlertDialog(
-              //         shape: RoundedRectangleBorder(
-              //             borderRadius: BorderRadius.circular(16)),
-              //         title: Text('Delete Labour',
-              //             style: GoogleFonts.poppins(
-              //                 fontSize: 15, fontWeight: FontWeight.w600)),
-              //         content: Text('Remove this entry?',
-              //             style: GoogleFonts.poppins(fontSize: 13)),
-              //         actions: [
-              //           TextButton(
-              //             onPressed: () => Navigator.pop(context),
-              //             child: Text('Cancel',
-              //                 style: GoogleFonts.poppins(
-              //                     color: AppColors.grey)),
-              //           ),
-              //           TextButton(
-              //             onPressed: () {
-              //               Navigator.pop(context);
-              //               onDelete();
-              //             },
-              //             child: Text('Delete',
-              //                 style: GoogleFonts.poppins(
-              //                     color: AppColors.red,
-              //                     fontWeight: FontWeight.w600)),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   },
-              //   child: Icon(Icons.delete_outline,
-              //       size: 18, color: AppColors.red.withOpacity(0.6)),
-              // ),
+              const SizedBox(height: 4),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditLabourScreen(
+                        labour: labour,
+                      ),
+                    ),
+                  );
+                },
+                child: Icon(Icons.edit,
+                    size: 18, color: AppColors.blue.withOpacity(0.6)),
+              ),
             ],
           ),
         ],

@@ -7,7 +7,6 @@ import 'package:construction_app/view/company/widgets/site_card.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -749,51 +748,51 @@ class _StageReportCard extends StatelessWidget {
 
 
 
-  Widget _buildHeader(BuildContext context, String title, String subtitle) {
-  return Container(
-    decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
-      ),
-    ),
-    padding: EdgeInsets.only(
-      top: MediaQuery.of(context).padding.top + 12,
-      bottom: 16,
-      left: 16,
-      right: 16,
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Row(
-            children: [
-              const Icon(Icons.arrow_back_ios_new,
-                  size: 14, color: AppColors.greyLight),
-              const SizedBox(width: 5),
-              Text('Reports',
-                  style: GoogleFonts.poppins(
-                      fontSize: 11, color: AppColors.greyLight)),
-            ],
-          ),
-        ),
-        const SizedBox(height: 10),
-        Text(title,
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppColors.white,
-            )),
-        const SizedBox(height: 2),
-        Text(subtitle,
-            style: GoogleFonts.poppins(fontSize: 11, color: AppColors.grey)),
-      ],
-    ),
-  );
-}
+//   Widget _buildHeader(BuildContext context, String title, String subtitle) {
+//   return Container(
+//     decoration: const BoxDecoration(
+//       gradient: LinearGradient(
+//         begin: Alignment.topLeft,
+//         end: Alignment.bottomRight,
+//         colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+//       ),
+//     ),
+//     padding: EdgeInsets.only(
+//       top: MediaQuery.of(context).padding.top + 12,
+//       bottom: 16,
+//       left: 16,
+//       right: 16,
+//     ),
+//     child: Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         GestureDetector(
+//           onTap: () => Navigator.pop(context),
+//           child: Row(
+//             children: [
+//               const Icon(Icons.arrow_back_ios_new,
+//                   size: 14, color: AppColors.greyLight),
+//               const SizedBox(width: 5),
+//               Text('Reports',
+//                   style: GoogleFonts.poppins(
+//                       fontSize: 11, color: AppColors.greyLight)),
+//             ],
+//           ),
+//         ),
+//         const SizedBox(height: 10),
+//         Text(title,
+//             style: GoogleFonts.poppins(
+//               fontSize: 18,
+//               fontWeight: FontWeight.w700,
+//               color: AppColors.white,
+//             )),
+//         const SizedBox(height: 2),
+//         Text(subtitle,
+//             style: GoogleFonts.poppins(fontSize: 11, color: AppColors.grey)),
+//       ],
+//     ),
+//   );
+// }
 
 
 
@@ -813,11 +812,11 @@ String getStatusValue(int status) {
 
 
 
-String _formatAmt(double v) {
-  if (v >= 10000000) return '₹${(v / 10000000).toStringAsFixed(1)}Cr';
-  if (v >= 100000) return '₹${(v / 100000).toStringAsFixed(1)}L';
-  if (v >= 1000) return '₹${(v / 1000).toStringAsFixed(1)}K';
-  return '₹${v.toStringAsFixed(0)}';
-}
+// String _formatAmt(double v) {
+//   if (v >= 10000000) return '₹${(v / 10000000).toStringAsFixed(1)}Cr';
+//   if (v >= 100000) return '₹${(v / 100000).toStringAsFixed(1)}L';
+//   if (v >= 1000) return '₹${(v / 1000).toStringAsFixed(1)}K';
+//   return '₹${v.toStringAsFixed(0)}';
+// }
 
 

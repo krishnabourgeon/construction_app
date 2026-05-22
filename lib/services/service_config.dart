@@ -30,8 +30,10 @@ import 'package:construction_app/models/get_payment_model.dart';
 import 'package:construction_app/models/get_stages_model.dart';
 import 'package:construction_app/models/get_sub_stages.dart';
 import 'package:construction_app/models/get_supervisor_model.dart';
+import 'package:construction_app/models/labour_edit_model.dart';
 import 'package:construction_app/models/login_model.dart';
 import 'package:construction_app/models/logout_model.dart';
+import 'package:construction_app/models/material_edit_model.dart';
 import 'package:construction_app/models/material_name_model.dart';
 import 'package:construction_app/models/payment_body.dart';
 import 'package:construction_app/models/payment_details_model.dart';
@@ -857,10 +859,7 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
   Future<Result> forgotPassword(String phone) async {
     Result res = await BaseClient.post("forgot-password/send-otp", body:{"mobile":phone});
     if (res.isError) {
-      ErrorResponseModel errorResponseModel = ErrorResponseModel(
-        errorMessage: "OOps...!, Something went wrong",
-      );
-      return Result.error(errorResponseModel);
+      return Result.error(res.asError!.error);
     } else {
       var response = res.asValue!.value;
       debugPrint("Forgot Password : $response");
@@ -873,10 +872,7 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
   Future<Result> forgotPassVerifyOtp(String mobile, String otp) async {
     Result res = await BaseClient.post("forgot-password/verify-otp", body: {"mobile":mobile,"otp":otp});
     if (res.isError) {
-      ErrorResponseModel errorResponseModel = ErrorResponseModel(
-        errorMessage: "OOps...!, Something went wrong",
-      );
-      return Result.error(errorResponseModel);
+      return Result.error(res.asError!.error);
     } else {
       var response = res.asValue!.value;
       debugPrint("Forgot Password verify otp: $response");
@@ -889,10 +885,7 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
   Future<Result> forgotPassReset(String mobile, String password,String confirmPassword,String resetToken) async {
     Result res = await BaseClient.post("forgot-password/reset", body: {"mobile":mobile,"password":password,"password_confirmation":confirmPassword,"reset_token":resetToken});
     if (res.isError) {
-      ErrorResponseModel errorResponseModel = ErrorResponseModel(
-        errorMessage: "OOps...!, Something went wrong",
-      );
-      return Result.error(errorResponseModel);
+      return Result.error(res.asError!.error);
     } else {
       var response = res.asValue!.value;
       debugPrint("Forgot Password reset: $response");
@@ -902,7 +895,44 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
   }
 
 
+  Future<Result> updateMaterial({required int siteid,required int categoryid,required int materialid,required String name,required int qty,required int unitid,required double price,required double totalamount,required int substageid,required String addeddate,required int supplierid,required int Id}) async {
+    Result res = await BaseClient.post("site-materials/update/$Id", body: {"site_id":siteid, "category_id":categoryid,
+  "name":         name,
+  "qty":          qty,
+  "unit_id":      unitid,
+  "price":        price,
+  "total_amount": totalamount,
+  "substage_id":  substageid,
+  "added_date":   addeddate,
+  "supplier_id":  supplierid});
+  if (res.isError) {
+      ErrorResponseModel errorResponseModel = ErrorResponseModel(
+        errorMessage: "OOps...!, Something went wrong",
+      );
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint("Update Material : $response");
+      MaterialEditModel updateMaterialModel = MaterialEditModel.fromJson(response);
+      return Result.value(updateMaterialModel);
+    }
+  }
 
+
+  Future<Result> updateLabour({required int substageid,required int no_of_labours,required int no_of_days,required double amount,required int Id}) async {
+    Result res = await BaseClient.post("labours/update/$Id", body: { "substage_id":substageid,  "no_of_labours":no_of_labours,  "no_of_days":no_of_days,  "amount":amount});
+  if (res.isError) {
+      ErrorResponseModel errorResponseModel = ErrorResponseModel(
+        errorMessage: "OOps...!, Something went wrong",
+      );
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+      debugPrint("Update Labour : $response");
+      LabourEditModel updateLabourModel = LabourEditModel.fromJson(response);
+      return Result.value(updateLabourModel);
+    }
+  }
 
 
 

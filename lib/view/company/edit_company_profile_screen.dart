@@ -7,14 +7,8 @@ import 'package:construction_app/models/profile_model.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:provider/provider.dart';
 
-// ── API Body Model ─────────────────────────────────────────────────────────
-// EditProfileBody { name, company: Company { name, email, phone,
-//   companyType, registrationNumber, gstNumber, address, city, state, pincode } }
-
 class EditCompanyProfileScreen extends StatefulWidget {
-  /// Pass current ProfileData so fields are pre-filled.
   final ProfileData profileData;
-  /// Called after a successful save so the parent can refresh.
   final VoidCallback? onSaved;
 
   const EditCompanyProfileScreen({
@@ -32,34 +26,33 @@ class _EditCompanyProfileScreenState extends State<EditCompanyProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isSaving = false;
 
-  // ── Controllers — 1-to-1 with EditProfileBody fields ──────────────────
-  late final TextEditingController _nameCtrl;           // EditProfileBody.name
-  late final TextEditingController _companyNameCtrl;    // Company.name
-  late final TextEditingController _emailCtrl;          // Company.email
-  late final TextEditingController _phoneCtrl;          // Company.phone
-  late final TextEditingController _companyTypeCtrl;    // Company.companyType
-  late final TextEditingController _regNumberCtrl;      // Company.registrationNumber
-  late final TextEditingController _gstCtrl;            // Company.gstNumber
-  late final TextEditingController _addressCtrl;        // Company.address
-  late final TextEditingController _cityCtrl;           // Company.city
-  late final TextEditingController _stateCtrl;          // Company.state
-  late final TextEditingController _pincodeCtrl;        // Company.pincode
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _companyNameCtrl;
+  late final TextEditingController _emailCtrl;
+  late final TextEditingController _phoneCtrl;
+  late final TextEditingController _companyTypeCtrl;
+  late final TextEditingController _regNumberCtrl;
+  late final TextEditingController _gstCtrl;
+  late final TextEditingController _addressCtrl;
+  late final TextEditingController _cityCtrl;
+  late final TextEditingController _stateCtrl;
+  late final TextEditingController _pincodeCtrl;
 
   @override
   void initState() {
     super.initState();
     final p = widget.profileData;
-    _nameCtrl        = TextEditingController(text: p?.name ?? '');
-    _companyNameCtrl = TextEditingController(text: p?.company.name ?? '');
-    _emailCtrl       = TextEditingController(text: p?.company.email ?? '');
-    _phoneCtrl       = TextEditingController(text: p?.company.phone ?? '');
-    _companyTypeCtrl = TextEditingController(text: p?.company.companyType ?? '');
-    _regNumberCtrl   = TextEditingController(text: p?.company.registrationNumber ?? '');
-    _gstCtrl         = TextEditingController(text: p?.company.gstNumber ?? '');
-    _addressCtrl     = TextEditingController(text: p?.company.address ?? '');
-    _cityCtrl        = TextEditingController(text: p?.company.city ?? '');
-    _stateCtrl       = TextEditingController(text: p?.company.state ?? '');
-    _pincodeCtrl     = TextEditingController(text: p?.company.pincode ?? '');
+    _nameCtrl        = TextEditingController(text: p.name);
+    _companyNameCtrl = TextEditingController(text: p.company.name);
+    _emailCtrl       = TextEditingController(text: p.company.email);
+    _phoneCtrl       = TextEditingController(text: p.company.phone);
+    _companyTypeCtrl = TextEditingController(text: p.company.companyType);
+    _regNumberCtrl   = TextEditingController(text: p.company.registrationNumber);
+    _gstCtrl         = TextEditingController(text: p.company.gstNumber);
+    _addressCtrl     = TextEditingController(text: p.company.address);
+    _cityCtrl        = TextEditingController(text: p.company.city);
+    _stateCtrl       = TextEditingController(text: p.company.state);
+    _pincodeCtrl     = TextEditingController(text: p.company.pincode);
   }
 
   @override

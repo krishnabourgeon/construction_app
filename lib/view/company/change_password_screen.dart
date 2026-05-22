@@ -3,7 +3,6 @@ import 'package:construction_app/provider/company_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:construction_app/provider/login_provider.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -20,7 +19,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _newCtrl     = TextEditingController();
   final _confirmCtrl = TextEditingController();
 
-  bool _showCurrent = false;
+  // bool _showCurrent = false;
   bool _showNew     = false;
   bool _showConfirm = false;
   bool _isLoading   = false;

@@ -1,5 +1,3 @@
-import 'package:construction_app/models/get_supervisor_model.dart';
-import 'package:construction_app/models/models.dart';
 import 'package:construction_app/models/supplier_model.dart';
 import 'package:construction_app/provider/company_provider.dart';
 import 'package:construction_app/view/company/supplier_detail_screen.dart';

@@ -1,5 +1,3 @@
-import 'package:construction_app/models/models.dart';
-import 'package:construction_app/models/sitesbycompanies.dart';
 import 'package:construction_app/provider/company_provider.dart';
 import 'package:construction_app/services/provider_helper_class.dart';
 import 'package:construction_app/services/shared_preference_helper.dart';

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:construction_app/models/add-sites_model.dart';
 import 'package:construction_app/models/add_labour_body.dart';
 import 'package:construction_app/models/add_labour_model.dart';
@@ -14,7 +13,6 @@ import 'package:construction_app/models/add_supplier_body.dart';
 import 'package:construction_app/models/add_supplier_model.dart';
 import 'package:construction_app/models/change_password_body.dart';
 import 'package:construction_app/models/create_user_body.dart';
-import 'package:construction_app/models/create_user_model.dart';
 import 'package:construction_app/models/edit_profile_body.dart';
 import 'package:construction_app/models/error_response_model.dart';
 import 'package:construction_app/models/forgot_pass_reset_model.dart';
@@ -28,7 +26,9 @@ import 'package:construction_app/models/get_payment_model.dart';
 import 'package:construction_app/models/get_stages_model.dart';
 import 'package:construction_app/models/get_sub_stages.dart';
 import 'package:construction_app/models/get_supervisor_model.dart';
+import 'package:construction_app/models/labour_edit_model.dart';
 import 'package:construction_app/models/logout_model.dart';
+import 'package:construction_app/models/material_edit_model.dart';
 import 'package:construction_app/models/material_name_model.dart';
 import 'package:construction_app/models/payment_body.dart';
 import 'package:construction_app/models/payment_details_model.dart';
@@ -53,7 +53,6 @@ import 'package:construction_app/models/total_recevied_detail_model.dart';
 import 'package:construction_app/models/total_spent_detail_model.dart';
 import 'package:construction_app/models/units_model.dart';
 import 'package:construction_app/models/update_stage_body.dart';
-import 'package:construction_app/models/update_stage_model.dart';
 import 'package:construction_app/models/verify_otp_body.dart';
 import 'package:construction_app/models/verify_otp_model.dart';
 import 'package:construction_app/services/provider_helper_class.dart';
@@ -168,7 +167,7 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       updateLoadState(LoaderState.loaded);
     }
 
-    notifyListeners(); //  VERY IMPORTANT
+    notifyListeners(); 
   }
 
   Future<void> addSites({
@@ -223,7 +222,7 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
       updateLoadState(LoaderState.loaded);
     }
 
-    notifyListeners(); //  VERY IMPORTANT
+    notifyListeners(); 
   }
 
   Future<void> getCompany({Function(String errorMessage)? onFailure}) async {
@@ -233,7 +232,6 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
 
     if (!res.isError) {
       final response = res.asValue!.value as GetCompany;
-
       updateLoadState(LoaderState.loaded);
     } else {
       String errorMessage = ErrorParser.getCleanErrorMessage(
@@ -1574,6 +1572,96 @@ Future<ForgotPassVerifyOtpModel?> forgotPasswordVerifyOtp(
       return null;
     }
   }
+
+
+
+  Future<MaterialEditModel?> updateMaterial(
+    {Function(String errorMessage)? onFailure,
+    required int siteid,
+    required int categoryid,
+    required int materialid,
+    required String name,
+    required int qty,
+    required int unitid,
+    required double price,
+    required double totalamount,
+    required int substageid,
+    required String addeddate,
+    required int supplierid,
+    required int Id,
+    } 
+  )async{
+    updateLoadState(LoaderState.loading);
+    try {
+      var res = await serviceConfig.updateMaterial(siteid: siteid, categoryid: categoryid, materialid: materialid, name: name, qty: qty, unitid: unitid, price: price, totalamount: totalamount, substageid: substageid, addeddate: addeddate, supplierid: supplierid, Id: Id);
+      if (res.isError != true) {
+        final response = res.asValue!.value as MaterialEditModel;
+        await getMaterials(substageId: substageid);
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return response;
+      }else{
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to update material");
+        if(res.asError!.error is ErrorResponseModel){
+          errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+        }
+        errorToast = errorMessage;
+        updateLoadState(LoaderState.loaded);
+        if(onFailure != null) onFailure(errorMessage);
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in updateMaterial: $e");
+      updateLoadState(LoaderState.loaded);
+      if(onFailure != null) onFailure(e.toString());
+      notifyListeners();
+      return null;
+    }
+  }
+
+
+
+  Future<LabourEditModel?> updateLabour(
+    {Function(String errorMessage)? onFailure,
+    required int substageid,
+    required int no_of_labours,
+    required int no_of_days,
+    required double amount,
+    required int Id,
+    } 
+  )async{
+    updateLoadState(LoaderState.loading);
+    try {
+      var res = await serviceConfig.updateLabour(substageid: substageid, no_of_labours: no_of_labours, no_of_days: no_of_days, amount: amount, Id: Id);
+      if (res.isError != true) {
+        final response = res.asValue!.value as LabourEditModel;
+        await getLabours(substageId: substageid);
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return response;
+      }else{
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to update labour");
+        if(res.asError!.error is ErrorResponseModel){
+          errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+        }
+        errorToast = errorMessage;
+        updateLoadState(LoaderState.loaded);
+        if(onFailure != null) onFailure(errorMessage);
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in updateLabour: $e");
+      updateLoadState(LoaderState.loaded);
+      if(onFailure != null) onFailure(e.toString());
+      notifyListeners();
+      return null;
+    }
+  }
+
 
 
 

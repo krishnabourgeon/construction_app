@@ -5,13 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-// ════════════════════════════════════════════════════════════════════════════
-//  FORGOT PASSWORD FLOW  (3 steps)
-//  Step 1 → enter mobile number
-//  Step 2 → enter 4-digit OTP
-//  Step 3 → set new password
-// ════════════════════════════════════════════════════════════════════════════
-
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -129,7 +122,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
       _showSnack('Passwords do not match');
       return;
     }
-    if (_newPassCtrl.text.length < 6) {
+    if (_newPassCtrl.text.length < 8) {
       _showSnack('Password must be at least 8 characters');
       return;
     }
@@ -497,7 +490,7 @@ class _OtpStep extends StatelessWidget {
             style: GoogleFonts.inter(
                 fontSize: 14, color: Colors.white54, height: 1.6),
             children: [
-              const TextSpan(text: 'We sent a 4-digit code to\n'),
+              const TextSpan(text: 'We sent a 6-digit code to\n'),
               TextSpan(
                 text: '+91 $phone',
                 style: const TextStyle(
@@ -741,7 +734,7 @@ class _NewPasswordStep extends StatelessWidget {
                 color: Colors.white24, size: 14),
             const SizedBox(width: 6),
             Text(
-              'Minimum 6 characters',
+              'Minimum 8 characters',
               style: GoogleFonts.inter(fontSize: 12, color: Colors.white30),
             ),
           ],
@@ -819,7 +812,7 @@ class _PasswordField extends StatelessWidget {
                   show
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
-                  color: Colors.white38,
+                  color: Colors.black,
                   size: 20,
                 ),
               ),

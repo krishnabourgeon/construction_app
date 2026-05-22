@@ -1,5 +1,4 @@
 import 'package:construction_app/models/get_supervisor_model.dart';
-import 'package:construction_app/models/models.dart';
 import 'package:construction_app/provider/company_provider.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:construction_app/widgets/common_widgets.dart';

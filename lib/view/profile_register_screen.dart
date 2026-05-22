@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:construction_app/models/profile_register_body.dart';
-import 'package:construction_app/models/register_company_body.dart';
 import 'package:construction_app/provider/company_provider.dart';
 import 'package:construction_app/view/login_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';

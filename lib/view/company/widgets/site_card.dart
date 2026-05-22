@@ -41,7 +41,7 @@ class _SiteCardState extends State<SiteCard> {
                 children: [
                   Expanded(
                     child: Text(
-                      widget.site.sitename ?? 'Unnamed Site',
+                      widget.site.sitename,
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,

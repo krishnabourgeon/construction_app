@@ -1,4 +1,5 @@
 import 'package:construction_app/models/get_materials_model.dart';
+import 'package:construction_app/view/company/edit_material_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -64,43 +65,19 @@ class MaterialCard extends StatelessWidget {
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                       color: AppColors.orange)),
-              // const SizedBox(height: 6),
-              // GestureDetector(
-              //   onTap: () {
-              //     showDialog(
-              //       context: context,
-              //       builder: (_) => AlertDialog(
-              //         shape: RoundedRectangleBorder(
-              //             borderRadius: BorderRadius.circular(16)),
-              //         title: Text('Delete Material',
-              //             style: GoogleFonts.poppins(
-              //                 fontSize: 15, fontWeight: FontWeight.w600)),
-              //         content: Text('Remove "${material.materialName}"?',
-              //             style: GoogleFonts.poppins(fontSize: 13)),
-              //         actions: [
-              //           TextButton(
-              //             onPressed: () => Navigator.pop(context),
-              //             child: Text('Cancel',
-              //                 style: GoogleFonts.poppins(
-              //                     color: AppColors.grey)),
-              //           ),
-              //           TextButton(
-              //             onPressed: () {
-              //               Navigator.pop(context);
-              //               onDelete();
-              //             },
-              //             child: Text('Delete',
-              //                 style: GoogleFonts.poppins(
-              //                     color: AppColors.red,
-              //                     fontWeight: FontWeight.w600)),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   },
-              //   child: Icon(Icons.delete_outline,
-              //       size: 18, color: AppColors.red.withOpacity(0.6)),
-              // ),
+              const SizedBox(height: 6),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditMaterialScreen(material: material),
+                    ),
+                  );
+                },
+                child: Icon(Icons.edit,
+                    size: 18, color: AppColors.blue.withOpacity(0.6)),
+              ),
             ],
           ),
         ],
