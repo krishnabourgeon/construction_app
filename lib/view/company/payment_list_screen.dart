@@ -413,6 +413,7 @@ class _PaymentListScreenState extends State<PaymentListScreen> {
 
         _row("Site",  p.siteName),
         _row("Stage", p.stageName),
+        _row("Ledger", p.ledgername),
         _row("Mode",  p.paymentMode ?? "N/A"),
         _row("Date",  DateFormat('dd MMM yyyy').format(p.paymentDate)),
 

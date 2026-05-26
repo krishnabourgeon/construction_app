@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:construction_app/models/cash_book_model.dart';
 import 'package:construction_app/models/get_payment_model.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
 import 'package:construction_app/provider/company_provider.dart';
@@ -14,9 +15,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Cashbook Screen  — double-column ledger layout with PDF/WhatsApp share
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 class CashbookScreen extends StatefulWidget {
   const CashbookScreen({super.key});
@@ -32,9 +31,11 @@ class _CashbookScreenState extends State<CashbookScreen> {
   bool _generating = false;
 
   // Separate lists loaded independently
-  List<GetPayment> _receipts = [];
-  List<GetPayment> _payments = [];
+  // List<GetPayment> _receipts = [];
+  // List<GetPayment> _payments = [];
   bool _loading = false;
+  CashBook? _cashBook;
+
 
   @override
   void initState() {
@@ -50,34 +51,36 @@ class _CashbookScreenState extends State<CashbookScreen> {
       setState(() => _selectedSite = provider.sitesList.first);
       await _load();
     }
+    
   }
 
-  Future<void> _load() async {
+   Future<void> _load() async {
     if (_selectedSite == null) return;
-    setState(() => _loading = true);
-    final provider = context.read<CompanyProvider>();
-
-    // Load receipts (type 2)
-    await provider.getPayments(
-      siteId: _selectedSite!.id,
-      paymentType: 2,
-      fromDate: DateFormat('yyyy-MM-dd').format(_fromDate),
-      toDate: DateFormat('yyyy-MM-dd').format(_toDate),
-    );
-    final receipts = List<GetPayment>.from(provider.paymentsList);
-
-    // Load payments (type 1)
-    await provider.getPayments(
-      siteId: _selectedSite!.id,
-      paymentType: 1,
-      fromDate: DateFormat('yyyy-MM-dd').format(_fromDate),
-      toDate: DateFormat('yyyy-MM-dd').format(_toDate),
-    );
-    final payments = List<GetPayment>.from(provider.paymentsList);
 
     setState(() {
-      _receipts = receipts;
-      _payments = payments;
+      _loading = true;
+    });
+
+    final provider = context.read<CompanyProvider>();
+
+    final response = await provider.getCashBook(
+      (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      },
+      _selectedSite!.id,
+      DateFormat('yyyy-MM-dd').format(_fromDate),
+      DateFormat('yyyy-MM-dd').format(_toDate),
+    );
+
+    if (response != null) {
+      setState(() {
+        _cashBook = response.data;
+      });
+    }
+
+     setState(() {
       _loading = false;
     });
   }
@@ -87,220 +90,293 @@ class _CashbookScreenState extends State<CashbookScreen> {
       context: context,
       initialDate: isFrom ? _fromDate : _toDate,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      builder: (ctx, child) => Theme(
-        data: Theme.of(ctx).copyWith(
-          colorScheme: const ColorScheme.light(primary: AppColors.amber),
-        ),
-        child: child!,
-      ),
+      lastDate: DateTime(2035),
     );
+
     if (picked != null) {
       setState(() {
         if (isFrom) {
           _fromDate = picked;
-          if (_toDate.isBefore(_fromDate)) _toDate = _fromDate;
+
+          if (_toDate.isBefore(_fromDate)) {
+            _toDate = _fromDate;
+          }
         } else {
           _toDate = picked;
-          if (_fromDate.isAfter(_toDate)) _fromDate = _toDate;
+
+          if (_fromDate.isAfter(_toDate)) {
+            _fromDate = _toDate;
+          }
         }
       });
     }
   }
 
-  double get _totalReceipts =>
-      _receipts.fold(0, (s, e) => s + (double.tryParse(e.amount.toString()) ?? 0));
-  double get _totalPayments =>
-      _payments.fold(0, (s, e) => s + (double.tryParse(e.amount.toString()) ?? 0));
-  double get _closingBalance => _totalReceipts - _totalPayments;
+  String _fmt(double v) {
+    return NumberFormat('#,##,##0.00').format(v);
+  }
 
-  String _fmt(double v) => NumberFormat('#,##,##0.00').format(v);
-
-  // ── PDF generation ─────────────────────────────────────────────────────────
   Future<void> _generateAndShare() async {
-    setState(() => _generating = true);
+    if (_cashBook == null) return;
+
+    setState(() {
+      _generating = true;
+    });
+
     try {
       final pdf = pw.Document();
+
+      final receipts = _cashBook!.receipts;
+      final payments = _cashBook!.payments;
+
+      final maxRows =
+          receipts.length > payments.length
+              ? receipts.length
+              : payments.length;
+
       final dateRange =
           '${DateFormat('dd-MM-yyyy').format(_fromDate)} to ${DateFormat('dd-MM-yyyy').format(_toDate)}';
-      final companyName =  'Real Line';
-      final siteName = _selectedSite?.sitename ?? '';
-
-      // Merge rows — pad to equal length
-      final maxRows = _receipts.length > _payments.length
-          ? _receipts.length
-          : _payments.length;
 
       pdf.addPage(
         pw.MultiPage(
           pageFormat: PdfPageFormat.a4.landscape,
-          margin: const pw.EdgeInsets.all(24),
-          build: (ctx) => [
-            // Title
-            pw.Center(
-              child: pw.Column(
-                children: [
-                  pw.Text(companyName,
-                      style: pw.TextStyle(
-                          fontSize: 14, fontWeight: pw.FontWeight.bold)),
-                  pw.SizedBox(height: 4),
-                  pw.Text('Cash Book From Date $dateRange',
-                      style: const pw.TextStyle(fontSize: 11)),
-                  if (siteName.isNotEmpty)
-                    pw.Text('Site: $siteName',
-                        style: const pw.TextStyle(fontSize: 10)),
-                ],
-              ),
-            ),
-            pw.SizedBox(height: 12),
+          margin: const pw.EdgeInsets.all(20),
+          build:
+              (context) => [
+                pw.Center(
+                  child: pw.Column(
+                    children: [
+                      pw.Text(
+                        "Cash Book",
+                        style: pw.TextStyle(
+                          fontWeight: pw.FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
 
-            // Double-column table
-            pw.Table(
-              border: pw.TableBorder.all(width: 0.5),
-              columnWidths: {
-                0: const pw.FixedColumnWidth(30),   // R.NO
-                1: const pw.FlexColumnWidth(3),      // Receipt desc
-                2: const pw.FixedColumnWidth(70),    // Receipt amount
-                3: const pw.FixedColumnWidth(10),    // divider
-                4: const pw.FixedColumnWidth(30),    // VR.NO
-                5: const pw.FlexColumnWidth(3),      // Payment desc
-                6: const pw.FixedColumnWidth(70),    // Payment amount
-              },
-              children: [
-                // Header row
-                pw.TableRow(
-                  decoration: const pw.BoxDecoration(color: PdfColors.grey300),
-                  children: [
-                    _pdfCell('R. NO', bold: true, center: true),
-                    _pdfCell('RECEIPTS', bold: true, center: true),
-                    _pdfCell('AMOUNT', bold: true, center: true),
-                    _pdfCell('', bold: true),
-                    _pdfCell('VR. NO', bold: true, center: true),
-                    _pdfCell('PAYMENTS', bold: true, center: true),
-                    _pdfCell('AMOUNT', bold: true, center: true),
-                  ],
+                      pw.SizedBox(height: 6),
+
+                      pw.Text(
+                        dateRange,
+                        style: const pw.TextStyle(fontSize: 11),
+                      ),
+
+                      pw.SizedBox(height: 14),
+                    ],
+                  ),
                 ),
 
-                // Opening balance row
-                pw.TableRow(children: [
-                  _pdfCell(''),
-                  _pdfCell('Opening Balance'),
-                  _pdfCell(_fmt(0), center: true),
-                  _pdfCell(''),
-                  _pdfCell(''),
-                  _pdfCell(''),
-                  _pdfCell(''),
-                ]),
-
-                // Data rows
-                for (int i = 0; i < maxRows; i++)
-                  pw.TableRow(children: [
-                    _pdfCell(i < _receipts.length ? '${i + 1}' : '',
-                        center: true),
-                    _pdfCell(i < _receipts.length
-                        ? '${_receipts[i].stageName} (${_receipts[i].paymentMode ?? ""})'
-                        : ''),
-                    _pdfCell(i < _receipts.length
-                        ? _fmt(double.tryParse(
-                                _receipts[i].amount.toString()) ??
-                            0)
-                        : '',
-                        center: true),
-                    _pdfCell(''),
-                    _pdfCell(i < _payments.length ? '${i + 1}' : '',
-                        center: true),
-                    _pdfCell(i < _payments.length
-                        ? '${_payments[i].stageName} (${_payments[i].paymentMode ?? ""})'
-                        : ''),
-                    _pdfCell(i < _payments.length
-                        ? _fmt(double.tryParse(
-                                _payments[i].amount.toString()) ??
-                            0)
-                        : '',
-                        center: true),
-                  ]),
-
-                // Total row
-                pw.TableRow(
-                  decoration: const pw.BoxDecoration(color: PdfColors.grey200),
+                pw.Table(
+                  border: pw.TableBorder.all(width: 0.5),
+                  columnWidths: {
+                    0: const pw.FixedColumnWidth(35),
+                    1: const pw.FlexColumnWidth(3),
+                    2: const pw.FixedColumnWidth(70),
+                    3: const pw.FixedColumnWidth(80),
+                    4: const pw.FixedColumnWidth(35),
+                    5: const pw.FlexColumnWidth(3),
+                    6: const pw.FixedColumnWidth(70),
+                    7: const pw.FixedColumnWidth(80),
+                  },
                   children: [
-                    _pdfCell(''),
-                    _pdfCell('Total', bold: true),
-                    _pdfCell(_fmt(_totalReceipts), bold: true, center: true),
-                    _pdfCell(''),
-                    _pdfCell(''),
-                    _pdfCell('Total', bold: true),
-                    _pdfCell(_fmt(_totalPayments), bold: true, center: true),
-                  ],
-                ),
+                    pw.TableRow(
+                      decoration: const pw.BoxDecoration(
+                        color: PdfColors.grey300,
+                      ),
+                      children: [
+                        _pdfCell("No", bold: true),
+                        _pdfCell("Receipts", bold: true),
+                        _pdfCell("Date", bold: true),
+                        _pdfCell("Amount", bold: true),
 
-                // Closing balance row
-                pw.TableRow(
-                  decoration: const pw.BoxDecoration(color: PdfColors.grey100),
-                  children: [
-                    _pdfCell(''),
-                    _pdfCell(''),
-                    _pdfCell(''),
-                    _pdfCell(''),
-                    _pdfCell(''),
-                    _pdfCell('Closing Balance', bold: true),
-                    _pdfCell(_fmt(_closingBalance.abs()),
-                        bold: true, center: true),
+                        _pdfCell("No", bold: true),
+                        _pdfCell("Payments", bold: true),
+                        _pdfCell("Date", bold: true),
+                        _pdfCell("Amount", bold: true),
+                      ],
+                    ),
+
+                    pw.TableRow(
+                      children: [
+                        _pdfCell(""),
+                        _pdfCell("Opening Balance"),
+                        _pdfCell(""),
+                        _pdfCell(
+                          _fmt(
+                            _cashBook!.openingBalance.toDouble(),
+                          ),
+                        ),
+
+                        _pdfCell(""),
+                        _pdfCell(""),
+                        _pdfCell(""),
+                        _pdfCell(""),
+                      ],
+                    ),
+
+                    for (int i = 0; i < maxRows; i++)
+                      pw.TableRow(
+                        children: [
+                          _pdfCell(
+                            i < receipts.length
+                                ? receipts[i].no.toString()
+                                : '',
+                          ),
+
+                          _pdfCell(
+                            i < receipts.length
+                                ? receipts[i].particulars
+                                : '',
+                          ),
+
+                          _pdfCell(
+                            i < receipts.length
+                                ? DateFormat(
+                                  'dd/MM/yyyy',
+                                ).format(receipts[i].date)
+                                : '',
+                          ),
+
+                          _pdfCell(
+                            i < receipts.length
+                                ? _fmt(
+                                  receipts[i].amount.toDouble(),
+                                )
+                                : '',
+                          ),
+
+                          _pdfCell(
+                            i < payments.length
+                                ? payments[i].no.toString()
+                                : '',
+                          ),
+
+                          _pdfCell(
+                            i < payments.length
+                                ? payments[i].particulars
+                                : '',
+                          ),
+
+                          _pdfCell(
+                            i < payments.length
+                                ? DateFormat(
+                                  'dd/MM/yyyy',
+                                ).format(payments[i].date)
+                                : '',
+                          ),
+
+                          _pdfCell(
+                            i < payments.length
+                                ? _fmt(
+                                  payments[i].amount.toDouble(),
+                                )
+                                : '',
+                          ),
+                        ],
+                      ),
+
+                    pw.TableRow(
+                      decoration: const pw.BoxDecoration(
+                        color: PdfColors.grey200,
+                      ),
+                      children: [
+                        _pdfCell(""),
+                        _pdfCell("Total", bold: true),
+                        _pdfCell(""),
+                        _pdfCell(
+                          _fmt(
+                            _cashBook!.totalReceipts.toDouble(),
+                          ),
+                          bold: true,
+                        ),
+
+                        _pdfCell(""),
+                        _pdfCell("Total", bold: true),
+                        _pdfCell(""),
+                        _pdfCell(
+                          _fmt(
+                            _cashBook!.totalPayments.toDouble(),
+                          ),
+                          bold: true,
+                        ),
+                      ],
+                    ),
+
+                    pw.TableRow(
+                      decoration: const pw.BoxDecoration(
+                        color: PdfColors.grey100,
+                      ),
+                      children: [
+                        _pdfCell(""),
+                        _pdfCell(""),
+                        _pdfCell(""),
+                        _pdfCell(""),
+
+                        _pdfCell(""),
+                        _pdfCell("Closing Balance", bold: true),
+                        _pdfCell(""),
+                        _pdfCell(
+                          _fmt(
+                            _cashBook!.closingBalance.toDouble(),
+                          ),
+                          bold: true,
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ],
-            ),
-
-            pw.SizedBox(height: 8),
-            pw.Text(
-              'Generated on ${DateFormat('dd MMM yyyy hh:mm a').format(DateTime.now())}',
-              style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey600),
-            ),
-          ],
         ),
       );
 
       final dir = await getTemporaryDirectory();
+
       final file = File(
-          '${dir.path}/cashbook_${DateFormat('yyyyMMdd').format(_fromDate)}_${DateFormat('yyyyMMdd').format(_toDate)}.pdf');
+        '${dir.path}/cashbook.pdf',
+      );
+
       await file.writeAsBytes(await pdf.save());
 
       await Share.shareXFiles(
-        [XFile(file.path, mimeType: 'application/pdf')],
-        text:
-            'Cash Book - $siteName\n$companyName\nFrom $dateRange',
-        subject: 'Cash Book Report',
+        [
+          XFile(
+            file.path,
+            mimeType: 'application/pdf',
+          ),
+        ],
+        text: 'Cash Book Report',
       );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error generating PDF: $e',
-                style: GoogleFonts.poppins(fontSize: 13)),
-            backgroundColor: AppColors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _generating = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
     }
+
+    setState(() {
+      _generating = false;
+    });
   }
 
-  pw.Widget _pdfCell(String text,
-      {bool bold = false, bool center = false}) {
+  pw.Widget _pdfCell(
+    String text, {
+    bool bold = false,
+  }) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+      padding: const pw.EdgeInsets.all(5),
       child: pw.Text(
         text,
-        textAlign: center ? pw.TextAlign.center : pw.TextAlign.left,
         style: pw.TextStyle(
           fontSize: 9,
-          fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+          fontWeight:
+              bold
+                  ? pw.FontWeight.bold
+                  : pw.FontWeight.normal,
         ),
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CompanyProvider>();
@@ -465,12 +541,18 @@ class _CashbookScreenState extends State<CashbookScreen> {
             child: _loading
                 ? const Center(
                     child: CircularProgressIndicator(color: AppColors.amber))
-                : _CashbookTable(
-                    receipts: _receipts,
-                    payments: _payments,
-                    fromDate: _fromDate,
-                    toDate: _toDate,
-                  ),
+                : _cashBook == null
+    ? const Center(
+        child: Text(
+          "No Cash Book Data",
+          style: TextStyle(fontSize: 16),
+        ),
+      )
+    : _CashbookTable(
+        cashBook: _cashBook!,
+        fromDate: _fromDate,
+        toDate: _toDate,
+      ),
           ),
         ],
       ),
@@ -483,26 +565,36 @@ class _CashbookScreenState extends State<CashbookScreen> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _CashbookTable extends StatelessWidget {
-  final List<GetPayment> receipts;
-  final List<GetPayment> payments;
+  final CashBook cashBook;
   final DateTime fromDate;
   final DateTime toDate;
 
   const _CashbookTable({
-    required this.receipts,
-    required this.payments,
+    required this.cashBook,
     required this.fromDate,
     required this.toDate,
   });
 
-  double get _totalR =>
-      receipts.fold(0, (s, e) => s + (double.tryParse(e.amount.toString()) ?? 0));
-  double get _totalP =>
-      payments.fold(0, (s, e) => s + (double.tryParse(e.amount.toString()) ?? 0));
-  double get _closing => _totalR - _totalP;
+   List<Payment> get receipts => cashBook.receipts;
 
-  String _fmt(double v) => NumberFormat('#,##,##0.00').format(v);
-  String _fmtDate(DateTime d) => DateFormat('dd/MM/yy').format(d);
+  List<Payment> get payments => cashBook.payments;
+
+  double get _totalR =>
+      cashBook.totalReceipts.toDouble();
+
+  double get _totalP =>
+      cashBook.totalPayments.toDouble();
+
+  double get _closing =>
+      cashBook.closingBalance.toDouble();
+
+  String _fmt(double v) {
+    return NumberFormat('#,##,##0.00').format(v);
+  }
+
+  String _fmtDate(DateTime d) {
+    return DateFormat('dd/MM/yyyy').format(d);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -607,7 +699,7 @@ class _CashbookTable extends StatelessWidget {
                               ? '${receipts[i].stageName}\n${receipts[i].siteName}'
                               : '',
                           rDate: i < receipts.length
-                              ? _fmtDate(receipts[i].paymentDate)
+                              ? _fmtDate(receipts[i].date)
                               : '',
                           rAmt: i < receipts.length
                               ? _fmt(double.tryParse(
@@ -619,7 +711,7 @@ class _CashbookTable extends StatelessWidget {
                               ? '${payments[i].stageName}\n${payments[i].siteName}'
                               : '',
                           pDate: i < payments.length
-                              ? _fmtDate(payments[i].paymentDate)
+                              ? _fmtDate(payments[i].date)
                               : '',
                           pAmt: i < payments.length
                               ? _fmt(double.tryParse(
@@ -653,7 +745,7 @@ class _CashbookTable extends StatelessWidget {
                         pNo: '',
                         pDesc: 'Closing Balance',
                         pDate: _fmtDate(toDate),
-                        pAmt: _fmt(_closing.abs()),
+                        pAmt: _fmt(_closing),
                         highlight: true,
                         highlightColor: const Color(0xFFFFF7ED),
                       ),
@@ -706,7 +798,7 @@ class _CashbookTable extends StatelessWidget {
           const SizedBox(height: 10),
           _SummaryCard(
             label: _closing >= 0 ? 'Closing Balance (Surplus)' : 'Closing Balance (Deficit)',
-            amount: _fmt(_closing.abs()),
+            amount: _fmt(_closing),
             icon: Icons.account_balance_wallet_rounded,
             color: _closing >= 0 ? AppColors.blue : AppColors.red,
             bgColor: _closing >= 0 ? AppColors.blueLight : AppColors.redLight,
@@ -1126,3 +1218,6 @@ class _DateChip extends StatelessWidget {
     );
   }
 }
+
+
+

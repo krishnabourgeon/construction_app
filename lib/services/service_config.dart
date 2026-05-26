@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:construction_app/models/add-sites_model.dart';
 import 'package:construction_app/models/add_labour_body.dart';
 import 'package:construction_app/models/add_labour_model.dart';
+import 'package:construction_app/models/add_ledger_model.dart';
 import 'package:construction_app/models/add_materials_body.dart';
 import 'package:construction_app/models/add_materials_model.dart';
 import 'package:construction_app/models/add_site_body.dart';
@@ -12,6 +13,7 @@ import 'package:construction_app/models/add_sub_stages_body.dart';
 import 'package:construction_app/models/add_sub_stages_model.dart';
 import 'package:construction_app/models/add_supplier_body.dart';
 import 'package:construction_app/models/add_supplier_model.dart';
+import 'package:construction_app/models/cash_book_model.dart';
 import 'package:construction_app/models/change_password_body.dart';
 import 'package:construction_app/models/change_password_model.dart';
 import 'package:construction_app/models/create_user_body.dart';
@@ -24,7 +26,9 @@ import 'package:construction_app/models/forgot_pass_verify_otp_model.dart';
 import 'package:construction_app/models/forgot_password_send_otp_Model.dart';
 import 'package:construction_app/models/get_categories_model.dart';
 import 'package:construction_app/models/get_company.dart';
+import 'package:construction_app/models/get_group_model.dart';
 import 'package:construction_app/models/get_labours_model.dart';
+import 'package:construction_app/models/get_ledger_model.dart';
 import 'package:construction_app/models/get_materials_model.dart';
 import 'package:construction_app/models/get_payment_model.dart';
 import 'package:construction_app/models/get_stages_model.dart';
@@ -936,6 +940,73 @@ Future<Result> getTotalReceivedDetail(int siteId) async {
 
 
 
+  Future<Result> addLedger({required String name, required int groupid }) async{
+    Result res = await BaseClient.post("add-ledgers",body: {
+      "name" : name,
+      "group_id" : groupid
+    });
+    if(res.isError){
+      ErrorResponseModel errorResponseModel =ErrorResponseModel(
+        errorMessage: "OOps...!, Something went wrong"
+      );
+      return Result.error(errorResponseModel);
+    } else {
+      var response = res.asValue!.value;
+       debugPrint("Add Ledger : $response");
+       AddledgerModel addledgerModel = AddledgerModel.fromJson(response);
+       return Result.value(addledgerModel);
+    }
+  }
+
+
+  Future<Result> getGroup() async {
+    Result res = await BaseClient.get("ledger-groups");
+    if(res.isError){
+      return Result.error(res.asError!.error);
+    }else{
+      var response = res.asValue!.value;
+      debugPrint("Get Payment Details : $response");
+      GetGroupsModel getGroupsModel = 
+      GetGroupsModel.fromJson(response);
+      return (getGroupsModel.status)
+      ?Result.value(getGroupsModel)
+      :Result.error(getGroupsModel);
+    }
+  }
+
+
+  Future<Result> getLedger() async {
+    Result res = await BaseClient.get("ledgers");
+    if(res.isError){
+      return Result.error(res.asError!.error);
+    }else{
+      var response = res.asValue!.value;
+      debugPrint("Get Ledgers : $response");
+      GetLedgerModel getLedgersModel = 
+      GetLedgerModel.fromJson(response);
+      return (getLedgersModel.status)
+      ?Result.value(getLedgersModel)
+      :Result.error(getLedgersModel);
+    }
+  }
+
+
+  Future<Result> cashBook(int siteid, String fromdate,String todate) async{
+  Result res = await BaseClient.get("cash-book?site_id=$siteid&from_date=$fromdate&to_date$todate");
+  if(res.isError){
+    ErrorResponseModel errorResponseModel =
+    ErrorResponseModel(errorMessage: "OOps...!, Something went wrong");
+    return Result.error(errorResponseModel);
+  }else{
+    var response = res.asValue!.value;
+    debugPrint("Get Cash Book : $response");
+      CashBookModel cashBookModel =
+    CashBookModel.fromJson(response);
+    return (cashBookModel.status)
+    ?Result.value(cashBookModel)
+    :Result.error(cashBookModel);
+  }
+  }
 
 
 }

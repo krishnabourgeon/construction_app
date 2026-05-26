@@ -39,6 +39,7 @@ class GetPayment {
     String siteName;
     int stageId;
     String stageName;
+    String ledgername;
     DateTime paymentDate;
     dynamic amount;
     dynamic paymentModeId;
@@ -54,6 +55,7 @@ class GetPayment {
         required this.companyId,
         required this.siteId,
         required this.siteName,
+        required this.ledgername,
         required this.stageId,
         required this.stageName,
         required this.paymentDate,
@@ -72,6 +74,7 @@ class GetPayment {
         companyId: json["company_id"],
         siteId: json["site_id"],
         siteName: json["site_name"],
+        ledgername: json["ledger_name"],
         stageId: json["stage_id"],
         stageName: json["stage_name"],
         paymentDate: DateTime.parse(json["payment_date"]),
@@ -90,6 +93,7 @@ class GetPayment {
         "company_id": companyId,
         "site_id": siteId,
         "site_name": siteName,
+        "ledger_name":ledgername,
         "stage_id": stageId,
         "stage_name": stageName,
         "payment_date": "${paymentDate.year.toString().padLeft(4, '0')}-${paymentDate.month.toString().padLeft(2, '0')}-${paymentDate.day.toString().padLeft(2, '0')}",

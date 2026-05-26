@@ -1,3 +1,4 @@
+import 'package:construction_app/models/get_ledger_model.dart';
 import 'package:construction_app/models/get_stages_model.dart';
 import 'package:construction_app/models/payment_modes_model.dart';
 import 'package:construction_app/models/sitesbycompanies.dart';
@@ -25,7 +26,7 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
   PaymentModes? selectedPaymentMode;
   SitesbyCompany? selectedSite;
   GetStages? selectedStage;
-  String? selectedLedger;
+  Ledger? selectedLedger;
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
       final companyId = await SharedPreferenceHelper.getCompanyId();
       if (mounted) {
         context.read<CompanyProvider>().sitesbycompanies(companyId: companyId);
+        context.read<CompanyProvider>().getLedger(null);
       }
     });
   }
@@ -111,62 +113,37 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
                     decoration: _inputDecoration(),
                   ),
             const SizedBox(height: 12),
-
-            _label("Select Site"),
-            provider.sitesList.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : DropdownButtonFormField<SitesbyCompany>(
-                    value: selectedSite,
-                    hint: const Text("Select Site"),
-                    items: provider.sitesList.map((site) {
-                      return DropdownMenuItem(
-                        value: site,
-                        child: Text(site.sitename),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedSite = value;
-                        selectedStage = null;
-                      });
-                      if (value != null) {
-                        provider.getStages(siteId: value.id);
-                      }
-                    },
-                    decoration: _inputDecoration(),
-                  ),
-                  const SizedBox(height: 12),
-            //       _label("Select Ledger"),
-            // provider.loaderState == LoaderState.loading && selectedSite != null
-            //     ? const Center(child: CircularProgressIndicator())
-            //     : provider.stagesList.isEmpty && selectedSite != null
-            //         ? const Padding(
-            //             padding: EdgeInsets.symmetric(vertical: 8.0),
-            //             child: Text("No ledger found",
-            //                 style: TextStyle(color: Colors.red)),
-            //           )
-            //         : DropdownButtonFormField<GetStages>(
-            //             isExpanded: true,
-            //             value: selectedStage,
-            //             hint: const Text("Select Ledger"),
-            //             items: provider.stagesList.map((stage) {
-            //               return DropdownMenuItem(
-            //                 value: stage,
-            //                 child: Text(
-            //                   stage.stage,
-            //                   overflow: TextOverflow.ellipsis,
-            //                 ),
-            //               );
-            //             }).toList(),
-            //             onChanged: (value) {
-            //           setState(() {
-            //             selectedStage = value;
-            //           });
-            //         },
-            //         decoration: _inputDecoration(),
-            //       ),
-
             const SizedBox(height: 12),
+_label("Select Ledger"),
+
+ provider.ledger.isEmpty
+        ? const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              "No ledger found",
+              style: TextStyle(color: Colors.red),
+            ),
+          )
+        : DropdownButtonFormField<Ledger>(
+            isExpanded: true,
+            value: selectedLedger,
+            hint: const Text("Select Ledger"),
+            items: provider.ledger.map((ledger) {
+              return DropdownMenuItem<Ledger>(
+                value: ledger,
+                child: Text(
+                  ledger.name,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            }).toList(),
+            onChanged: (Ledger? value) {
+              setState(() {
+                selectedLedger = value;
+              });
+            },
+            decoration: _inputDecoration(),
+          ),
 
             /// AMOUNT
             _label("Amount"),
@@ -288,6 +265,7 @@ class _AddPaymentScreenState extends State<AddPaymentScreen> {
       },
       selectedSite!.id,
       selectedStage!.id,
+      selectedLedger!.id,
       selectedDate,
       int.parse(amountController.text),
       selectedPaymentMode!.id,

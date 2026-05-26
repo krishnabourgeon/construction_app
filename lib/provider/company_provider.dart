@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:construction_app/models/add-sites_model.dart';
 import 'package:construction_app/models/add_labour_body.dart';
 import 'package:construction_app/models/add_labour_model.dart';
+import 'package:construction_app/models/add_ledger_model.dart';
 import 'package:construction_app/models/add_materials_body.dart';
 import 'package:construction_app/models/add_materials_model.dart';
 import 'package:construction_app/models/add_site_body.dart';
@@ -11,6 +12,7 @@ import 'package:construction_app/models/add_sub_stages_body.dart';
 import 'package:construction_app/models/add_sub_stages_model.dart';
 import 'package:construction_app/models/add_supplier_body.dart';
 import 'package:construction_app/models/add_supplier_model.dart';
+import 'package:construction_app/models/cash_book_model.dart';
 import 'package:construction_app/models/change_password_body.dart';
 import 'package:construction_app/models/create_user_body.dart';
 import 'package:construction_app/models/edit_profile_body.dart';
@@ -20,7 +22,9 @@ import 'package:construction_app/models/forgot_pass_verify_otp_model.dart';
 import 'package:construction_app/models/forgot_password_send_otp_Model.dart';
 import 'package:construction_app/models/get_categories_model.dart';
 import 'package:construction_app/models/get_company.dart';
+import 'package:construction_app/models/get_group_model.dart';
 import 'package:construction_app/models/get_labours_model.dart';
+import 'package:construction_app/models/get_ledger_model.dart';
 import 'package:construction_app/models/get_materials_model.dart';
 import 'package:construction_app/models/get_payment_model.dart';
 import 'package:construction_app/models/get_stages_model.dart';
@@ -100,6 +104,12 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
   SupplierDetailData? supplierDetail;
   ProfileData? profileData;
   PaymentDetailsModel? paymentDetailsModel;
+  GetGroupsModel? getGroupsModel;
+  GetLedgerModel? getLedgerModel;
+  List<Ledger> ledger = [];
+  CashBookModel? cashBookModel;
+  // List<CashBook> cashBookList =[];
+  CashBook? cashBookData;
 
 
   Future<void> createUser({
@@ -866,6 +876,7 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
     Function(String errorMessage)? onFailure,
     int siteId,
     int stageId,
+    int ledgerId,
     DateTime paymentDate,
     int amount,
     int paymentModeId,
@@ -876,6 +887,7 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
     PaymentBody paymentBody = PaymentBody(
       siteId: siteId,
       stageId: stageId,
+      ledgerId:ledgerId,
       paymentDate: paymentDate,
       amount: amount,
       paymentModeId: paymentModeId,
@@ -1662,6 +1674,229 @@ Future<ForgotPassVerifyOtpModel?> forgotPasswordVerifyOtp(
     }
   }
 
+
+
+  Future<AddledgerModel?>addLedger({
+    Function(String errorMessage)? onFailure,
+    required String name,
+    required int groupid
+  }) async {
+    updateLoadState(LoaderState.loading);
+    try {
+      var res = await serviceConfig.addLedger(name: name,groupid: groupid);
+      if (res.isError != true) {
+        final response = res.asValue!.value as AddledgerModel;
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return response;
+      }else{
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to add ledger");
+        if(res.asError!.error is ErrorResponseModel){
+          errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+        }
+        errorToast = errorMessage;
+        updateLoadState(LoaderState.loaded);
+        if(onFailure != null) onFailure(errorMessage);
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in updateLabour: $e");
+      updateLoadState(LoaderState.loaded);
+      if(onFailure != null) onFailure(e.toString());
+      notifyListeners();
+      return null;
+    }
+  }
+
+
+    Future<GetGroupsModel?> getGroups(
+    Function(String errorMessage)? onFailure,
+  )async{
+    updateLoadState(LoaderState.loading);
+    try {
+      var res = await serviceConfig.getGroup();
+      if(!res.isError){
+        final response = res.asValue!.value as GetGroupsModel;
+        getGroupsModel = response;
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return getGroupsModel;
+      }else{
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to get Ledger");
+        if(res.asError!.error is ErrorResponseModel){
+          errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+        }
+        errorToast = errorMessage;
+        if(onFailure != null) onFailure(errorMessage);
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in getGroup: $e");
+      updateLoadState(LoaderState.loaded);
+      if(onFailure != null) onFailure(e.toString());
+      notifyListeners();
+      return null;
+    }
+  }
+
+
+
+
+      Future<GetLedgerModel?> getLedger(
+    Function(String errorMessage)? onFailure,
+  )async{
+    updateLoadState(LoaderState.loading);
+    try {
+      var res = await serviceConfig.getLedger();
+      if(!res.isError){
+        final response = res.asValue!.value as GetLedgerModel;
+        getLedgerModel = response;
+        ledger = response.data; // IMPORTANT LINE
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return getLedgerModel;
+      }else{
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to get group");
+        if(res.asError!.error is ErrorResponseModel){
+          errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+        }
+        errorToast = errorMessage;
+        if(onFailure != null) onFailure(errorMessage);
+        updateLoadState(LoaderState.loaded);
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in getGroup: $e");
+      updateLoadState(LoaderState.loaded);
+      if(onFailure != null) onFailure(e.toString());
+      notifyListeners();
+      return null;
+    }
+  }
+
+
+  // Future<CashBookModel?> cashBook(
+  //    Function(String errorMessage)? onFailure,
+  //    int siteid,
+  //    String fromDate,
+  //    String toDate,
+  // )async{
+  //   updateLoadState(LoaderState.loading);
+  //   try {
+  //     var res = await serviceConfig.cashBook(
+  //       siteid,
+  //       fromDate,
+  //       toDate
+  //     );
+  //     if(!res.isError){
+  //       final response = res.asValue!.value as CashBookModel;
+  //       cashBookModel = response;
+  //       cashBookList = response.data; 
+  //       updateLoadState(LoaderState.loaded);
+  //       notifyListeners();
+  //       return cashBookModel;
+  //     }else{
+  //       String errorMessage = ErrorParser.getCleanErrorMessage(
+  //           res.asError!.error, "Failed to get group");
+  //       if(res.asError!.error is ErrorResponseModel){
+  //         errorMessage = (res.asError!.error as ErrorResponseModel).errorMessage ?? errorMessage;
+  //       }
+  //       errorToast = errorMessage;
+  //       if(onFailure != null) onFailure(errorMessage);
+  //       updateLoadState(LoaderState.loaded);
+  //       notifyListeners();
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     debugPrint("CompanyProvider: Error in getGroup: $e");
+  //     updateLoadState(LoaderState.loaded);
+  //     if(onFailure != null) onFailure(e.toString());
+  //     notifyListeners();
+  //     return null;
+  //   }
+  // }
+
+
+  Future<CashBookModel?> getCashBook(
+  Function(String errorMessage)? onFailure,
+  int siteid,
+  String fromDate,
+  String toDate,
+) async {
+
+  updateLoadState(LoaderState.loading);
+
+  try {
+
+    var res = await serviceConfig.cashBook(
+      siteid,
+      fromDate,
+      toDate,
+    );
+
+    if (!res.isError) {
+
+      final response = res.asValue!.value as CashBookModel;
+
+      cashBookModel = response;
+
+      cashBookData = response.data;
+
+      updateLoadState(LoaderState.loaded);
+
+      notifyListeners();
+
+      return cashBookModel;
+
+    } else {
+
+      String errorMessage = ErrorParser.getCleanErrorMessage(
+        res.asError!.error,
+        "Failed to get cash book",
+      );
+
+      if (res.asError!.error is ErrorResponseModel) {
+        errorMessage =
+            (res.asError!.error as ErrorResponseModel)
+                    .errorMessage ??
+                errorMessage;
+      }
+
+      errorToast = errorMessage;
+
+      if (onFailure != null) {
+        onFailure(errorMessage);
+      }
+
+      updateLoadState(LoaderState.loaded);
+
+      notifyListeners();
+
+      return null;
+    }
+
+  } catch (e) {
+
+    debugPrint("CompanyProvider: Error in getCashBook: $e");
+
+    updateLoadState(LoaderState.loaded);
+
+    if (onFailure != null) {
+      onFailure(e.toString());
+    }
+
+    notifyListeners();
+
+    return null;
+  }
+}
 
 
 

@@ -1,7 +1,520 @@
+
+// import 'package:construction_app/models/get_group_model.dart';
+// import 'package:construction_app/provider/company_provider.dart';
+// import 'package:construction_app/widgets/app_theme.dart';
+// import 'package:construction_app/widgets/common_widgets.dart';
+// import 'package:flutter/material.dart';
+// import 'package:google_fonts/google_fonts.dart';
+// import 'package:provider/provider.dart';
+
+
+// // ── Avatar color palette ───────────────────────────────────────────────────────
+
+// const List<Color> _avatarBgs = [
+//   Color(0xFFFEF3C7),
+//   Color(0xFFDBEAFE),
+//   Color(0xFFFEE2E2),
+//   Color(0xFFEDE9FE),
+//   Color(0xFFDCFCE7),
+//   Color(0xFFFED7AA),
+// ];
+
+// const List<Color> _avatarFgs = [
+//   Color(0xFFB45309),
+//   Color(0xFF1D4ED8),
+//   Color(0xFFB91C1C),
+//   Color(0xFF6D28D9),
+//   Color(0xFF15803D),
+//   Color(0xFFEA580C),
+// ];
+
+// // ── Ledger Model ──────────────────────────────────────────────────────────────
+
+// class LedgerEntry {
+//   final String id;
+//   final String name;
+//   final String group;
+
+//   LedgerEntry({
+//     required this.id,
+//     required this.name,
+//     required this.group,
+//   });
+// }
+
+// // ── Ledger Screen ─────────────────────────────────────────────────────────────
+
+// class LedgerScreen extends StatefulWidget {
+//   const LedgerScreen({super.key});
+
+//   @override
+//   State<LedgerScreen> createState() => _LedgerScreenState();
+// }
+
+// class _LedgerScreenState extends State<LedgerScreen> {
+//   String _search = '';
+
+//   // final List<LedgerEntry> _ledgers = [
+//   //   LedgerEntry(id: '1', name: 'Cash Account', group: 'Cash in Hand'),
+//   //   LedgerEntry(id: '2', name: 'HDFC Bank', group: 'Bank Accounts'),
+//   //   LedgerEntry(id: '3', name: 'Sales Revenue', group: 'Income'),
+//   // ];
+
+//   // List<LedgerEntry> get _filtered => _ledgers.where((l) {
+//   //       return l.name.toLowerCase().contains(_search.toLowerCase()) ||
+//   //           l.group.toLowerCase().contains(_search.toLowerCase());
+//   //     }).toList();
+
+//   Future<void> _openAddLedger() async {
+//     final result = await Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (_) => const AddLedgerScreen(),
+//       ),
+//     );
+
+//     if (result is LedgerEntry) {
+//       setState(() {
+//         _ledgers.add(result);
+//       });
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: AppColors.greyBg,
+//       body: Column(
+//         children: [
+//           // HEADER
+//           Container(
+//             color: AppColors.navy,
+//             padding: EdgeInsets.only(
+//               top: MediaQuery.of(context).padding.top + 16,
+//               bottom: 20,
+//               left: 20,
+//               right: 20,
+//             ),
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     Text(
+//                       'Accounts',
+//                       style: GoogleFonts.poppins(
+//                         fontSize: 15,
+//                         color: AppColors.greyLight,
+//                       ),
+//                     ),
+//                     Text(
+//                       'Ledger',
+//                       style: GoogleFonts.poppins(
+//                         fontSize: 22,
+//                         fontWeight: FontWeight.w600,
+//                         color: AppColors.white,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//                 GestureDetector(
+//                   onTap: _openAddLedger,
+//                   child: Container(
+//                     padding: const EdgeInsets.symmetric(
+//                       horizontal: 14,
+//                       vertical: 8,
+//                     ),
+//                     decoration: BoxDecoration(
+//                       color: AppColors.amber,
+//                       borderRadius: BorderRadius.circular(20),
+//                     ),
+//                     child: Row(
+//                       children: [
+//                         const Icon(
+//                           Icons.add,
+//                           size: 18,
+//                           color: AppColors.dark,
+//                         ),
+//                         const SizedBox(width: 4),
+//                         Text(
+//                           'Add',
+//                           style: GoogleFonts.poppins(
+//                             fontSize: 16,
+//                             fontWeight: FontWeight.w600,
+//                             color: AppColors.dark,
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+
+//           // SEARCH
+//           Padding(
+//             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+//             child: TextField(
+//               onChanged: (v) {
+//                 setState(() {
+//                   _search = v;
+//                 });
+//               },
+//               decoration: InputDecoration(
+//                 hintText: 'Search ledger',
+//                 prefixIcon: const Icon(Icons.search),
+//                 filled: true,
+//                 fillColor: AppColors.white,
+//                 border: OutlineInputBorder(
+//                   borderRadius: BorderRadius.circular(12),
+//                 ),
+//               ),
+//             ),
+//           ),
+
+//           // LIST
+//           Expanded(
+//             child: ListView.builder(
+//               padding: const EdgeInsets.all(16),
+//               itemCount: _filtered.length,
+//               itemBuilder: (_, i) {
+//                 final entry = _filtered[i];
+
+//                 return _LedgerCard(
+//                   entry: entry,
+//                   avatarBg: _avatarBgs[i % _avatarBgs.length],
+//                   avatarFg: _avatarFgs[i % _avatarFgs.length],
+//                 );
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// // ── Ledger Card ───────────────────────────────────────────────────────────────
+
+// class _LedgerCard extends StatelessWidget {
+//   final LedgerEntry entry;
+//   final Color avatarBg;
+//   final Color avatarFg;
+
+//   const _LedgerCard({
+//     required this.entry,
+//     required this.avatarBg,
+//     required this.avatarFg,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final initials = entry.name.substring(0, 2).toUpperCase();
+
+//     return Container(
+//       margin: const EdgeInsets.only(bottom: 12),
+//       padding: const EdgeInsets.all(14),
+//       decoration: BoxDecoration(
+//         color: AppColors.white,
+//         borderRadius: BorderRadius.circular(16),
+//       ),
+//       child: Row(
+//         children: [
+//           Container(
+//             width: 48,
+//             height: 48,
+//             decoration: BoxDecoration(
+//               color: avatarBg,
+//               borderRadius: BorderRadius.circular(14),
+//             ),
+//             child: Center(
+//               child: Text(
+//                 initials,
+//                 style: GoogleFonts.poppins(
+//                   fontWeight: FontWeight.w700,
+//                   color: avatarFg,
+//                 ),
+//               ),
+//             ),
+//           ),
+
+//           const SizedBox(width: 12),
+
+//           Expanded(
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   entry.name,
+//                   style: GoogleFonts.poppins(
+//                     fontSize: 15,
+//                     fontWeight: FontWeight.w600,
+//                   ),
+//                 ),
+//                 Text(
+//                   entry.group,
+//                   style: GoogleFonts.poppins(
+//                     fontSize: 12,
+//                     color: AppColors.grey,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// // ── Add Ledger Screen ─────────────────────────────────────────────────────────
+
+// class AddLedgerScreen extends StatefulWidget {
+//   const AddLedgerScreen({super.key});
+
+//   @override
+//   State<AddLedgerScreen> createState() => _AddLedgerScreenState();
+// }
+
+// class _AddLedgerScreenState extends State<AddLedgerScreen> {
+//   final _formKey = GlobalKey<FormState>();
+
+//   final TextEditingController _nameCtrl = TextEditingController();
+
+//   Groups? _selectedGroup;
+
+//   bool _saving = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     Future.microtask(() {
+//       context.read<CompanyProvider>().getGroups(
+//         (error) {
+//           debugPrint(error);
+//         },
+//       );
+//     });
+//   }
+
+//   Future<void> _save() async {
+//     if (!_formKey.currentState!.validate()) return;
+
+//     setState(() {
+//       _saving = true;
+//     });
+
+//     await context.read<CompanyProvider>().addLedger(
+//           name: _nameCtrl.text.trim(),
+//           groupid: _selectedGroup!.id,
+//         );
+
+//     await Future.delayed(const Duration(milliseconds: 500));
+
+//     setState(() {
+//       _saving = false;
+//     });
+
+//     if (!mounted) return;
+
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Text(
+//           'Ledger added successfully!',
+//           style: GoogleFonts.poppins(),
+//         ),
+//       ),
+//     );
+
+//     Navigator.pop(
+//       context,
+//       LedgerEntry(
+//         id: DateTime.now().millisecondsSinceEpoch.toString(),
+//         name: _nameCtrl.text.trim(),
+//         group: _selectedGroup!.name,
+//       ),
+//     );
+//   }
+
+//   @override
+//   void dispose() {
+//     _nameCtrl.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: AppColors.greyBg,
+//       body: Column(
+//         children: [
+//           // HEADER
+//           Container(
+//             color: AppColors.navy,
+//             padding: EdgeInsets.only(
+//               top: MediaQuery.of(context).padding.top + 10,
+//               bottom: 16,
+//               left: 10,
+//               right: 16,
+//             ),
+//             child: Row(
+//               children: [
+//                 IconButton(
+//                   onPressed: () {
+//                     Navigator.pop(context);
+//                   },
+//                   icon: const Icon(
+//                     Icons.arrow_back_ios_new,
+//                     color: AppColors.white,
+//                   ),
+//                 ),
+//                 Text(
+//                   'Add Ledger',
+//                   style: GoogleFonts.poppins(
+//                     fontSize: 18,
+//                     fontWeight: FontWeight.w600,
+//                     color: AppColors.white,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+
+//           // FORM
+//           Expanded(
+//             child: SingleChildScrollView(
+//               padding: const EdgeInsets.all(16),
+//               child: Form(
+//                 key: _formKey,
+//                 child: Container(
+//                   padding: const EdgeInsets.all(20),
+//                   decoration: BoxDecoration(
+//                     color: AppColors.white,
+//                     borderRadius: BorderRadius.circular(20),
+//                   ),
+//                   child: Column(
+//                     children: [
+//                       // NAME FIELD
+//                       AppTextField(
+//                         label: 'Ledger Name',
+//                         hint: 'Enter ledger name',
+//                         controller: _nameCtrl,
+//                         validator: (v) {
+//                           if (v == null || v.trim().isEmpty) {
+//                             return 'Ledger name required';
+//                           }
+//                           return null;
+//                         },
+//                       ),
+
+//                       const SizedBox(height: 18),
+
+//                       // GROUP DROPDOWN
+//                       Align(
+//                         alignment: Alignment.centerLeft,
+//                         child: Text(
+//                           'Group',
+//                           style: GoogleFonts.poppins(
+//                             fontSize: 13,
+//                             fontWeight: FontWeight.w600,
+//                           ),
+//                         ),
+//                       ),
+
+//                       const SizedBox(height: 8),
+
+//                       Consumer<CompanyProvider>(
+//                         builder: (context, provider, child) {
+//                           final groups =
+//                               provider.getGroupsModel?.data ?? [];
+
+//                           return DropdownButtonFormField<Groups>(
+//                             value: _selectedGroup,
+//                             isExpanded: true,
+//                             hint: Text(
+//                               'Select Group',
+//                               style: GoogleFonts.poppins(
+//                                 fontSize: 13,
+//                               ),
+//                             ),
+
+//                             decoration: InputDecoration(
+//                               filled: true,
+//                               fillColor: AppColors.white,
+//                               contentPadding:
+//                                   const EdgeInsets.symmetric(
+//                                 horizontal: 16,
+//                                 vertical: 14,
+//                               ),
+//                               border: OutlineInputBorder(
+//                                 borderRadius:
+//                                     BorderRadius.circular(12),
+//                               ),
+//                             ),
+
+//                             items: groups.map((group) {
+//                               return DropdownMenuItem<Groups>(
+//                                 value: group,
+//                                 child: Text(
+//                                   group.name,
+//                                   style: GoogleFonts.poppins(),
+//                                 ),
+//                               );
+//                             }).toList(),
+
+//                             onChanged: (value) {
+//                               setState(() {
+//                                 _selectedGroup = value;
+//                               });
+//                             },
+
+//                             validator: (value) {
+//                               if (value == null) {
+//                                 return 'Please select group';
+//                               }
+//                               return null;
+//                             },
+//                           );
+//                         },
+//                       ),
+
+//                       const SizedBox(height: 24),
+
+//                       // BUTTON
+//                       AppButton(
+//                         label: 'Save Ledger',
+//                         onPressed: _save,
+//                         isLoading: _saving,
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+import 'package:construction_app/models/edit_profile_body.dart';
+import 'package:construction_app/models/get_group_model.dart';
+import 'package:construction_app/models/get_ledger_model.dart';
+import 'package:construction_app/provider/company_provider.dart';
+import 'package:construction_app/services/provider_helper_class.dart';
 import 'package:construction_app/widgets/app_theme.dart';
 import 'package:construction_app/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 // ── Avatar color palette ───────────────────────────────────────────────────────
 
@@ -30,24 +543,12 @@ class LedgerEntry {
   final String name;
   final String group;
 
-  LedgerEntry({required this.id, required this.name, required this.group});
+  LedgerEntry({
+    required this.id,
+    required this.name,
+    required this.group,
+  });
 }
-
-// ── Sample groups ─────────────────────────────────────────────────────────────
-
-const List<String> kLedgerGroups = [
-  'Assets',
-  'Liabilities',
-  'Income',
-  'Expenses',
-  'Capital',
-  'Bank Accounts',
-  'Cash in Hand',
-  'Sundry Debtors',
-  'Sundry Creditors',
-  'Fixed Assets',
-  'Loans & Advances',
-];
 
 // ── Ledger Screen ─────────────────────────────────────────────────────────────
 
@@ -61,198 +562,248 @@ class LedgerScreen extends StatefulWidget {
 class _LedgerScreenState extends State<LedgerScreen> {
   String _search = '';
 
-  // Sample data — replace with provider/API call
-  final List<LedgerEntry> _ledgers = [
-    LedgerEntry(id: '1', name: 'Cash Account', group: 'Cash in Hand'),
-    LedgerEntry(id: '2', name: 'HDFC Bank', group: 'Bank Accounts'),
-    LedgerEntry(id: '3', name: 'Sales Revenue', group: 'Income'),
-    LedgerEntry(id: '4', name: 'Office Rent', group: 'Expenses'),
-    LedgerEntry(id: '5', name: 'Rajan Constructions', group: 'Sundry Creditors'),
-    LedgerEntry(id: '6', name: 'Kerala Cement Depot', group: 'Sundry Debtors'),
-  ];
-
-  List<LedgerEntry> get _filtered => _ledgers
-      .where((l) =>
-          l.name.toLowerCase().contains(_search.toLowerCase()) ||
-          l.group.toLowerCase().contains(_search.toLowerCase()))
-      .toList();
 
   Future<void> _openAddLedger() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const AddLedgerScreen()),
+      MaterialPageRoute(
+        builder: (_) => const AddLedgerScreen(),
+      ),
     );
-    if (result is LedgerEntry) {
-      setState(() => _ledgers.add(result));
+
+    if (result != null && mounted) {
+       await context.read<CompanyProvider>().getLedger(
+      (error) {
+        debugPrint(error);
+      },
+    );
+      setState(() {
+        
+      });
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.greyBg,
-      body: Column(
-        children: [
-          // ── Header ────────────────────────────────────────────────────
-          Container(
-            color: AppColors.navy,
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 16,
-              bottom: 20,
-              left: 20,
-              right: 20,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+  void initState() {
+    //context.read<CompanyProvider>().getLedger(null);
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CompanyProvider>().getLedger(null);
+    });
+  }
+
+@override
+Widget build(BuildContext context) {
+  return Consumer<CompanyProvider>(
+    builder: (context, provider, child) {
+
+      // LOADING
+      if (provider.loaderState == LoaderState.loading) {
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      }
+
+      // ERROR
+      if (provider.loaderState == LoaderState.error) {
+        return const Scaffold(
+          body: Center(
+            child: Text('Something went wrong'),
+          ),
+        );
+      }
+
+      // NULL CHECK
+      final data = provider.getLedgerModel;
+
+      if (data == null || data.data.isEmpty) {
+        return Scaffold(
+          backgroundColor: AppColors.greyBg,
+          body: Column(
+            children: [
+              Container(
+                color: AppColors.navy,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 16,
+                  bottom: 20,
+                  left: 20,
+                  right: 20,
+                ),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Accounts',
-                      style: GoogleFonts.poppins(
-                        fontSize: 15,
-                        color: AppColors.greyLight,
-                      ),
-                    ),
-                    Text(
-                      'Ledger',
-                      style: GoogleFonts.poppins(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.white,
-                      ),
+                    Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Accounts',
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            color: AppColors.greyLight,
+                          ),
+                        ),
+                        Text(
+                          'Ledger',
+                          style: GoogleFonts.poppins(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                GestureDetector(
-                  onTap: _openAddLedger,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.amber,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.add, size: 18, color: AppColors.dark),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Add',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+              ),
+
+              const Expanded(
+                child: Center(
+                  child: Text("No Ledger Found"),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return Scaffold(
+        backgroundColor: AppColors.greyBg,
+        body: Column(
+          children: [
+
+            // HEADER
+            Container(
+              color: AppColors.navy,
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 16,
+                bottom: 20,
+                left: 20,
+                right: 20,
+              ),
+              child: Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Accounts',
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          color: AppColors.greyLight,
+                        ),
+                      ),
+                      Text(
+                        'Ledger',
+                        style: GoogleFonts.poppins(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  GestureDetector(
+                    onTap: _openAddLedger,
+                    child: Container(
+                      padding:
+                          const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.amber,
+                        borderRadius:
+                            BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.add,
+                            size: 18,
                             color: AppColors.dark,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 4),
+                          Text(
+                            'Add',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight:
+                                  FontWeight.w600,
+                              color: AppColors.dark,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-
-          // ── Search bar ────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-            child: TextField(
-              onChanged: (v) => setState(() => _search = v),
-              style: GoogleFonts.poppins(fontSize: 15),
-              decoration: InputDecoration(
-                hintText: 'Search ledger by name or group',
-                filled: true,
-                fillColor: AppColors.white,
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: AppColors.grey,
-                  size: 20,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      const BorderSide(color: AppColors.amber, width: 2),
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                ],
               ),
             ),
-          ),
 
-          // ── Count ─────────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 6, 16, 4),
-            child: Row(
-              children: [
-                Text(
-                  '${_filtered.length} ledger${_filtered.length == 1 ? '' : 's'}',
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.grey,
+            // SEARCH
+            Padding(
+              padding:
+                  const EdgeInsets.fromLTRB(
+                      16, 12, 16, 4),
+              child: TextField(
+                onChanged: (v) {
+                  setState(() {
+                    _search = v;
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search ledger',
+                  prefixIcon:
+                      const Icon(Icons.search),
+                  filled: true,
+                  fillColor: AppColors.white,
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(12),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
 
-          // ── List ──────────────────────────────────────────────────────
-          Expanded(
-            child: _filtered.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.account_balance_wallet_outlined,
-                            size: 52, color: AppColors.greyLight),
-                        const SizedBox(height: 12),
-                        Text(
-                          _search.isEmpty
-                              ? 'No ledgers yet.\nTap Add to create one.'
-                              : 'No results for "$_search"',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: AppColors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                    itemCount: _filtered.length,
-                    itemBuilder: (_, i) {
-                      final entry = _filtered[i];
-                      final colorIdx = i % _avatarBgs.length;
-                      return _LedgerCard(
-                        entry: entry,
-                        avatarBg: _avatarBgs[colorIdx],
-                        avatarFg: _avatarFgs[colorIdx],
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
+            // LIST
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: data.data.length,
+                itemBuilder: (_, i) {
+
+                  final entry = data.data[i];
+
+                  return _LedgerCard(
+                    entry: entry,
+                    avatarBg:
+                        _avatarBgs[i % _avatarBgs.length],
+                    avatarFg:
+                        _avatarFgs[i % _avatarFgs.length],
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
-
+}
 // ── Ledger Card ───────────────────────────────────────────────────────────────
 
 class _LedgerCard extends StatelessWidget {
-  final LedgerEntry entry;
+  final Ledger entry;
   final Color avatarBg;
   final Color avatarFg;
 
@@ -264,21 +815,17 @@ class _LedgerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initials = entry.name.trim().isNotEmpty
-        ? entry.name.trim().substring(0, entry.name.trim().length >= 2 ? 2 : 1).toUpperCase()
-        : '??';
+    final initials = entry.name.substring(0, 2).toUpperCase();
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
-          // Avatar
           Container(
             width: 48,
             height: 48,
@@ -290,16 +837,15 @@ class _LedgerCard extends StatelessWidget {
               child: Text(
                 initials,
                 style: GoogleFonts.poppins(
-                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: avatarFg,
                 ),
               ),
             ),
           ),
+
           const SizedBox(width: 12),
 
-          // Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,43 +855,16 @@ class _LedgerCard extends StatelessWidget {
                   style: GoogleFonts.poppins(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.dark,
                   ),
                 ),
-                const SizedBox(height: 3),
-                Row(
-                  children: [
-                    const Icon(Icons.folder_outlined,
-                        size: 13, color: AppColors.greyLight),
-                    const SizedBox(width: 4),
-                    Text(
-                      entry.group,
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: AppColors.grey,
-                      ),
-                    ),
-                  ],
+                Text(
+                  entry.groupName,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: AppColors.grey,
+                  ),
                 ),
               ],
-            ),
-          ),
-
-          // Group badge
-          Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.amberLight,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              entry.group,
-              style: GoogleFonts.poppins(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: AppColors.amberDark,
-              ),
             ),
           ),
         ],
@@ -365,29 +884,52 @@ class AddLedgerScreen extends StatefulWidget {
 
 class _AddLedgerScreenState extends State<AddLedgerScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameCtrl = TextEditingController();
-  String? _selectedGroup;
+
+  final TextEditingController _nameCtrl = TextEditingController();
+
+  Groups? _selectedGroup;
+
   bool _saving = false;
 
-  void _save() async {
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      context.read<CompanyProvider>().getGroups(
+        (error) {
+          debugPrint(error);
+        },
+      );
+    });
+  }
+
+  Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _saving = true);
 
-    // Simulate API save — replace with your provider call
-    await Future.delayed(const Duration(milliseconds: 600));
+    setState(() {
+      _saving = true;
+    });
 
-    setState(() => _saving = false);
+    await context.read<CompanyProvider>().addLedger(
+          name: _nameCtrl.text.trim(),
+          groupid: _selectedGroup!.id,
+        );
+
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    setState(() {
+      _saving = false;
+    });
+
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
           'Ledger added successfully!',
-          style: GoogleFonts.poppins(fontSize: 13),
+          style: GoogleFonts.poppins(),
         ),
-        backgroundColor: AppColors.green,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
 
@@ -396,7 +938,7 @@ class _AddLedgerScreenState extends State<AddLedgerScreen> {
       LedgerEntry(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: _nameCtrl.text.trim(),
-        group: _selectedGroup!,
+        group: _selectedGroup!.name,
       ),
     );
   }
@@ -413,27 +955,28 @@ class _AddLedgerScreenState extends State<AddLedgerScreen> {
       backgroundColor: AppColors.greyBg,
       body: Column(
         children: [
-          // ── Header ──────────────────────────────────────────────────
+          // HEADER
           Container(
             color: AppColors.navy,
             padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 8,
+              top: MediaQuery.of(context).padding.top + 10,
               bottom: 16,
-              left: 8,
+              left: 10,
               right: 16,
             ),
             child: Row(
               children: [
                 IconButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   icon: const Icon(
-                    Icons.arrow_back_ios_new_rounded,
+                    Icons.arrow_back_ios_new,
                     color: AppColors.white,
-                    size: 18,
                   ),
                 ),
                 Text(
-                  'Add New Ledger',
+                  'Add Ledger',
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -444,7 +987,7 @@ class _AddLedgerScreenState extends State<AddLedgerScreen> {
             ),
           ),
 
-          // ── Form ────────────────────────────────────────────────────
+          // FORM
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -455,105 +998,96 @@ class _AddLedgerScreenState extends State<AddLedgerScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.white,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.border),
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Section heading
-                      Text(
-                        'Ledger Details',
-                        style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.dark,
-                        ),
-                      ),
-                      Text(
-                        'Fill in the name and assign a group for this ledger account.',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: AppColors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Name
+                      // NAME FIELD
                       AppTextField(
-                        label: 'Ledger Name *',
-                        hint: 'e.g. HDFC Bank Current Account',
+                        label: 'Ledger Name',
+                        hint: 'Enter ledger name',
                         controller: _nameCtrl,
-                        validator: (v) =>
-                            v == null || v.trim().isEmpty
-                                ? 'Ledger name is required'
-                                : null,
+                        validator: (v) {
+                          if (v == null || v.trim().isEmpty) {
+                            return 'Ledger name required';
+                          }
+                          return null;
+                        },
                       ),
 
-                      // Group dropdown
-                      Text(
-                        'Group *',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.dark,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      DropdownButtonFormField<String>(
-                        value: _selectedGroup,
-                        hint: Text(
-                          'Select group',
+                      const SizedBox(height: 18),
+
+                      // GROUP DROPDOWN
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Group',
                           style: GoogleFonts.poppins(
                             fontSize: 13,
-                            color: AppColors.greyLight,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        isExpanded: true,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: AppColors.white,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 14),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                const BorderSide(color: AppColors.border),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                const BorderSide(color: AppColors.border),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                                color: AppColors.amber, width: 2),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide:
-                                const BorderSide(color: AppColors.red),
-                          ),
-                        ),
-                        items: kLedgerGroups
-                            .map(
-                              (g) => DropdownMenuItem(
-                                value: g,
-                                child: Text(
-                                  g,
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 14, color: AppColors.dark),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (v) => setState(() => _selectedGroup = v),
-                        validator: (v) =>
-                            v == null ? 'Please select a group' : null,
                       ),
+
+                      const SizedBox(height: 8),
+
+                      Consumer<CompanyProvider>(
+                        builder: (context, provider, child) {
+                          final groups =
+                              provider.getGroupsModel?.data ?? [];
+
+                          return DropdownButtonFormField<Groups>(
+                            value: _selectedGroup,
+                            isExpanded: true,
+                            hint: Text(
+                              'Select Group',
+                              style: GoogleFonts.poppins(
+                                fontSize: 13,
+                              ),
+                            ),
+
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppColors.white,
+                              contentPadding:
+                                  const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.circular(12),
+                              ),
+                            ),
+
+                            items: groups.map((group) {
+                              return DropdownMenuItem<Groups>(
+                                value: group,
+                                child: Text(
+                                  group.name,
+                                  style: GoogleFonts.poppins(),
+                                ),
+                              );
+                            }).toList(),
+
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedGroup = value;
+                              });
+                            },
+
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please select group';
+                              }
+                              return null;
+                            },
+                          );
+                        },
+                      ),
+
                       const SizedBox(height: 24),
 
-                      // Save button
+                      // BUTTON
                       AppButton(
                         label: 'Save Ledger',
                         onPressed: _save,

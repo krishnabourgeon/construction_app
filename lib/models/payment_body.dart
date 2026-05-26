@@ -11,6 +11,7 @@ String paymentBodyToJson(PaymentBody data) => json.encode(data.toJson());
 class PaymentBody {
     int siteId;
     int stageId;
+    int ledgerId;
     DateTime paymentDate;
     int amount;
     int paymentModeId;
@@ -20,6 +21,7 @@ class PaymentBody {
     PaymentBody({
         required this.siteId,
         required this.stageId,
+        required this.ledgerId,
         required this.paymentDate,
         required this.amount,
         required this.paymentModeId,
@@ -30,6 +32,7 @@ class PaymentBody {
     factory PaymentBody.fromJson(Map<String, dynamic> json) => PaymentBody(
         siteId: json["site_id"],
         stageId: json["stage_id"],
+        ledgerId: json["ledger_id"],
         paymentDate: DateTime.parse(json["payment_date"]),
         amount: json["amount"],
         paymentModeId: json["payment_mode_id"],
@@ -40,6 +43,7 @@ class PaymentBody {
     Map<String, dynamic> toJson() => {
         "site_id": siteId,
         "stage_id": stageId,
+        "ledger_id": ledgerId,
         "payment_date": "${paymentDate.year.toString().padLeft(4, '0')}-${paymentDate.month.toString().padLeft(2, '0')}-${paymentDate.day.toString().padLeft(2, '0')}",
         "amount": amount,
         "payment_mode_id": paymentModeId,
