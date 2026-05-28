@@ -71,28 +71,30 @@ class _PaymentScreenState extends State<PaymentScreen>
 
   Future<void> _loadPlans() async {
     setState(() => _isLoading = true);
-    final result = await context.read<CompanyProvider>().getPaymentDetails(
-      (error) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(error, style: GoogleFonts.poppins(fontSize: 13)),
-              backgroundColor: AppColors.red,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+    final result = await context.read<CompanyProvider>().getPaymentDetails((
+      error,
+    ) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error, style: GoogleFonts.poppins(fontSize: 13)),
+            backgroundColor: AppColors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-          );
-        }
-      },
-    );
+          ),
+        );
+      }
+    });
 
     if (!mounted) return;
     setState(() {
       _plans = result?.data ?? [];
       // Default select the plan with a badge (best value) if available
       final badgeIndex = _plans.indexWhere(
-          (p) => p.badge != null && p.badge!.isNotEmpty);
+        (p) => p.badge != null && p.badge!.isNotEmpty,
+      );
       _selectedPlanIndex = badgeIndex >= 0 ? badgeIndex : 0;
       _isLoading = false;
     });
@@ -108,7 +110,7 @@ class _PaymentScreenState extends State<PaymentScreen>
 
     _paymentService.openCheckout(
       amount: priceInPaise,
-      name: 'RealLine Pro',
+      name: 'BproPro',
       description: '${selectedPlan.name} Subscription',
       email: 'customer@email.com',
       contact: '9876543210',
@@ -118,7 +120,9 @@ class _PaymentScreenState extends State<PaymentScreen>
   void _onPaymentSuccess(PaymentSuccessResponse response) async {
     if (!mounted) return;
     await SharedPreferenceHelper.saveTrialInfo(daysLeft: 30, expired: false);
-    await SharedPreferenceHelper.saveSubscriptionExpiry(DateTime.now().add(const Duration(days: 30)));
+    await SharedPreferenceHelper.saveSubscriptionExpiry(
+      DateTime.now().add(const Duration(days: 30)),
+    );
     _showSuccessDialog();
   }
 
@@ -132,8 +136,7 @@ class _PaymentScreenState extends State<PaymentScreen>
         ),
         backgroundColor: AppColors.red,
         behavior: SnackBarBehavior.floating,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -155,10 +158,7 @@ class _PaymentScreenState extends State<PaymentScreen>
             color: AppColors.white,
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 40,
-              ),
+              BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 40),
             ],
           ),
           child: Column(
@@ -171,8 +171,11 @@ class _PaymentScreenState extends State<PaymentScreen>
                   color: AppColors.greenLight,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.check_circle_rounded,
-                    color: AppColors.green, size: 44),
+                child: const Icon(
+                  Icons.check_circle_rounded,
+                  color: AppColors.green,
+                  size: 44,
+                ),
               ),
               const SizedBox(height: 20),
               Text(
@@ -185,7 +188,7 @@ class _PaymentScreenState extends State<PaymentScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                'Welcome to RealLine Pro.\nYour subscription is now active.',
+                'Welcome to BproPro.\nYour subscription is now active.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                   fontSize: 14,
@@ -205,7 +208,9 @@ class _PaymentScreenState extends State<PaymentScreen>
                     if (role.toLowerCase() == 'supervisor') {
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (_) => const MainUserScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const MainUserScreen(),
+                        ),
                         (route) => false,
                       );
                     } else {
@@ -220,13 +225,16 @@ class _PaymentScreenState extends State<PaymentScreen>
                     backgroundColor: AppColors.amber,
                     foregroundColor: AppColors.dark,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     elevation: 0,
                   ),
                   child: Text(
                     'Go to Dashboard',
                     style: GoogleFonts.poppins(
-                        fontSize: 15, fontWeight: FontWeight.w700),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -251,8 +259,11 @@ class _PaymentScreenState extends State<PaymentScreen>
           automaticallyImplyLeading: !_isTrialExpired,
           leading: !_isTrialExpired
               ? IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                      color: AppColors.white, size: 20),
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: AppColors.white,
+                    size: 20,
+                  ),
                   onPressed: () => Navigator.pop(context),
                 )
               : null,
@@ -269,9 +280,11 @@ class _PaymentScreenState extends State<PaymentScreen>
           children: [
             // Background decorative circles
             Positioned(
-              top: -60, right: -60,
+              top: -60,
+              right: -60,
               child: Container(
-                width: 200, height: 200,
+                width: 200,
+                height: 200,
                 decoration: BoxDecoration(
                   color: AppColors.amber.withOpacity(0.08),
                   shape: BoxShape.circle,
@@ -279,9 +292,11 @@ class _PaymentScreenState extends State<PaymentScreen>
               ),
             ),
             Positioned(
-              top: 120, left: -80,
+              top: 120,
+              left: -80,
               child: Container(
-                width: 220, height: 220,
+                width: 220,
+                height: 220,
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.03),
                   shape: BoxShape.circle,
@@ -319,7 +334,10 @@ class _PaymentScreenState extends State<PaymentScreen>
           decoration: BoxDecoration(
             color: AppColors.amber.withOpacity(0.15),
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.amber.withOpacity(0.3), width: 2),
+            border: Border.all(
+              color: AppColors.amber.withOpacity(0.3),
+              width: 2,
+            ),
           ),
           child: const Icon(
             Icons.lock_person_rounded,
@@ -389,18 +407,22 @@ class _PaymentScreenState extends State<PaymentScreen>
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 8),
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.amber.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                      color: AppColors.amber.withOpacity(0.3)),
+                  border: Border.all(color: AppColors.amber.withOpacity(0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.lock_open_rounded,
-                        color: AppColors.amber, size: 16),
+                    const Icon(
+                      Icons.lock_open_rounded,
+                      color: AppColors.amber,
+                      size: 16,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       'Upgrade to Continue',
@@ -415,7 +437,7 @@ class _PaymentScreenState extends State<PaymentScreen>
               ),
               const SizedBox(height: 16),
               Text(
-                'Continue Your\nRealLine Access',
+                'Continue Your\nBproAccess',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                   fontSize: 28,
@@ -454,60 +476,56 @@ class _PaymentScreenState extends State<PaymentScreen>
             ),
             child: _isLoading
                 ? const Center(
-                    child: CircularProgressIndicator(
-                        color: AppColors.amber),
+                    child: CircularProgressIndicator(color: AppColors.amber),
                   )
                 : _plans.isEmpty
-                    ? _buildEmptyState()
-                    : SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(
-                            20, 28, 20, 24),
-                        child: Column(
+                ? _buildEmptyState()
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
+                    child: Column(
+                      children: [
+                        // Plan cards
+                        ..._plans.asMap().entries.map((entry) {
+                          return _PlanCard(
+                            plan: entry.value,
+                            isSelected: entry.key == _selectedPlanIndex,
+                            onTap: () =>
+                                setState(() => _selectedPlanIndex = entry.key),
+                          );
+                        }),
+
+                        const SizedBox(height: 8),
+
+                        // Pay button
+                        _PayButton(
+                          label: 'Pay ${_plans[_selectedPlanIndex].priceLabel}',
+                          onPressed: _handlePayment,
+                        ),
+
+                        const SizedBox(height: 14),
+
+                        // Security note
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Plan cards
-                            ..._plans.asMap().entries.map((entry) {
-                              return _PlanCard(
-                                plan: entry.value,
-                                isSelected:
-                                    entry.key == _selectedPlanIndex,
-                                onTap: () => setState(
-                                    () => _selectedPlanIndex =
-                                        entry.key),
-                              );
-                            }),
-
-                            const SizedBox(height: 8),
-
-                            // Pay button
-                            _PayButton(
-                              label:
-                                  'Pay ${_plans[_selectedPlanIndex].priceLabel}',
-                              onPressed: _handlePayment,
+                            const Icon(
+                              Icons.lock_rounded,
+                              size: 12,
+                              color: AppColors.greyLight,
                             ),
-
-                            const SizedBox(height: 14),
-
-                            // Security note
-                            Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.lock_rounded,
-                                    size: 12,
-                                    color: AppColors.greyLight),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Secure payment · Cancel anytime',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 11,
-                                    color: AppColors.greyLight,
-                                  ),
-                                ),
-                              ],
+                            const SizedBox(width: 4),
+                            Text(
+                              'Secure payment · Cancel anytime',
+                              style: GoogleFonts.poppins(
+                                fontSize: 11,
+                                color: AppColors.greyLight,
+                              ),
                             ),
                           ],
                         ),
-                      ),
+                      ],
+                    ),
+                  ),
           ),
         ),
       ],
@@ -519,24 +537,31 @@ class _PaymentScreenState extends State<PaymentScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline_rounded,
-              color: AppColors.greyLight, size: 48),
+          const Icon(
+            Icons.error_outline_rounded,
+            color: AppColors.greyLight,
+            size: 48,
+          ),
           const SizedBox(height: 12),
           Text(
             'No plans available',
             style: GoogleFonts.poppins(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: AppColors.grey),
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: AppColors.grey,
+            ),
           ),
           const SizedBox(height: 8),
           TextButton(
             onPressed: _loadPlans,
-            child: Text('Retry',
-                style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.amber)),
+            child: Text(
+              'Retry',
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AppColors.amber,
+              ),
+            ),
           ),
         ],
       ),
@@ -596,10 +621,9 @@ class _PlanCard extends StatelessWidget {
   });
 
   // Plans with a badge use amber, others use navy
-  Color get _planColor =>
-      (plan.badge != null && plan.badge!.isNotEmpty)
-          ? AppColors.amber
-          : AppColors.navy;
+  Color get _planColor => (plan.badge != null && plan.badge!.isNotEmpty)
+      ? AppColors.amber
+      : AppColors.navy;
 
   @override
   Widget build(BuildContext context) {
@@ -612,8 +636,8 @@ class _PlanCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? (plan.badge != null && plan.badge!.isNotEmpty
-                  ? AppColors.amberLight
-                  : const Color(0xFFEEF2FF))
+                    ? AppColors.amberLight
+                    : const Color(0xFFEEF2FF))
               : AppColors.white,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
@@ -626,7 +650,7 @@ class _PlanCard extends StatelessWidget {
                     color: _planColor.withOpacity(0.15),
                     blurRadius: 16,
                     offset: const Offset(0, 4),
-                  )
+                  ),
                 ]
               : [],
         ),
@@ -635,7 +659,8 @@ class _PlanCard extends StatelessWidget {
             // Radio button
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: 22, height: 22,
+              width: 22,
+              height: 22,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isSelected ? _planColor : Colors.transparent,
@@ -669,7 +694,9 @@ class _PlanCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.amber,
                             borderRadius: BorderRadius.circular(6),
@@ -742,7 +769,9 @@ class _PlanCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 2),
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.greenLight,
                       borderRadius: BorderRadius.circular(6),
@@ -801,13 +830,17 @@ class _PayButton extends StatelessWidget {
             backgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.payment_rounded,
-                  size: 20, color: AppColors.dark),
+              const Icon(
+                Icons.payment_rounded,
+                size: 20,
+                color: AppColors.dark,
+              ),
               const SizedBox(width: 8),
               Text(
                 label,

@@ -147,7 +147,7 @@
 //               children: [
 //                 Text(
 //                   daysLeft == 1
-//                       ? 'Continue Your RealLine Access!'
+//                       ? 'Continue Your BproAccess!'
 //                       : 'Free Trial: $daysLeft days left',
 //                   style: GoogleFonts.poppins(
 //                     fontSize: 13,
@@ -325,9 +325,6 @@
 //   }
 // }
 
-
-
-
 import 'package:construction_app/services/shared_preference_helper.dart';
 import 'package:construction_app/view/company/payment_subscription_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
@@ -354,12 +351,12 @@ class _TrialBannerWidgetState extends State<TrialBannerWidget> {
 
   Future<void> _loadTrialInfo() async {
     final daysLeft = await SharedPreferenceHelper.getTrialDaysLeft();
-    final expired  = await SharedPreferenceHelper.getTrialExpired();
+    final expired = await SharedPreferenceHelper.getTrialExpired();
     if (mounted) {
       setState(() {
-        _daysLeft      = daysLeft;
-        _trialExpired  = expired;
-        _loaded        = true;
+        _daysLeft = daysLeft;
+        _trialExpired = expired;
+        _loaded = true;
       });
     }
   }
@@ -438,7 +435,7 @@ class _TrialActiveBanner extends StatelessWidget {
               children: [
                 Text(
                   daysLeft == 1
-                      ? 'Continue Your RealLine Access!'
+                      ? 'Continue Your BproAccess!'
                       : 'Free Trial: $daysLeft days left',
                   style: GoogleFonts.poppins(
                     fontSize: 13,
@@ -517,8 +514,11 @@ class _ExpiredBanner extends StatelessWidget {
                 color: AppColors.amber.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.lock_rounded,
-                  color: AppColors.amber, size: 22),
+              child: const Icon(
+                Icons.lock_rounded,
+                color: AppColors.amber,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(

@@ -252,7 +252,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                       fontSize: 18, fontWeight: FontWeight.w700,
                       color: AppColors.dark)),
               const SizedBox(height: 6),
-              Text('Are you sure you want to sign out\nfrom RealLine?',
+              Text('Are you sure you want to sign out\nfrom Bpro?',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                       fontSize: 13, color: AppColors.grey, height: 1.5)),
@@ -401,7 +401,7 @@ class _Header extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'RealLine',
+                            'Bpro',
                             style: GoogleFonts.poppins(
                               fontSize: 22,
                               fontWeight: FontWeight.w800,

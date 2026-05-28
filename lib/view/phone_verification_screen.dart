@@ -571,7 +571,7 @@ class _PhoneVerificationScreenState extends State<PhoneVerificationScreen>
                           const SizedBox(height: 22),
 
                           Text(
-                            'Build Smarter with RealLine',
+                            'Build Smarter with Bpro',
                             style: GoogleFonts.poppins(
                               fontSize: 25,
                               fontWeight: FontWeight.w800,

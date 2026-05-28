@@ -415,7 +415,7 @@
 //                             ),
 //                             const SizedBox(height: 6),
 //                             Text(
-//                               'Set a strong password to secure your\nRealLine account.',
+//                               'Set a strong password to secure your\nBproaccount.',
 //                               style: GoogleFonts.poppins(
 //                                   fontSize: 14,
 //                                   color: AppColors.grey,
@@ -725,7 +725,6 @@
 //   }
 // }
 
-
 import 'package:construction_app/provider/company_provider.dart';
 import 'package:construction_app/view/login_screen.dart';
 import 'package:construction_app/view/registration_screen.dart';
@@ -739,7 +738,12 @@ class CreatePasswordScreen extends StatefulWidget {
   final String phoneNumber;
   final int companyId;
   final String regtoken;
-  const CreatePasswordScreen({super.key, required this.phoneNumber, required this.companyId, required this.regtoken});
+  const CreatePasswordScreen({
+    super.key,
+    required this.phoneNumber,
+    required this.companyId,
+    required this.regtoken,
+  });
 
   @override
   State<CreatePasswordScreen> createState() => _CreatePasswordScreenState();
@@ -768,10 +772,12 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     });
   }
 
-  int get _strengthScore =>
-      [_hasMinLength, _hasUpperCase, _hasNumber, _hasSpecialChar]
-          .where((e) => e)
-          .length;
+  int get _strengthScore => [
+    _hasMinLength,
+    _hasUpperCase,
+    _hasNumber,
+    _hasSpecialChar,
+  ].where((e) => e).length;
 
   Color get _strengthColor {
     if (_strengthScore <= 1) return const Color(0xFFDC2626);
@@ -797,7 +803,6 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         password: _passwordController.text,
         confirmPassword: _confirmController.text,
         companyId: widget.companyId,
-
       );
       await Future.delayed(const Duration(seconds: 1));
       if (!mounted) return;
@@ -838,8 +843,11 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       color: AppColors.amber,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Icon(Icons.domain_rounded,
-                        color: AppColors.navy, size: 28),
+                    child: const Icon(
+                      Icons.domain_rounded,
+                      color: AppColors.navy,
+                      size: 28,
+                    ),
                   ),
                   const SizedBox(height: 14),
                   Text(
@@ -855,7 +863,10 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                     'Complete your company registration\nto get started.',
                     textAlign: TextAlign.center,
                     style: GoogleFonts.poppins(
-                        fontSize: 13, color: AppColors.greyLight, height: 1.5),
+                      fontSize: 13,
+                      color: AppColors.greyLight,
+                      height: 1.5,
+                    ),
                   ),
                 ],
               ),
@@ -869,18 +880,24 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   // Trial badge
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 10),
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.amberLight,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                          color: AppColors.amber.withOpacity(0.3)),
+                        color: AppColors.amber.withOpacity(0.3),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.star_rounded,
-                            color: AppColors.amber, size: 16),
+                        const Icon(
+                          Icons.star_rounded,
+                          color: AppColors.amber,
+                          size: 16,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           '15-Day Free Trial Included',
@@ -903,7 +920,11 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => CompanyRegisterScreen(companyID: widget.companyId,regtoken: widget.regtoken,)),
+                            builder: (_) => CompanyRegisterScreen(
+                              companyID: widget.companyId,
+                              regtoken: widget.regtoken,
+                            ),
+                          ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -911,12 +932,15 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                         foregroundColor: AppColors.dark,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       child: Text(
                         'Complete Registration',
                         style: GoogleFonts.poppins(
-                            fontSize: 14, fontWeight: FontWeight.w600),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -930,16 +954,18 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => const LoginScreen()),
+                            builder: (_) => const LoginScreen(),
+                          ),
                           (route) => false,
                         );
                       },
                       child: Text(
                         'Skip for now',
                         style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.grey),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.grey,
+                        ),
                       ),
                     ),
                   ),
@@ -960,8 +986,11 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         backgroundColor: AppColors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              size: 18, color: AppColors.dark),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 18,
+            color: AppColors.dark,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -983,8 +1012,11 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                     color: AppColors.navy.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Icon(Icons.lock_outline_rounded,
-                      color: AppColors.navy, size: 26),
+                  child: const Icon(
+                    Icons.lock_outline_rounded,
+                    color: AppColors.navy,
+                    size: 26,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Text(
@@ -999,7 +1031,10 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 Text(
                   'Set a strong password to secure your account.',
                   style: GoogleFonts.poppins(
-                      fontSize: 14, color: AppColors.grey, height: 1.5),
+                    fontSize: 14,
+                    color: AppColors.grey,
+                    height: 1.5,
+                  ),
                 ),
 
                 const SizedBox(height: 36),
@@ -1012,7 +1047,9 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   obscureText: _obscurePassword,
                   onChanged: _analyzePassword,
                   style: GoogleFonts.poppins(
-                      fontSize: 15, color: AppColors.dark),
+                    fontSize: 15,
+                    color: AppColors.dark,
+                  ),
                   decoration: _inputDecoration(
                     hint: 'Enter your password',
                     suffixIcon: IconButton(
@@ -1039,18 +1076,21 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      ...List.generate(4, (i) => Expanded(
-                        child: Container(
-                          height: 3,
-                          margin: EdgeInsets.only(right: i < 3 ? 4 : 0),
-                          decoration: BoxDecoration(
-                            color: i < _strengthScore
-                                ? _strengthColor
-                                : AppColors.border,
-                            borderRadius: BorderRadius.circular(2),
+                      ...List.generate(
+                        4,
+                        (i) => Expanded(
+                          child: Container(
+                            height: 3,
+                            margin: EdgeInsets.only(right: i < 3 ? 4 : 0),
+                            decoration: BoxDecoration(
+                              color: i < _strengthScore
+                                  ? _strengthColor
+                                  : AppColors.border,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
                           ),
                         ),
-                      )),
+                      ),
                       const SizedBox(width: 10),
                       Text(
                         _strengthLabel,
@@ -1084,7 +1124,9 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   controller: _confirmController,
                   obscureText: _obscureConfirm,
                   style: GoogleFonts.poppins(
-                      fontSize: 15, color: AppColors.dark),
+                    fontSize: 15,
+                    color: AppColors.dark,
+                  ),
                   decoration: _inputDecoration(
                     hint: 'Re-enter your password',
                     suffixIcon: IconButton(
@@ -1120,7 +1162,8 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                       backgroundColor: AppColors.amber,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     child: _isLoading
                         ? const SizedBox(
@@ -1128,8 +1171,9 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation(AppColors.white),
+                              valueColor: AlwaysStoppedAnimation(
+                                AppColors.white,
+                              ),
                             ),
                           )
                         : Text(
@@ -1153,24 +1197,22 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   }
 
   Widget _buildLabel(String text) => Text(
-        text,
-        style: GoogleFonts.poppins(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: AppColors.dark,
-        ),
-      );
+    text,
+    style: GoogleFonts.poppins(
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+      color: AppColors.dark,
+    ),
+  );
 
   InputDecoration _inputDecoration({required String hint, Widget? suffixIcon}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle:
-          GoogleFonts.poppins(fontSize: 14, color: AppColors.greyLight),
+      hintStyle: GoogleFonts.poppins(fontSize: 14, color: AppColors.greyLight),
       filled: true,
       fillColor: const Color(0xFFF8F9FC),
       suffixIcon: suffixIcon,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: AppColors.border),
@@ -1216,9 +1258,7 @@ class _CheckChip extends StatelessWidget {
         color: active ? AppColors.greenLight : AppColors.greyBg,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: active
-              ? AppColors.green.withOpacity(0.4)
-              : AppColors.border,
+          color: active ? AppColors.green.withOpacity(0.4) : AppColors.border,
         ),
       ),
       child: Row(

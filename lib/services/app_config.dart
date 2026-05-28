@@ -16,6 +16,7 @@ class AppConfig {
   static String? customerNumber;
   static String? regtoken;
   static String? settings;
-  static int? version = 1;
+  static String? version = "1";
+  static String? iosversion = "1";
   static int? companyId;
 }

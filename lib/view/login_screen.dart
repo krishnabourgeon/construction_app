@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
     await provider.login(
       onSuccess: (role, trialExpired) {
         Helpers.successToast('Login Successful');
-        
+
         if (trialExpired) {
           Navigator.pushReplacement(
             context,
@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'RealLine Constructions',
+                    'BproConstructions',
                     style: GoogleFonts.poppins(
                       color: AppColors.white,
                       fontSize: 26,

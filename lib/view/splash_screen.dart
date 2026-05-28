@@ -144,6 +144,7 @@
 // Replace your existing splash_screen.dart with this file
 // ══════════════════════════════════════════════════════════════════════════════
 
+import 'package:construction_app/provider/version_provider.dart';
 import 'package:construction_app/view/company/payment_subscription_screen.dart';
 import 'package:construction_app/view/phone_verification_screen.dart';
 import 'package:construction_app/widgets/app_theme.dart';
@@ -224,11 +225,32 @@ class _SplashScreenState extends State<SplashScreen>
     //   return;
     // }
 
-    final trialExpired = await SharedPreferenceHelper.getTrialExpired();
-    if (trialExpired) {
-      _navigate(const PaymentScreen());
-      return;
-    }
+    // final trialExpired = await SharedPreferenceHelper.getTrialExpired();
+    // if (trialExpired) {
+    //   _navigate(const PaymentScreen());
+    //   return;
+    // }
+
+
+    /// ── CHECK APP UPDATE ─────────────────────────────────────────────
+final versionProvider = VersionProvider();
+
+await versionProvider.fetchVersion();
+
+final isUpdateAvailable = versionProvider.isUpdateAvailable();
+
+if (isUpdateAvailable) {
+  _navigate(const MainScreen());
+  return;
+}
+
+/// ── CHECK TRIAL ─────────────────────────────────────────────────
+final trialExpired = await SharedPreferenceHelper.getTrialExpired();
+
+if (trialExpired) {
+  _navigate(const PaymentScreen());
+  return;
+}
 
     // ── All good → go to dashboard ───────────────────────────────────────
     _navigate(
@@ -322,7 +344,7 @@ class _SplashScreenState extends State<SplashScreen>
                     const SizedBox(height: 28),
 
                     Text(
-                      'RealLine',
+                      'Bpro',
                       style: GoogleFonts.poppins(
                         color: AppColors.white,
                         fontSize: 36,
