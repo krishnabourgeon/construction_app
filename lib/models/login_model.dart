@@ -136,6 +136,8 @@ class Data {
     int? trialDaysLeft;
     bool? trialExpired;
     String dashboard;
+    bool? showpaymentpopup;
+    String? subscriptionstatus;
 
     Data({
         required this.id,
@@ -151,6 +153,8 @@ class Data {
         this.trialDaysLeft,
         this.trialExpired,
         required this.dashboard,
+        this.showpaymentpopup,
+        this.subscriptionstatus
     });
 
     factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -167,6 +171,8 @@ class Data {
         trialDaysLeft: json["trial_days_left"],
         trialExpired: json["trial_expired"],
         dashboard: json["dashboard"] ?? "",
+        showpaymentpopup: json["show_payment_popup"],
+        subscriptionstatus: json["subscription_status"]
     );
 
     Map<String, dynamic> toJson() => {
@@ -183,5 +189,7 @@ class Data {
         "trial_days_left": trialDaysLeft,
         "trial_expired": trialExpired,
         "dashboard": dashboard,
+        "show_payment_popup": showpaymentpopup,
+        "subscription_status": subscriptionstatus
     };
 }

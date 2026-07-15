@@ -657,6 +657,40 @@ Widget build(BuildContext context) {
                         ),
                       ],
                     ),
+                    GestureDetector(
+                      onTap: _openAddLedger,
+                      child: Container(
+                        padding:
+                            const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.amber,
+                          borderRadius:
+                              BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.add,
+                              size: 18,
+                              color: AppColors.dark,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Add',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight:
+                                    FontWeight.w600,
+                                color: AppColors.dark,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

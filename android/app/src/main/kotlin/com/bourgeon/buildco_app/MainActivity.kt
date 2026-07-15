@@ -1,4 +1,4 @@
-package com.example.construction_app
+package com.bourgeon.buildco_app
 
 import io.flutter.embedding.android.FlutterActivity
 

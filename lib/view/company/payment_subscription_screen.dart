@@ -119,7 +119,7 @@ class _PaymentScreenState extends State<PaymentScreen>
 
   void _onPaymentSuccess(PaymentSuccessResponse response) async {
     if (!mounted) return;
-    await SharedPreferenceHelper.saveTrialInfo(daysLeft: 30, expired: false);
+    await SharedPreferenceHelper.saveTrialInfo(daysLeft: 30, expired: false, );
     await SharedPreferenceHelper.saveSubscriptionExpiry(
       DateTime.now().add(const Duration(days: 30)),
     );
