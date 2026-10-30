@@ -33,10 +33,17 @@ class _MaterialsDetailScreenState extends State<MaterialsDetailScreen> {
 void initState() {
   super.initState();
 
+  // Clear stale data from a previously viewed site before this screen's first paint.
+  context.read<CompanyProvider>().totalSpentDetail = null;
+
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    context.read<CompanyProvider>()
-        .getTotalSpentDetail(siteId: widget.siteId);
+    _refresh();
   });
+}
+
+Future<void> _refresh() async {
+  await context.read<CompanyProvider>()
+      .getTotalSpentDetail(siteId: widget.siteId);
 }
   @override
   Widget build(BuildContext context) {
@@ -106,13 +113,18 @@ void initState() {
 
           // Materials Table
           Expanded(
-            child: ListView.builder(
-              itemCount: materials.length,
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              itemBuilder: (context, index) {
-                final mat = materials[index];
-                return MaterialExpenseCard(materials: mat);
-              },
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              color: AppColors.amber,
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: materials.length,
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                itemBuilder: (context, index) {
+                  final mat = materials[index];
+                  return MaterialExpenseCard(materials: mat);
+                },
+              ),
             ),
           ),
           // // ✅ FINAL CLEAN VERSION
@@ -332,10 +344,20 @@ void initState() {
     );
   }
 
+// String _formatAmt(double v) {
+//   if (v >= 10000000) return '₹${(v / 10000000).toStringAsFixed(1)}Cr';
+//   if (v >= 100000) return '₹${(v / 100000).toStringAsFixed(1)}L';
+//   if (v >= 1000) return '₹${(v / 1000).toStringAsFixed(1)}K';
+//   return '₹${v.toStringAsFixed(0)}';
+// }
 String _formatAmt(double v) {
-  if (v >= 10000000) return '₹${(v / 10000000).toStringAsFixed(1)}Cr';
-  if (v >= 100000) return '₹${(v / 100000).toStringAsFixed(1)}L';
-  if (v >= 1000) return '₹${(v / 1000).toStringAsFixed(1)}K';
+  if (v >= 10000000) {
+    return '₹${(v / 10000000).toStringAsFixed(2)} Cr';
+  }
+  if (v >= 100000) {
+    return '₹${(v / 100000).toStringAsFixed(2)} L';
+  }
   return '₹${v.toStringAsFixed(0)}';
 }
+
 }

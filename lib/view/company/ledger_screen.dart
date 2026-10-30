@@ -585,12 +585,13 @@ class _LedgerScreenState extends State<LedgerScreen> {
 
   @override
   void initState() {
-    //context.read<CompanyProvider>().getLedger(null);
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CompanyProvider>().getLedger(null);
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
+  }
+
+  Future<void> _refresh() async {
+    await context.read<CompanyProvider>().getLedger(null);
   }
 
 @override
@@ -695,9 +696,17 @@ Widget build(BuildContext context) {
                 ),
               ),
 
-              const Expanded(
-                child: Center(
-                  child: Text("No Ledger Found"),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _refresh,
+                  color: AppColors.amber,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: const [
+                      SizedBox(height: 200),
+                      Center(child: Text("No Ledger Found")),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -810,21 +819,26 @@ Widget build(BuildContext context) {
 
             // LIST
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: data.data.length,
-                itemBuilder: (_, i) {
+              child: RefreshIndicator(
+                onRefresh: _refresh,
+                color: AppColors.amber,
+                child: ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  itemCount: data.data.length,
+                  itemBuilder: (_, i) {
 
-                  final entry = data.data[i];
+                    final entry = data.data[i];
 
-                  return _LedgerCard(
-                    entry: entry,
-                    avatarBg:
-                        _avatarBgs[i % _avatarBgs.length],
-                    avatarFg:
-                        _avatarFgs[i % _avatarFgs.length],
-                  );
-                },
+                    return _LedgerCard(
+                      entry: entry,
+                      avatarBg:
+                          _avatarBgs[i % _avatarBgs.length],
+                      avatarFg:
+                          _avatarFgs[i % _avatarFgs.length],
+                    );
+                  },
+                ),
               ),
             ),
           ],

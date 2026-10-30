@@ -12,7 +12,7 @@ class AddMaterialsBody {
     int siteId;
     int categoryId;
     String name;
-    int qty;
+    double qty;
     int unitId;
     int price;
     int totalAmount;

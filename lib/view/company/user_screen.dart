@@ -40,9 +40,11 @@ class _UserScreenState extends State<UserScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CompanyProvider>().getSupervisors();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
+  }
+
+  Future<void> _refresh() async {
+    await context.read<CompanyProvider>().getSupervisors();
   }
 
   String _search = '';
@@ -192,29 +194,34 @@ class _UserScreenState extends State<UserScreen> {
 
           // ── List ────────────────────────────────────────────────────────
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-              itemCount: _filtered.length,
-              itemBuilder: (_, i) {
-                final supervisor = _filtered[i];
-                final colorIdx = i % _avatarBgs.length;
-                return _UserCard(
-                  supervisor: supervisor,
-                  avatarBg: _avatarBgs[colorIdx],
-                  avatarFg: _avatarFgs[colorIdx],
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => UserDetailScreen(
-                        //user: user,
-                        supervisor: supervisor,
-                        avatarBg: _avatarBgs[colorIdx],
-                        avatarFg: _avatarFgs[colorIdx],
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              color: AppColors.amber,
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final supervisor = _filtered[i];
+                  final colorIdx = i % _avatarBgs.length;
+                  return _UserCard(
+                    supervisor: supervisor,
+                    avatarBg: _avatarBgs[colorIdx],
+                    avatarFg: _avatarFgs[colorIdx],
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => UserDetailScreen(
+                          //user: user,
+                          supervisor: supervisor,
+                          avatarBg: _avatarBgs[colorIdx],
+                          avatarFg: _avatarFgs[colorIdx],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         ],

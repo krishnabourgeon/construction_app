@@ -541,7 +541,7 @@ class _MainScreenState extends State<MainScreen>
     super.initState();
 
     _checkRegistration();
-    _checkTrial();
+    // _checkTrial();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<VersionProvider>().fetchVersion();
@@ -562,15 +562,15 @@ class _MainScreenState extends State<MainScreen>
   }
 
   // ── Check whether trial has expired ───────────────────────────────────────
-  Future<void> _checkTrial() async {
-    final subscriptionStatus = await SharedPreferenceHelper.getSubscriptionStatus();
-
-    if (mounted) {
-      // Only block the app when status is explicitly 'expired'
-      // 'paid' or 'trial' (active) → never block
-      setState(() => _isTrialExpired = subscriptionStatus == 'expired');
-    }
-  }
+  // Future<void> _checkTrial() async {
+  //   final subscriptionStatus = await SharedPreferenceHelper.getSubscriptionStatus();
+  //
+  //   if (mounted) {
+  //     // Only block the app when status is explicitly 'expired'
+  //     // 'paid' or 'trial' (active) → never block
+  //     setState(() => _isTrialExpired = subscriptionStatus == 'expired');
+  //   }
+  // }
 
   Future<void> _checkRegistration() async {
     final companyId = await SharedPreferenceHelper.getCompanyId();
@@ -619,13 +619,12 @@ class _MainScreenState extends State<MainScreen>
 
     return Scaffold(
       // ── Bottom Sheet Priority ──────────────────────────────────────────────
-      bottomSheet: isUpdateAvailable
-          ? _updateBottomSheet(versionProvider)
-          : (_isTrialExpired ? _paymentBottomSheet() : null),
+      bottomSheet:
+          isUpdateAvailable ? _updateBottomSheet(versionProvider) : null,
 
       // ── Block app if locked/update ────────────────────────────────────────
       body: IgnorePointer(
-        ignoring: _isTrialExpired || isUpdateAvailable,
+        ignoring: isUpdateAvailable,
         child: IndexedStack(
           index: _currentIndex,
           children: _screens,
@@ -649,116 +648,116 @@ class _MainScreenState extends State<MainScreen>
   // PAYMENT SHEET
   // ──────────────────────────────────────────────────────────────────────────
 
-  Widget _paymentBottomSheet() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 20,
-            offset: const Offset(0, -6),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: AppColors.border,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
+  // Widget _paymentBottomSheet() {
+  //   return Container(
+  //     padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+  //     decoration: BoxDecoration(
+  //       color: AppColors.white,
+  //       borderRadius: const BorderRadius.vertical(
+  //         top: Radius.circular(20),
+  //       ),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.black.withOpacity(0.15),
+  //           blurRadius: 20,
+  //           offset: const Offset(0, -6),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Column(
+  //       mainAxisSize: MainAxisSize.min,
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Center(
+  //           child: Container(
+  //             width: 40,
+  //             height: 4,
+  //             margin: const EdgeInsets.only(bottom: 20),
+  //             decoration: BoxDecoration(
+  //               color: AppColors.border,
+  //               borderRadius: BorderRadius.circular(2),
+  //             ),
+  //           ),
+  //         ),
 
-          Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: AppColors.amberLight,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.lock_rounded,
-                  color: AppColors.amber,
-                  size: 22,
-                ),
-              ),
+  //         Row(
+  //           children: [
+  //             Container(
+  //               width: 44,
+  //               height: 44,
+  //               decoration: BoxDecoration(
+  //                 color: AppColors.amberLight,
+  //                 borderRadius: BorderRadius.circular(12),
+  //               ),
+  //               child: const Icon(
+  //                 Icons.lock_rounded,
+  //                 color: AppColors.amber,
+  //                 size: 22,
+  //               ),
+  //             ),
 
-              const SizedBox(width: 14),
+  //             const SizedBox(width: 14),
 
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Trial Expired',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.dark,
-                    ),
-                  ),
-                  Text(
-                    'Subscribe to regain full access',
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: AppColors.greyLight,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+  //             Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Text(
+  //                   'Trial Expired',
+  //                   style: GoogleFonts.poppins(
+  //                     fontSize: 16,
+  //                     fontWeight: FontWeight.w700,
+  //                     color: AppColors.dark,
+  //                   ),
+  //                 ),
+  //                 Text(
+  //                   'Subscribe to regain full access',
+  //                   style: GoogleFonts.poppins(
+  //                     fontSize: 12,
+  //                     color: AppColors.greyLight,
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ],
+  //         ),
 
-          const SizedBox(height: 20),
+  //         const SizedBox(height: 20),
 
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const PaymentScreen(),
-                  ),
-                );
+  //         SizedBox(
+  //           width: double.infinity,
+  //           height: 50,
+  //           child: ElevatedButton(
+  //             onPressed: () async {
+  //               await Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(
+  //                   builder: (_) => const PaymentScreen(),
+  //                 ),
+  //               );
 
-                _checkTrial();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.amber,
-                foregroundColor: AppColors.dark,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: Text(
-                'SUBSCRIBE NOW',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  //               _checkTrial();
+  //             },
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: AppColors.amber,
+  //               foregroundColor: AppColors.dark,
+  //               elevation: 0,
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(12),
+  //               ),
+  //             ),
+  //             child: Text(
+  //               'SUBSCRIBE NOW',
+  //               style: GoogleFonts.poppins(
+  //                 fontSize: 14,
+  //                 fontWeight: FontWeight.w700,
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // ──────────────────────────────────────────────────────────────────────────
   // UPDATE SHEET

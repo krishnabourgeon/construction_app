@@ -29,26 +29,37 @@ class _PaymentListScreenState extends State<PaymentListScreen> {
   void initState() {
     super.initState();
 
-    Future.microtask(() async {
-      final provider = context.read<CompanyProvider>();
-      final companyId = await SharedPreferenceHelper.getCompanyId();
+    // Clear stale data from the other payment type / previously viewed site before first paint.
+    final provider = context.read<CompanyProvider>();
+    provider.paymentsList = [];
+    provider.loaderState = LoaderState.loading;
 
-      /// Load Sites
-      await provider.sitesbycompanies(companyId: companyId);
+    Future.microtask(_refresh);
+  }
 
-      /// Load Payments for the first site by default
-      if (provider.sitesList.isNotEmpty) {
-        setState(() {
-          selectedSite = provider.sitesList.first;
-        });
-        provider.getPayments(
-          siteId: selectedSite!.id,
-          paymentType: widget.paymentType,
-          fromDate: fromDate?.toString() ?? "",
-          toDate: toDate?.toString() ?? "",
-        );
-      }
-    });
+  Future<void> _refresh() async {
+    final provider = context.read<CompanyProvider>();
+    final companyId = await SharedPreferenceHelper.getCompanyId();
+
+    /// Load Sites
+    await provider.sitesbycompanies(companyId: companyId);
+
+    /// Load Payments for the selected site, defaulting to the first site
+    if (provider.sitesList.isNotEmpty) {
+      final currentSiteId = selectedSite?.id;
+      setState(() {
+        selectedSite = currentSiteId != null &&
+                provider.sitesList.any((s) => s.id == currentSiteId)
+            ? provider.sitesList.firstWhere((s) => s.id == currentSiteId)
+            : provider.sitesList.first;
+      });
+      await provider.getPayments(
+        siteId: selectedSite!.id,
+        paymentType: widget.paymentType,
+        fromDate: fromDate?.toString() ?? "",
+        toDate: toDate?.toString() ?? "",
+      );
+    }
   }
 
   @override
@@ -215,14 +226,25 @@ class _PaymentListScreenState extends State<PaymentListScreen> {
           Expanded(
             child: provider.loaderState == LoaderState.loading
                 ? const Center(child: CircularProgressIndicator())
-                : payments.isEmpty
-                ? const Center(child: Text("No data found"))
-                : ListView.builder(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: payments.length,
-                    itemBuilder: (_, i) {
-                      return _paymentCard(payments[i]);
-                    },
+                : RefreshIndicator(
+                    onRefresh: _refresh,
+                    color: AppColors.amber,
+                    child: payments.isEmpty
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: const [
+                              SizedBox(height: 200),
+                              Center(child: Text("No data found")),
+                            ],
+                          )
+                        : ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.all(12),
+                            itemCount: payments.length,
+                            itemBuilder: (_, i) {
+                              return _paymentCard(payments[i]);
+                            },
+                          ),
                   ),
           ),
         ],

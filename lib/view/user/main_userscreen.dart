@@ -27,22 +27,22 @@ class _MainUserScreenState extends State<MainUserScreen> {
   @override
   void initState() {
     super.initState();
-    _checkTrial();
+    //_checkTrial();
   }
 
-  Future<void> _checkTrial() async {
-    final expired = await SharedPreferenceHelper.getTrialExpired();
-    final hasSub = await SharedPreferenceHelper.hasSubscription();
-    if (expired && !hasSub) {
-      if (mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const PaymentScreen()),
-          (route) => false,
-        );
-      }
-    }
-  }
+  // Future<void> _checkTrial() async {
+  //   final expired = await SharedPreferenceHelper.getTrialExpired();
+  //   final hasSub = await SharedPreferenceHelper.hasSubscription();
+  //   if (expired && !hasSub) {
+  //     if (mounted) {
+  //       Navigator.pushAndRemoveUntil(
+  //         context,
+  //         MaterialPageRoute(builder: (_) => const PaymentScreen()),
+  //         (route) => false,
+  //       );
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

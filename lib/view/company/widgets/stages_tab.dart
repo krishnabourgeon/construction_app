@@ -26,10 +26,18 @@ class WorkingStagesTabState extends State<WorkingStagesTab> {
   void initState() {
     super.initState();
 
-    Future.microtask(() {
-      context.read<CompanyProvider>().getStages(siteId: widget.site.id ?? 0);
-      context.read<CompanyProvider>().getSubStages(siteId: widget.site.id ?? 0);
-    });
+    // Clear stale data from a previously viewed site before this screen's first paint.
+    final provider = context.read<CompanyProvider>();
+    provider.stagesList = [];
+    provider.subStagesList = [];
+
+    Future.microtask(_refresh);
+  }
+
+  Future<void> _refresh() async {
+    final provider = context.read<CompanyProvider>();
+    await provider.getStages(siteId: widget.site.id ?? 0);
+    await provider.getSubStages(siteId: widget.site.id ?? 0);
   }
 
   @override
@@ -98,26 +106,31 @@ class WorkingStagesTabState extends State<WorkingStagesTab> {
         const Divider(height: 1, thickness: 1.5, color: Color(0xFFE5E7EB)),
         // Stages list
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-            itemCount: provider.subStagesList.length,
-            itemBuilder: (context, index) {
-              final stage = provider.subStagesList[index];
-              final isExpanded = expandedStageId == stage.id.toString();
+          child: RefreshIndicator(
+            onRefresh: _refresh,
+            color: AppColors.amber,
+            child: ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              itemCount: provider.subStagesList.length,
+              itemBuilder: (context, index) {
+                final stage = provider.subStagesList[index];
+                final isExpanded = expandedStageId == stage.id.toString();
 
-              return _StageCard(
-                stage: stage,
-                siteName: widget.site.sitename ?? "",
-                isExpanded: isExpanded,
-                onToggle: () {
-                  setState(() {
-                    expandedStageId = expandedStageId == stage.id.toString()
-                        ? null
-                        : stage.id.toString();
-                  });
-                },
-              );
-            },
+                return _StageCard(
+                  stage: stage,
+                  siteName: widget.site.sitename ?? "",
+                  isExpanded: isExpanded,
+                  onToggle: () {
+                    setState(() {
+                      expandedStageId = expandedStageId == stage.id.toString()
+                          ? null
+                          : stage.id.toString();
+                    });
+                  },
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -267,70 +280,70 @@ class _StageCard extends StatelessWidget {
         children: [
           // Cost pills
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 13,),
             child: Row(
               children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(9),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFEF9C3),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          '₹${(0.0 / 100000).toStringAsFixed(1)}L',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF854D0E),
-                          ),
-                        ),
-                        const SizedBox(height: 1),
-                        const Text(
-                          'MATERIALS',
-                          style: TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFFA16207),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(9),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDCFCE7),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          '₹${(0.0 / 100000).toStringAsFixed(1)}L',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF15803D),
-                          ),
-                        ),
-                        const SizedBox(height: 1),
-                        const Text(
-                          'LABOUR',
-                          style: TextStyle(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF166534),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                // Expanded(
+                //   child: Container(
+                //     padding: const EdgeInsets.all(9),
+                //     decoration: BoxDecoration(
+                //       color: const Color(0xFFFEF9C3),
+                //       borderRadius: BorderRadius.circular(10),
+                //     ),
+                //     child: Column(
+                //       children: [
+                //         Text(
+                //           '₹${(0.0 / 100000).toStringAsFixed(1)}L',
+                //           style: const TextStyle(
+                //             fontSize: 15,
+                //             fontWeight: FontWeight.w700,
+                //             color: Color(0xFF854D0E),
+                //           ),
+                //         ),
+                //         const SizedBox(height: 1),
+                //         const Text(
+                //           'MATERIALS',
+                //           style: TextStyle(
+                //             fontSize: 9,
+                //             fontWeight: FontWeight.w700,
+                //             color: Color(0xFFA16207),
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                // const SizedBox(width: 8),
+                // Expanded(
+                //   child: Container(
+                //     padding: const EdgeInsets.all(9),
+                //     decoration: BoxDecoration(
+                //       color: const Color(0xFFDCFCE7),
+                //       borderRadius: BorderRadius.circular(10),
+                //     ),
+                //     child: Column(
+                //       children: [
+                //         Text(
+                //           '₹${(0.0 / 100000).toStringAsFixed(1)}L',
+                //           style: const TextStyle(
+                //             fontSize: 15,
+                //             fontWeight: FontWeight.w700,
+                //             color: Color(0xFF15803D),
+                //           ),
+                //         ),
+                //         const SizedBox(height: 1),
+                //         const Text(
+                //           'LABOUR',
+                //           style: TextStyle(
+                //             fontSize: 9,
+                //             fontWeight: FontWeight.w700,
+                //             color: Color(0xFF166534),
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

@@ -29,6 +29,7 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
   final _priceCtrl = TextEditingController();
   final _supplierCtrl = TextEditingController();
   final _dateCtrl = TextEditingController();
+  DateTime _selectedDate = DateTime.now();
   int? _selectedCategoryId;
   int? _selectedUnitId;
   int? _selectedSupplierId;
@@ -54,7 +55,7 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
   @override
   void initState() {
     super.initState();
-    _dateCtrl.text = _formatDate(DateTime.now());
+    _dateCtrl.text = _formatDate(_selectedDate);
     
     // Listen to text changes for autocomplete
     _nameCtrl.addListener(_onNameChanged);
@@ -256,11 +257,12 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
     );
     if (picked != null) {
       setState(() {
+        _selectedDate = picked;
         _dateCtrl.text = _formatDate(picked);
       });
     }
   }
- 
+
   void _save() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedCategoryId == null) {
@@ -291,12 +293,12 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
       siteId: widget.subStages.siteId,
       substageId: widget.subStages.id,
       name: _nameCtrl.text.trim(),
-      quantity: int.tryParse(_qtyCtrl.text) ?? 0,
+      quantity: double.tryParse(_qtyCtrl.text) ?? 0,
       unitId: _selectedUnitId!,
       price: int.tryParse(_priceCtrl.text) ?? 0,
       totalAmount: _totalAmount.toInt(),
       supplierId: _selectedSupplierId!, // Defaulting for now
-      addedDate: DateTime.now(),
+      addedDate: _selectedDate,
       categoryId: _selectedCategoryId!,
       onFailure: (errorMessage) {
         ScaffoldMessenger.of(context).showSnackBar(

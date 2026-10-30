@@ -25,27 +25,34 @@ class _SiteWiseReportsScreenState extends State<SiteWiseReportsScreen> {
   void initState() {
     super.initState();
     selectedSite = widget.site;
-    
-    Future.microtask(() async {
-      final provider = context.read<CompanyProvider>();
-      
-      // Ensure sites are loaded
-      if (provider.sitesList.isEmpty) {
-        final companyId = await SharedPreferenceHelper.getCompanyId();
-        await provider.sitesbycompanies(companyId: companyId);
-      }
-      
-      // If no site was passed, use the first one from the list
-      if (selectedSite == null && provider.sitesList.isNotEmpty) {
-        setState(() {
-          selectedSite = provider.sitesList.first;
-        });
-      }
-      
-      if (selectedSite != null) {
-        provider.getSiteDetailReport(siteId: selectedSite!.id);
-      }
-    });
+
+    // Clear stale data from a previously viewed site before this screen's first paint.
+    final provider = context.read<CompanyProvider>();
+    provider.siteDetailReport = null;
+    provider.loaderState = LoaderState.loading;
+
+    Future.microtask(_refresh);
+  }
+
+  Future<void> _refresh() async {
+    final provider = context.read<CompanyProvider>();
+
+    // Ensure sites are loaded
+    if (provider.sitesList.isEmpty) {
+      final companyId = await SharedPreferenceHelper.getCompanyId();
+      await provider.sitesbycompanies(companyId: companyId);
+    }
+
+    // If no site was passed, use the first one from the list
+    if (selectedSite == null && provider.sitesList.isNotEmpty) {
+      setState(() {
+        selectedSite = provider.sitesList.first;
+      });
+    }
+
+    if (selectedSite != null) {
+      await provider.getSiteDetailReport(siteId: selectedSite!.id);
+    }
   }
 
   @override
@@ -101,32 +108,45 @@ class _SiteWiseReportsScreenState extends State<SiteWiseReportsScreen> {
             child: Consumer<CompanyProvider>(
               builder: (context, provider, child) {
                 final reportData = provider.siteDetailReport;
-                
+
                 if (provider.loaderState == LoaderState.loading) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                
-                if (selectedSite == null) {
-                  return const Center(child: Text("Please select a site to view report"));
-                }
-                
-                if (reportData == null) {
-                  return const Center(child: Text("No report data available for this site"));
-                }
-                
-                return SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: _SiteReportCard(
-                      site: reportData,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => SiteDetailReportScreen(site: reportData),
-                        ),
-                      ),
-                    ),
-                  ),
+
+                return RefreshIndicator(
+                  onRefresh: _refresh,
+                  color: AppColors.amber,
+                  child: selectedSite == null
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: const [
+                            SizedBox(height: 200),
+                            Center(child: Text("Please select a site to view report")),
+                          ],
+                        )
+                      : reportData == null
+                          ? ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: const [
+                                SizedBox(height: 200),
+                                Center(child: Text("No report data available for this site")),
+                              ],
+                            )
+                          : SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: _SiteReportCard(
+                                  site: reportData,
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => SiteDetailReportScreen(site: reportData),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                 );
               }
             ),
@@ -318,10 +338,19 @@ class _SiteReportCard extends StatelessWidget {
     );
   }
 
+  // String _formatAmt(double v) {
+  //   if (v >= 10000000) return '₹${(v / 10000000).toStringAsFixed(1)}Cr';
+  //   if (v >= 100000) return '₹${(v / 100000).toStringAsFixed(1)}L';
+  //   if (v >= 1000) return '₹${(v / 1000).toStringAsFixed(1)}K';
+  //   return '₹${v.toStringAsFixed(0)}';
+  // }
   String _formatAmt(double v) {
-    if (v >= 10000000) return '₹${(v / 10000000).toStringAsFixed(1)}Cr';
-    if (v >= 100000) return '₹${(v / 100000).toStringAsFixed(1)}L';
-    if (v >= 1000) return '₹${(v / 1000).toStringAsFixed(1)}K';
-    return '₹${v.toStringAsFixed(0)}';
+  if (v >= 10000000) {
+    return '₹${(v / 10000000).toStringAsFixed(2)} Cr';
   }
+  if (v >= 100000) {
+    return '₹${(v / 100000).toStringAsFixed(2)} L';
+  }
+  return '₹${v.toStringAsFixed(0)}';
+}
 }

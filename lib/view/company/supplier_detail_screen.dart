@@ -51,9 +51,19 @@ class _SupplierDetailScreenState extends State<SupplierDetailScreen> {
     void initState() {
     // TODO: implement initState
     super.initState();
+
+    // Clear stale data from a previously viewed supplier before this screen's first paint.
+    final provider = context.read<CompanyProvider>();
+    provider.supplierDetail = null;
+    provider.loaderState = LoaderState.loading;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CompanyProvider>().getSupplierDetail(supplierId:widget.supplier.id);
+      _refresh();
     });
+  }
+
+  Future<void> _refresh() async {
+    await context.read<CompanyProvider>().getSupplierDetail(supplierId: widget.supplier.id);
   }
 
   @override
@@ -73,17 +83,22 @@ class _SupplierDetailScreenState extends State<SupplierDetailScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 final supplierDetail = provider.supplierDetail;
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildContactCard(supplierDetail),
-                      const SizedBox(height: 14),
-                      _buildStatsRow(supplierDetail),
-                      const SizedBox(height: 18),
-                      _buildMaterialsSection(supplierDetail),
-                    ],
+                return RefreshIndicator(
+                  onRefresh: _refresh,
+                  color: AppColors.amber,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildContactCard(supplierDetail),
+                        const SizedBox(height: 14),
+                        _buildStatsRow(supplierDetail),
+                        const SizedBox(height: 18),
+                        _buildMaterialsSection(supplierDetail),
+                      ],
+                    ),
                   ),
                 );
               },

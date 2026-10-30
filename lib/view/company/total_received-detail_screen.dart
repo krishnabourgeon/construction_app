@@ -29,11 +29,19 @@ class _TotalReceivedDetailScreenState extends State<TotalReceivedDetailScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Clear stale data from a previously viewed site before this screen's first paint.
+    context.read<CompanyProvider>().totalReceived = null;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CompanyProvider>().getTotalReceivedDetail(
-        siteId: widget.siteId,
-      );
+      _refresh();
     });
+  }
+
+  Future<void> _refresh() async {
+    await context.read<CompanyProvider>().getTotalReceivedDetail(
+      siteId: widget.siteId,
+    );
   }
 
   @override
@@ -120,13 +128,18 @@ class _TotalReceivedDetailScreenState extends State<TotalReceivedDetailScreen> {
           // ),
 
           Expanded(
-            child: ListView.builder(
-              itemCount: data.payments.length,
-              padding: const EdgeInsets.all(16),
-              itemBuilder: (_, i) {
-                final receipt = data.payments[i];
-                return ReceiptCard(receipt: receipt);
-              },
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              color: AppColors.amber,
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: data.payments.length,
+                padding: const EdgeInsets.all(16),
+                itemBuilder: (_, i) {
+                  final receipt = data.payments[i];
+                  return ReceiptCard(receipt: receipt);
+                },
+              ),
             ),
           ),
         ],

@@ -29,27 +29,34 @@ class _StageWiseReportsScreenState extends State<StageWiseReportsScreen> {
   void initState() {
     super.initState();
     selectedSite = widget.sites;
-    
-    Future.microtask(() async {
-      final provider = context.read<CompanyProvider>();
-      
-      // Ensure sites are loaded
-      if (provider.sitesList.isEmpty) {
-        final companyId = await SharedPreferenceHelper.getCompanyId();
-        await provider.sitesbycompanies(companyId: companyId);
-      }
-      
-      // If no site was passed, use the first one from the list
-      if (selectedSite == null && provider.sitesList.isNotEmpty) {
-        setState(() {
-          selectedSite = provider.sitesList.first;
-        });
-      }
-      
-      if (selectedSite != null) {
-        provider.getStageWiseReport(siteId: selectedSite!.id);
-      }
-    });
+
+    // Clear stale data from a previously viewed site before this screen's first paint.
+    final provider = context.read<CompanyProvider>();
+    provider.stageWiseReport = [];
+    provider.loaderState = LoaderState.loading;
+
+    Future.microtask(_refresh);
+  }
+
+  Future<void> _refresh() async {
+    final provider = context.read<CompanyProvider>();
+
+    // Ensure sites are loaded
+    if (provider.sitesList.isEmpty) {
+      final companyId = await SharedPreferenceHelper.getCompanyId();
+      await provider.sitesbycompanies(companyId: companyId);
+    }
+
+    // If no site was passed, use the first one from the list
+    if (selectedSite == null && provider.sitesList.isNotEmpty) {
+      setState(() {
+        selectedSite = provider.sitesList.first;
+      });
+    }
+
+    if (selectedSite != null) {
+      await provider.getStageWiseReport(siteId: selectedSite!.id);
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -106,25 +113,38 @@ class _StageWiseReportsScreenState extends State<StageWiseReportsScreen> {
             child: Consumer<CompanyProvider>(
               builder: (context, provider, child) {
                 final reports = provider.stageWiseReport;
-                
+
                 if (provider.loaderState == LoaderState.loading) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                
-                if (selectedSite == null) {
-                  return const Center(child: Text("Please select a site to view reports"));
-                }
-                
-                if (reports.isEmpty) {
-                  return const Center(child: Text("No stage-wise reports available for this site"));
-                }
-                
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: reports.length,
-                  itemBuilder: (context, index) {
-                    return _StageReportCard(report: reports[index]);
-                  },
+
+                return RefreshIndicator(
+                  onRefresh: _refresh,
+                  color: AppColors.amber,
+                  child: selectedSite == null
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: const [
+                            SizedBox(height: 200),
+                            Center(child: Text("Please select a site to view reports")),
+                          ],
+                        )
+                      : reports.isEmpty
+                          ? ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: const [
+                                SizedBox(height: 200),
+                                Center(child: Text("No stage-wise reports available for this site")),
+                              ],
+                            )
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.all(16),
+                              itemCount: reports.length,
+                              itemBuilder: (context, index) {
+                                return _StageReportCard(report: reports[index]);
+                              },
+                            ),
                 );
               }
             ),

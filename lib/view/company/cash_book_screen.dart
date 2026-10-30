@@ -541,18 +541,28 @@ class _CashbookScreenState extends State<CashbookScreen> {
             child: _loading
                 ? const Center(
                     child: CircularProgressIndicator(color: AppColors.amber))
-                : _cashBook == null
-    ? const Center(
-        child: Text(
-          "No Cash Book Data",
-          style: TextStyle(fontSize: 16),
-        ),
-      )
-    : _CashbookTable(
-        cashBook: _cashBook!,
-        fromDate: _fromDate,
-        toDate: _toDate,
-      ),
+                : RefreshIndicator(
+                    onRefresh: _load,
+                    color: AppColors.amber,
+                    child: _cashBook == null
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: const [
+                              SizedBox(height: 200),
+                              Center(
+                                child: Text(
+                                  "No Cash Book Data",
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ],
+                          )
+                        : _CashbookTable(
+                            cashBook: _cashBook!,
+                            fromDate: _fromDate,
+                            toDate: _toDate,
+                          ),
+                  ),
           ),
         ],
       ),
@@ -603,6 +613,7 @@ class _CashbookTable extends StatelessWidget {
         : payments.length;
 
     return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(12),
       child: Column(
         children: [

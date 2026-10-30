@@ -26,10 +26,17 @@ class _TotalSpentDetailScreenState extends State<TotalSpentDetailScreen> {
 void initState() {
   super.initState();
 
+  // Clear stale data from a previously viewed site before this screen's first paint.
+  context.read<CompanyProvider>().totalSpentDetail = null;
+
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    context.read<CompanyProvider>()
-        .getTotalSpentDetail(siteId: widget.siteId);
+    _refresh();
   });
+}
+
+Future<void> _refresh() async {
+  await context.read<CompanyProvider>()
+      .getTotalSpentDetail(siteId: widget.siteId);
 }
 
   @override
@@ -91,7 +98,11 @@ void initState() {
 
           // Breakdown Cards
           Expanded(
-            child: ListView(
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              color: AppColors.amber,
+              child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
                 Text('Expense Breakdown',
@@ -269,6 +280,7 @@ void initState() {
                   ),
                 ),
               ],
+              ),
             ),
           ),
         ],

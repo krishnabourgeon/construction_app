@@ -2215,7 +2215,7 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
     Function(String errorMessage)? onFailure,
     required int siteId,
     required String name,
-    required int quantity,
+    required double quantity,
     required int unitId,
     required int price,
     required int totalAmount,
@@ -2226,39 +2226,46 @@ class CompanyProvider extends ChangeNotifier with ProviderHelperClass {
   }) async {
     updateLoadState(LoaderState.loading);
 
-    var res = await serviceConfig.addMaterial(
-      AddMaterialsBody(
-        siteId: siteId,
-        name: name,
-        unitId: unitId,
-        price: price,
-        totalAmount: totalAmount,
-        addedDate: addedDate,
-        categoryId: categoryId,
-        qty: quantity,
-        supplierId: supplierId,
-        substageId: substageId,
-      ),
-    );
+    try {
+      var res = await serviceConfig.addMaterial(
+        AddMaterialsBody(
+          siteId: siteId,
+          name: name,
+          unitId: unitId,
+          price: price,
+          totalAmount: totalAmount,
+          addedDate: addedDate,
+          categoryId: categoryId,
+          qty: quantity,
+          supplierId: supplierId,
+          substageId: substageId,
+        ),
+      );
 
-    if (!res.isError) {
-      final response = res.asValue!.value as AddMaterialsModel;
+      if (!res.isError) {
+        final response = res.asValue!.value as AddMaterialsModel;
 
-      updateLoadState(LoaderState.loaded);
-      await getMaterials(substageId: substageId);
-    } else {
-      String errorMessage = ErrorParser.getCleanErrorMessage(
-          res.asError!.error, "Failed to add materials");
+        updateLoadState(LoaderState.loaded);
+        await getMaterials(substageId: substageId);
+      } else {
+        String errorMessage = ErrorParser.getCleanErrorMessage(
+            res.asError!.error, "Failed to add materials");
 
-      if (res.asError!.error is ErrorResponseModel) {
-        errorMessage =
-            (res.asError!.error as ErrorResponseModel).errorMessage ??
-            errorMessage;
+        if (res.asError!.error is ErrorResponseModel) {
+          errorMessage =
+              (res.asError!.error as ErrorResponseModel).errorMessage ??
+              errorMessage;
+        }
+
+        errorToast = errorMessage;
+        if (onFailure != null) onFailure(errorMessage);
+
+        updateLoadState(LoaderState.loaded);
       }
-
-      errorToast = errorMessage;
-      if (onFailure != null) onFailure(errorMessage);
-
+    } catch (e) {
+      debugPrint("CompanyProvider: Error in addMaterials: $e");
+      errorToast = "Failed to add materials";
+      if (onFailure != null) onFailure(errorToast!);
       updateLoadState(LoaderState.loaded);
     }
 

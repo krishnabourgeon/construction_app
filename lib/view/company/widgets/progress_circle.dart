@@ -4,10 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ProgressCircle extends StatelessWidget {
   final String label;
-  final int value;
-  final int total;
+  final num value;
+  final num total;
   final Color color;
   final String suffix;
+  final int decimals;
 
   const ProgressCircle({
     required this.label,
@@ -15,10 +16,13 @@ class ProgressCircle extends StatelessWidget {
     required this.total,
     required this.color,
     this.suffix = '',
+    this.decimals = 0,
   });
 
   @override
   Widget build(BuildContext context) {
+    final displayValue =
+        decimals > 0 ? value.toStringAsFixed(decimals) : value.toInt().toString();
     return Column(
       children: [
         Stack(
@@ -34,7 +38,7 @@ class ProgressCircle extends StatelessWidget {
                 strokeWidth: 6,
               ),
             ),
-            Text('$value$suffix',
+            Text('$displayValue$suffix',
                 style: GoogleFonts.poppins(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,

@@ -41,14 +41,16 @@ class _SupplierScreenState extends State<SupplierScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CompanyProvider>().getSupplier((error) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error), backgroundColor: Colors.red),
-          );
-        }
-      });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
+  }
+
+  Future<void> _refresh() async {
+    await context.read<CompanyProvider>().getSupplier((error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error), backgroundColor: Colors.red),
+        );
+      }
     });
   }
 
@@ -202,18 +204,23 @@ class _SupplierScreenState extends State<SupplierScreen> {
 
           // ── List ────────────────────────────────────────────────────────
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-              itemCount: _filtered.length,
-              itemBuilder: (_, i) {
-                final supplier = _filtered[i];
-                final colorIdx = i % _avatarBgs.length;
-                return _UserCard(
-                  supplier: supplier,
-                  avatarBg: _avatarBgs[colorIdx],
-                  avatarFg: _avatarFgs[colorIdx],
-                );
-              },
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              color: AppColors.amber,
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final supplier = _filtered[i];
+                  final colorIdx = i % _avatarBgs.length;
+                  return _UserCard(
+                    supplier: supplier,
+                    avatarBg: _avatarBgs[colorIdx],
+                    avatarFg: _avatarFgs[colorIdx],
+                  );
+                },
+              ),
             ),
           ),
         ],

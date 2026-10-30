@@ -30,13 +30,15 @@ class _SitesScreenState extends State<SitesScreen> {
   void initState() {
     super.initState();
 
-    Future.microtask(() async {
-      final companyId = await SharedPreferenceHelper.getCompanyId();
-      if (mounted) {
-        context.read<CompanyProvider>().sitesbycompanies(companyId: companyId);
-      }
-      context.read<CompanyProvider>().getSupervisors();
-    });
+    Future.microtask(_refresh);
+  }
+
+  Future<void> _refresh() async {
+    final companyId = await SharedPreferenceHelper.getCompanyId();
+    if (mounted) {
+      await context.read<CompanyProvider>().sitesbycompanies(companyId: companyId);
+    }
+    await context.read<CompanyProvider>().getSupervisors();
   }
 
   // void loadSupervisors() async {
@@ -168,33 +170,43 @@ class _SitesScreenState extends State<SitesScreen> {
                     allSites.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                if (sites.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No sites found',
-                      style: TextStyle(color: AppColors.grey),
-                    ),
-                  );
-                }
-                return ListView.builder(
-                  padding: const EdgeInsets.all(12),
-                  itemCount: sites.length,
-                  itemBuilder: (context, index) {
-                    final site = sites[index];
-                    return SiteCard(
-                      site: site,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SiteDetailScreen(
-                              site: site,
+                return RefreshIndicator(
+                  onRefresh: _refresh,
+                  color: AppColors.amber,
+                  child: sites.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: const [
+                            SizedBox(height: 200),
+                            Center(
+                              child: Text(
+                                'No sites found',
+                                style: TextStyle(color: AppColors.grey),
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    );
-                  },
+                          ],
+                        )
+                      : ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.all(12),
+                          itemCount: sites.length,
+                          itemBuilder: (context, index) {
+                            final site = sites[index];
+                            return SiteCard(
+                              site: site,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SiteDetailScreen(
+                                      site: site,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
                 );
               },
             ),

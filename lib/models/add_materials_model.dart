@@ -55,11 +55,11 @@ class Data {
 class Mapping {
     int siteId;
     int categoryId;
-    int qty;
+    num qty;
     int unitId;
     int substageId;
-    int price;
-    int amount;
+    num price;
+    num amount;
     int supplierId;
     DateTime addedDate;
     int materialId;

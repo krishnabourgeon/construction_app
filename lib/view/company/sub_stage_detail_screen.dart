@@ -37,6 +37,11 @@ class _SubStageDetailScreenState extends State<SubStageDetailScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
+    // Clear stale data from a previously viewed sub-stage before this screen's first paint.
+    final provider = context.read<CompanyProvider>();
+    provider.materialsList = [];
+    provider.laboursList = [];
+
     Future.microtask(() {
       context.read<CompanyProvider>().getLabours(
         substageId: widget.subStages.id,
@@ -399,51 +404,63 @@ class _MaterialsTab extends StatelessWidget {
                   provider.loaderState == LoaderState.loading &&
                       materials.isEmpty
                   ? const Center(child: CircularProgressIndicator())
-                  ///  EMPTY
-                  : materials.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.inventory_2_outlined,
-                            size: 48,
-                            color: AppColors.greyLight,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'No materials added yet',
-                            style: GoogleFonts.poppins(
-                              fontSize: 15,
-                              color: AppColors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Tap "Add Material" to get started',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: AppColors.greyLight,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ///  LIST
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: materials.length,
-                      itemBuilder: (_, i) {
-                        final m = materials[i];
+                  : RefreshIndicator(
+                      onRefresh: () =>
+                          provider.getMaterials(substageId: subStages.id),
+                      color: AppColors.amber,
+                      ///  EMPTY
+                      child: materials.isEmpty
+                          ? ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: [
+                                const SizedBox(height: 80),
+                                Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.inventory_2_outlined,
+                                        size: 48,
+                                        color: AppColors.greyLight,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        'No materials added yet',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 15,
+                                          color: AppColors.grey,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Tap "Add Material" to get started',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          color: AppColors.greyLight,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          ///  LIST
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.all(12),
+                              itemCount: materials.length,
+                              itemBuilder: (_, i) {
+                                final m = materials[i];
 
-                        return MaterialCard(
-                          material: materials[i],
-                          onDelete: () {
-                            /// TODO: implement delete API if needed
-                            onUpdate();
-                          },
-                        );
-                      },
+                                return MaterialCard(
+                                  material: materials[i],
+                                  onDelete: () {
+                                    /// TODO: implement delete API if needed
+                                    onUpdate();
+                                  },
+                                );
+                              },
+                            ),
                     ),
             ),
           ],
@@ -536,48 +553,60 @@ class _LabourTab extends StatelessWidget {
                   provider.loaderState == LoaderState.loading &&
                       filteredLabours.isEmpty
                   ? const Center(child: CircularProgressIndicator())
-                  : filteredLabours.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.groups_outlined,
-                            size: 48,
-                            color: AppColors.greyLight,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'No labour entries yet',
-                            style: GoogleFonts.poppins(
-                              fontSize: 13,
-                              color: AppColors.grey,
+                  : RefreshIndicator(
+                      onRefresh: () =>
+                          provider.getLabours(substageId: subStages.id),
+                      color: AppColors.amber,
+                      child: filteredLabours.isEmpty
+                          ? ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: [
+                                const SizedBox(height: 80),
+                                Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.groups_outlined,
+                                        size: 48,
+                                        color: AppColors.greyLight,
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        'No labour entries yet',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          color: AppColors.grey,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Tap "Add Labour" to get started',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 11,
+                                          color: AppColors.greyLight,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.all(12),
+                              itemCount: filteredLabours.length,
+                              itemBuilder: (_, i) {
+                                final l = filteredLabours[i];
+                                return LabourCard(
+                                  labour: l,
+                                  onDelete: () {
+                                    // provider.deleteLabour(l.id); // Implement if needed
+                                    onUpdate();
+                                  },
+                                );
+                              },
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Tap "Add Labour" to get started',
-                            style: GoogleFonts.poppins(
-                              fontSize: 11,
-                              color: AppColors.greyLight,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: filteredLabours.length,
-                      itemBuilder: (_, i) {
-                        final l = filteredLabours[i];
-                        return LabourCard(
-                          labour: l,
-                          onDelete: () {
-                            // provider.deleteLabour(l.id); // Implement if needed
-                            onUpdate();
-                          },
-                        );
-                      },
                     ),
             ),
           ],

@@ -968,17 +968,17 @@ class _SplashScreenState extends State<SplashScreen>
       return;
     }
 
-    if (subscriptionStatus == 'expired') {
-      _navigate(const PaymentScreen());
-      return;
-    }
+    // if (subscriptionStatus == 'expired') {
+    //   _navigate(const PaymentScreen());
+    //   return;
+    // }
 
     // ── Fallback: check trial expired flag ───────────────────────────
-    final trialExpired = await SharedPreferenceHelper.getTrialExpired();
-    if (trialExpired) {
-      _navigate(const PaymentScreen());
-      return;
-    }
+    // final trialExpired = await SharedPreferenceHelper.getTrialExpired();
+    // if (trialExpired) {
+    //   _navigate(const PaymentScreen());
+    //   return;
+    // }
 
     // ── All good → go to dashboard ───────────────────────────────────────
     _navigate(

@@ -11,24 +11,24 @@ String addSitesModelToJson(AddSitesModel data) => json.encode(data.toJson());
 class AddSitesModel {
     bool status;
     String message;
-    Data data;
+    Data? data;
 
     AddSitesModel({
         required this.status,
         required this.message,
-        required this.data,
+        this.data,
     });
 
     factory AddSitesModel.fromJson(Map<String, dynamic> json) => AddSitesModel(
         status: json["status"],
         message: json["message"],
-        data: Data.fromJson(json["data"]),
+        data: json["data"] != null ? Data.fromJson(json["data"]) : null,
     );
 
     Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
-        "data": data.toJson(),
+        "data": data?.toJson(),
     };
 }
 
@@ -71,7 +71,7 @@ class Data {
         supervisorId: json["supervisor_id"] ?? 0,
         startDate: json["start_date"] != null ? DateTime.parse(json["start_date"]) : DateTime.now(),
         tentativeCompletionDate: json["tentative_completion_date"] != null ? DateTime.parse(json["tentative_completion_date"]) : DateTime.now(),
-        estimateAmount: json["estimate_amount"] ?? 0,
+        estimateAmount: json["estimate_amount"] != null ? int.tryParse(json["estimate_amount"].toString()) ?? 0 : 0,
         description: json["description"] ?? "",
         status: json["status"] ?? 0,
         updatedAt: json["updated_at"] != null ? DateTime.parse(json["updated_at"]) : DateTime.now(),

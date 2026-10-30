@@ -347,12 +347,13 @@ class _LoginScreenState extends State<LoginScreen> {
           return;
         }
 
-        if (trialExpired || subscriptionStatus == 'expired') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const PaymentScreen()),
-          );
-        } else {
+        // if (trialExpired || subscriptionStatus == 'expired') {
+        //   Navigator.pushReplacement(
+        //     context,
+        //     MaterialPageRoute(builder: (_) => const PaymentScreen()),
+        //   );
+        // }
+        // else {
           if (role == 'supervisor') {
             Navigator.pushReplacement(
               context,
@@ -364,7 +365,7 @@ class _LoginScreenState extends State<LoginScreen> {
               MaterialPageRoute(builder: (_) => const MainScreen()),
             );
           }
-        }
+        // }
       },
       onFailure: (errorMessage) {
         ScaffoldMessenger.of(context).showSnackBar(

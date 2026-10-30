@@ -1286,7 +1286,11 @@ class _ProfileScreenState extends State<ProfileScreen>
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FC),
-      body: CustomScrollView(
+      body: RefreshIndicator(
+        onRefresh: _loadData,
+        color: AppColors.amber,
+        child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           // ── App bar / header ─────────────────────────────────────────
           SliverAppBar(
@@ -1400,7 +1404,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         ],
                                       ),
                                     const SizedBox(height: 6),
-                                    _SubBadge(profileData: _profileData),
+                                    //_SubBadge(profileData: _profileData),
                                   ],
                                 ),
                               ),
@@ -1502,22 +1506,22 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
 
                 // Subscription section
-                _SectionTitle(title: 'Subscription'),
-                _ProfileCard(
-                  children: [
-                    _ProfileTile(
-                      icon: Icons.workspace_premium_outlined,
-                      iconColor: AppColors.amber,
-                      iconBg: AppColors.amberLight,
-                      title: 'Current Plan',
-                      subtitle: _profileData?.subscription.plan ?? 'Loading...',
-                      trailing: _profileData != null
-                          ? _DaysLeftChip(profileData: _profileData!)
-                          : null,
-                      onTap: () {},
-                    ),
-                  ],
-                ),
+                // _SectionTitle(title: 'Subscription'),
+                // _ProfileCard(
+                //   children: [
+                    // _ProfileTile(
+                    //   icon: Icons.workspace_premium_outlined,
+                    //   iconColor: AppColors.amber,
+                    //   iconBg: AppColors.amberLight,
+                    //   title: 'Current Plan',
+                    //   subtitle: _profileData?.subscription.plan ?? 'Loading...',
+                    //   // trailing: _profileData != null
+                    //   //     ? _DaysLeftChip(profileData: _profileData!)
+                    //   //     : null,
+                    //   onTap: () {},
+                    // ),
+                //   ],
+                // ),
 
                 // App section
                 _SectionTitle(title: 'App'),
@@ -1591,6 +1595,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -1997,86 +2002,86 @@ class _HeaderIconBtn extends StatelessWidget {
   }
 }
 
-class _SubBadge extends StatelessWidget {
-  final ProfileData? profileData;
-  const _SubBadge({required this.profileData});
+// class _SubBadge extends StatelessWidget {
+//   final ProfileData? profileData;
+//   const _SubBadge({required this.profileData});
 
-  @override
-  Widget build(BuildContext context) {
-    if (profileData == null) return const SizedBox.shrink();
+//   @override
+//   Widget build(BuildContext context) {
+//     if (profileData == null) return const SizedBox.shrink();
 
-    final plan      = profileData!.subscription.plan.toLowerCase();
-    final isPro     = plan == 'active';
-    final isExpired = profileData!.subscription.trialExpired;
-    final daysLeft  = profileData!.subscription.trialDaysLeft;
+//     final plan      = profileData!.subscription.plan.toLowerCase();
+//     final isPro     = plan == 'active';
+//     final isExpired = profileData!.subscription.trialExpired;
+//     final daysLeft  = profileData!.subscription.trialDaysLeft;
 
-    final Color bg, text;
-    final IconData icon;
-    final String label;
+//     final Color bg, text;
+//     final IconData icon;
+//     final String label;
 
-    if (isPro) {
-      bg = AppColors.greenLight; text = AppColors.green;
-      icon = Icons.workspace_premium_rounded;
-      label = 'Pro · ${daysLeft}d left';
-    } else if (!isExpired) {
-      bg = AppColors.amberLight; text = AppColors.amberDark;
-      icon = Icons.hourglass_top_rounded;
-      label = 'Free Trial · ${daysLeft}d left';
-    } else {
-      bg = AppColors.redLight; text = AppColors.red;
-      icon = Icons.lock_outline_rounded;
-      label = 'Trial Expired';
-    }
+//     if (isPro) {
+//       bg = AppColors.greenLight; text = AppColors.green;
+//       icon = Icons.workspace_premium_rounded;
+//       label = 'Pro · ${daysLeft}d left';
+//     } else if (!isExpired) {
+//       bg = AppColors.amberLight; text = AppColors.amberDark;
+//       icon = Icons.hourglass_top_rounded;
+//       label = 'Free Trial · ${daysLeft}d left';
+//     } else {
+//       bg = AppColors.redLight; text = AppColors.red;
+//       icon = Icons.lock_outline_rounded;
+//       label = 'Trial Expired';
+//     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-          color: bg, borderRadius: BorderRadius.circular(8)),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: text),
-          const SizedBox(width: 4),
-          Text(label,
-              style: GoogleFonts.poppins(
-                fontSize: 11, fontWeight: FontWeight.w600, color: text,
-              )),
-        ],
-      ),
-    );
-  }
-}
+//     return Container(
+//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+//       decoration: BoxDecoration(
+//           color: bg, borderRadius: BorderRadius.circular(8)),
+//       child: Row(
+//         mainAxisSize: MainAxisSize.min,
+//         children: [
+//           Icon(icon, size: 12, color: text),
+//           const SizedBox(width: 4),
+//           Text(label,
+//               style: GoogleFonts.poppins(
+//                 fontSize: 11, fontWeight: FontWeight.w600, color: text,
+//               )),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
-class _DaysLeftChip extends StatelessWidget {
-  final ProfileData profileData;
-  const _DaysLeftChip({required this.profileData});
+// class _DaysLeftChip extends StatelessWidget {
+//   final ProfileData profileData;
+//   const _DaysLeftChip({required this.profileData});
 
-  @override
-  Widget build(BuildContext context) {
-    final days  = profileData.subscription.trialDaysLeft;
-    final isPro = profileData.subscription.plan.toLowerCase() == 'active';
+//   @override
+//   Widget build(BuildContext context) {
+//     final days  = profileData.subscription.trialDaysLeft;
+//     final isPro = profileData.subscription.plan.toLowerCase() == 'active';
 
-    final color = days > 7
-        ? (isPro ? AppColors.green : AppColors.navy)
-        : days > 3
-            ? AppColors.amberDark
-            : AppColors.red;
+//     final color = days > 7
+//         ? (isPro ? AppColors.green : AppColors.navy)
+//         : days > 3
+//             ? AppColors.amberDark
+//             : AppColors.red;
 
-    final bg = days > 7
-        ? (isPro ? AppColors.greenLight : const Color(0xFFEEF2FF))
-        : days > 3
-            ? AppColors.amberLight
-            : AppColors.redLight;
+//     final bg = days > 7
+//         ? (isPro ? AppColors.greenLight : const Color(0xFFEEF2FF))
+//         : days > 3
+//             ? AppColors.amberLight
+//             : AppColors.redLight;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-          color: bg, borderRadius: BorderRadius.circular(8)),
-      child: Text('$days days left',
-          style: GoogleFonts.poppins(
-            fontSize: 12, fontWeight: FontWeight.w700, color: color,
-          )),
-    );
-  }
-}
+//     return Container(
+//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+//       decoration: BoxDecoration(
+//           color: bg, borderRadius: BorderRadius.circular(8)),
+//       child: Text('$days days left',
+//           style: GoogleFonts.poppins(
+//             fontSize: 12, fontWeight: FontWeight.w700, color: color,
+//           )),
+//     );
+//   }
+// }
 

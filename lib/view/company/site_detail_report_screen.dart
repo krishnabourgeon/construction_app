@@ -13,10 +13,22 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
 
-class SiteDetailReportScreen extends StatelessWidget {
+class SiteDetailReportScreen extends StatefulWidget {
   final SiteDetailReportData site;
 
   const SiteDetailReportScreen({super.key, required this.site});
+
+  @override
+  State<SiteDetailReportScreen> createState() => _SiteDetailReportScreenState();
+}
+
+class _SiteDetailReportScreenState extends State<SiteDetailReportScreen> {
+
+  double get _spentPercent {
+    final estimated = widget.site.financialSummary.estimatedBudget;
+    final spent = widget.site.financialSummary.totalSpent;
+    return (estimated > 0) ? (spent / estimated * 100).clamp(0, 100) : 0.0;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +36,7 @@ class SiteDetailReportScreen extends StatelessWidget {
       backgroundColor: AppColors.greyBg,
       body: Column(
         children: [
-          _buildHeader(context, site.siteName, 'Detailed Financial Report'),
+          _buildHeader(context, widget.site.siteName, 'Detailed Financial Report'),
 
           Expanded(
             child: SingleChildScrollView(
@@ -45,7 +57,7 @@ class SiteDetailReportScreen extends StatelessWidget {
                       children: [
                         _buildWhiteStat(
                           'Estimated Budget',
-                          _formatAmt(site.financialSummary.estimatedBudget),
+                          _formatAmt(widget.site.financialSummary.estimatedBudget),
                         ),
                         const Divider(color: Colors.white24, height: 20),
                         _buildWhiteStat(
@@ -54,12 +66,12 @@ class SiteDetailReportScreen extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (_) =>
-                                    TotalSpentDetailScreen(siteId: site.siteId),
+                                    TotalSpentDetailScreen(siteId: widget.site.siteId),
                               ),
                             );
                           },
                           'Total Spent',
-                          _formatAmt(site.financialSummary.totalSpent),
+                          _formatAmt(widget.site.financialSummary.totalSpent),
                         ),
                         const Divider(color: Colors.white24, height: 20),
                         _buildWhiteStat(
@@ -68,19 +80,19 @@ class SiteDetailReportScreen extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => TotalReceivedDetailScreen(
-                                  siteId: site.siteId,
+                                  siteId: widget.site.siteId,
                                 ),
                               ),
                             );
                           },
                           'Total Received',
-                          _formatAmt(site.financialSummary.totalReceived),
+                          _formatAmt(widget.site.financialSummary.totalReceived),
                         ),
                         const Divider(color: Colors.white24, height: 20),
                         _buildWhiteStat(
                           'Balance',
-                          _formatAmt(site.financialSummary.balance),
-                          valueColor: site.financialSummary.balance >= 0
+                          _formatAmt(widget.site.financialSummary.balance),
+                          valueColor: widget.site.financialSummary.balance >= 0
                               ? AppColors.greenLight
                               : AppColors.redLight,
                         ),
@@ -108,7 +120,7 @@ class SiteDetailReportScreen extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (_) =>
-                                    MaterialsDetailScreen(siteId: site.siteId),
+                                    MaterialsDetailScreen(siteId: widget.site.siteId),
                               ),
                             );
                           },
@@ -141,7 +153,7 @@ class SiteDetailReportScreen extends StatelessWidget {
                                 const SizedBox(height: 2),
                                 Text(
                                   _formatAmt(
-                                    site.expenseBreakdown.materials.amount,
+                                    widget.site.expenseBreakdown.materials.amount,
                                   ),
                                   style: GoogleFonts.poppins(
                                     fontSize: 18,
@@ -162,7 +174,7 @@ class SiteDetailReportScreen extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (_) =>
-                                    LabourDetailScreen(siteId: site.siteId),
+                                    LabourDetailScreen(siteId: widget.site.siteId),
                               ),
                             );
                           },
@@ -195,7 +207,7 @@ class SiteDetailReportScreen extends StatelessWidget {
                                 const SizedBox(height: 2),
                                 Text(
                                   _formatAmt(
-                                    site.expenseBreakdown.labour.amount,
+                                    widget.site.expenseBreakdown.labour.amount,
                                   ),
                                   style: GoogleFonts.poppins(
                                     fontSize: 18,
@@ -234,23 +246,23 @@ class SiteDetailReportScreen extends StatelessWidget {
                       children: [
                         ProgressCircle(
                           label: 'Completed',
-                          value: site.projectProgress.completed,
-                          total: site.projectProgress.totalStages,
+                          value: widget.site.projectProgress.completed,
+                          total: widget.site.projectProgress.totalStages,
                           color: AppColors.green,
                         ),
                         ProgressCircle(
                           label: 'In Progress',
-                          value: site.projectProgress.inProgress,
-                          total: site.projectProgress.totalStages,
+                          value: widget.site.projectProgress.inProgress,
+                          total: widget.site.projectProgress.totalStages,
                           color: AppColors.orange,
                         ),
                         ProgressCircle(
                           label: 'Budget Used',
-                          value: (site.projectProgress.budgetUsedPct)
-                              .toInt(),
+                          value: _spentPercent,
                           total: 100,
                           color: AppColors.blue,
                           suffix: '%',
+                          decimals: 1,
                         ),
                       ],
                     ),
@@ -262,7 +274,7 @@ class SiteDetailReportScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _generatePDFReport(context, site),
+        onPressed: () => _generatePDFReport(context, widget.site),
         backgroundColor: AppColors.blue,
         icon: const Icon(Icons.picture_as_pdf),
         label: Text(
@@ -274,37 +286,6 @@ class SiteDetailReportScreen extends StatelessWidget {
   }
 
   // Widget _buildWhiteStat(
-  //   String label,
-  //   String value, {
-  //   Color? valueColor,
-  //   VoidCallback? onTap,
-  // }) {
-  //   return InkWell(
-  //     onTap: onTap,
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //       children: [
-  //         Text(
-  //           label,
-  //           style: GoogleFonts.poppins(
-  //             fontSize: 18,
-  //             color: Colors.white.withOpacity(0.9),
-  //             fontWeight: FontWeight.w500,
-  //           ),
-  //         ),
-  //         Text(
-  //           value,
-  //           style: GoogleFonts.poppins(
-  //             fontSize: 18,
-  //             fontWeight: FontWeight.w700,
-  //             color: valueColor ?? AppColors.white,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget _buildWhiteStat(
   String label,
   String value, {
@@ -442,63 +423,6 @@ class SiteDetailReportScreen extends StatelessWidget {
   }
 
   // ══════════════════════════════════════════════════════════════════════════════
-  // PDF GENERATION
-  // ══════════════════════════════════════════════════════════════════════════════
-
-  // Future<void> _generatePDFReport(
-  //     BuildContext context,  SiteDetailReportData site) async {
-  //   final pdf = pw.Document();
-
-  //   pdf.addPage(
-  //     pw.Page(
-  //       build: (pw.Context context) {
-  //         return pw.Column(
-  //           crossAxisAlignment: pw.CrossAxisAlignment.start,
-  //           children: [
-  //             pw.Text('Site Financial Report',
-  //                 style:
-  //                     pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
-  //             pw.SizedBox(height: 10),
-  //             pw.Text(site.siteName, style: const pw.TextStyle(fontSize: 18)),
-  //             pw.SizedBox(height: 20),
-  //             pw.Divider(),
-  //             pw.SizedBox(height: 10),
-  //             _pdfRow('Estimated Budget', _formatAmt(site.financialSummary.estimatedBudget).replaceAll('₹', 'Rs.')),
-  //             _pdfRow('Total Spent', _formatAmt(site.financialSummary.totalSpent).replaceAll('₹', 'Rs.')),
-  //             _pdfRow('Total Received', _formatAmt(site.financialSummary.totalReceived).replaceAll('₹', 'Rs.')),
-  //             _pdfRow('Balance', _formatAmt(site.financialSummary.balance).replaceAll('₹', 'Rs.')),
-  //             pw.SizedBox(height: 20),
-  //             pw.Divider(),
-  //             pw.SizedBox(height: 10),
-  //             pw.Text('Expense Breakdown',
-  //                 style:
-  //                     pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-  //             pw.SizedBox(height: 10),
-  //             _pdfRow('Materials', _formatAmt(site.expenseBreakdown.materials.amount).replaceAll('₹', 'Rs.')),
-  //             _pdfRow('Labour', _formatAmt(site.expenseBreakdown.labour.amount).replaceAll('₹', 'Rs.')),
-  //           ],
-  //         );
-  //       },
-  //     ),
-  //   );
-
-  //   await Printing.layoutPdf(
-  //       onLayout: (PdfPageFormat format) async => pdf.save());
-  // }
-
-  // pw.Widget _pdfRow(String label, String value) {
-  //   return pw.Padding(
-  //     padding: const pw.EdgeInsets.symmetric(vertical: 4),
-  //     child: pw.Row(
-  //       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-  //       children: [
-  //         pw.Text(label),
-  //         pw.Text(value, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Future<void> _generatePDFReport(
     BuildContext context,
     SiteDetailReportData site,
@@ -599,7 +523,6 @@ class SiteDetailReportScreen extends StatelessWidget {
       XFile(file.path),
     ], text: 'Site Financial Report - ${site.siteName}');
   }
-
 
   pw.Widget _pdfRow(String label, String value) {
     return pw.Padding(

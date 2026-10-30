@@ -26,11 +26,18 @@ class _LabourDetailScreenState extends State<LabourDetailScreen> {
   void initState() {
     super.initState();
 
+    // Clear stale data from a previously viewed site before this screen's first paint.
+    context.read<CompanyProvider>().totalSpentDetail = null;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CompanyProvider>().getTotalSpentDetail(
-        siteId: widget.siteId,
-      );
+      _refresh();
     });
+  }
+
+  Future<void> _refresh() async {
+    await context.read<CompanyProvider>().getTotalSpentDetail(
+      siteId: widget.siteId,
+    );
   }
 
   @override
@@ -101,13 +108,18 @@ class _LabourDetailScreenState extends State<LabourDetailScreen> {
 
           // Labour List
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: labours.length,
-              itemBuilder: (_, i) {
-                final item = labours[i];
-                return LabourExpenseCard(labour: item);
-              },
+            child: RefreshIndicator(
+              onRefresh: _refresh,
+              color: AppColors.amber,
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                itemCount: labours.length,
+                itemBuilder: (_, i) {
+                  final item = labours[i];
+                  return LabourExpenseCard(labour: item);
+                },
+              ),
             ),
           ),
         ],

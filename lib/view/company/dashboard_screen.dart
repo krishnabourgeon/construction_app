@@ -55,6 +55,12 @@ class _DashboardScreenState extends State<DashboardScreen>
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
   late Animation<Offset> _slideAnim;
+  // final GlobalKey<TrialBannerWidgetState> _trialBannerKey =
+  //     GlobalKey<TrialBannerWidgetState>();
+
+  // Future<void> _refresh() async {
+  //   await _trialBannerKey.currentState?.reload();
+  // }
 
   @override
   void initState() {
@@ -92,117 +98,118 @@ class _DashboardScreenState extends State<DashboardScreen>
               child: SlideTransition(
                 position: _slideAnim,
                 child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Trial banner
-                      const TrialBannerWidget(),
-                      const SizedBox(height: 22),
-
-                      // Section label
-                      _SectionLabel(label: 'QUICK ACCESS'),
-                      const SizedBox(height: 14),
-
-                      // Big cards (Supervisor, Sites, Report)
-                      _AnimatedCard(delay: 0.0, child: _BigDashCard(
-                        label: 'Supervisor',
-                        icon: Icons.supervised_user_circle_rounded,
-                        gradient: const [Color(0xFF4F46E5), Color(0xFF6366F1)],
+                physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics()),
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Trial banner
+                   // TrialBannerWidget(key: _trialBannerKey),
+                    const SizedBox(height: 22),
+                
+                    // Section label
+                    _SectionLabel(label: 'QUICK ACCESS'),
+                    const SizedBox(height: 14),
+                
+                    // Big cards (Supervisor, Sites, Report)
+                    _AnimatedCard(delay: 0.0, child: _BigDashCard(
+                      label: 'Supervisor',
+                      icon: Icons.supervised_user_circle_rounded,
+                      gradient: const [Color(0xFF4F46E5), Color(0xFF6366F1)],
+                      iconBg: Colors.white12,
+                      labelColor: Colors.white,
+                      onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const UserScreen())),
+                    )),
+                    const SizedBox(height: 12),
+                
+                    _AnimatedCard(delay: 0.08, child: _BigDashCard(
+                      label: 'My Sites',
+                      icon: Icons.domain_rounded,
+                      gradient: const [Color(0xFFF59E0B), Color(0xFFD97706)],
+                      iconBg: Colors.black12,
+                      labelColor: AppColors.dark,
+                      onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const SitesScreen())),
+                    )),
+                    const SizedBox(height: 12),
+                
+                    _AnimatedCard(delay: 0.16, child: _BigDashCard(
+                      label: 'Reports',
+                      icon: Icons.bar_chart_rounded,
+                      gradient: const [Color(0xFF1A1A2E), Color(0xFF2D2D4E)],
+                      iconBg: Colors.white12,
+                      labelColor: Colors.white,
+                      onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const ReportsScreen())),
+                    )),
+                    const SizedBox(height: 12),
+                
+                    // ── Two-column quick cards ─────────────────────────
+                    _AnimatedCard(
+                      delay: 0.24,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _SmallDashCard(
+                              label: 'Payments',
+                              icon: Icons.payment_rounded,
+                              gradient: const [Color(0xFFEA580C), Color(0xFFC2410C)],
+                              onTap: () => Navigator.push(context,
+                                MaterialPageRoute(builder: (_) =>
+                                  const PaymentListScreen(paymentType: 1))),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _SmallDashCard(
+                              label: 'Receipts',
+                              icon: Icons.receipt_long_rounded,
+                              gradient: const [Color(0xFF4F46E5), Color(0xFF6366F1)],
+                              onTap: () => Navigator.push(context,
+                                MaterialPageRoute(builder: (_) =>
+                                  const PaymentListScreen(paymentType: 2))),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // After the existing Payments/Receipts _AnimatedCard row, add:
+                
+                    const SizedBox(height: 22),
+                
+                    _SectionLabel(label: 'ACCOUNTS'),
+                    const SizedBox(height: 14),
+                
+                    _AnimatedCard(
+                      delay: 0.32,
+                      child: _BigDashCard(
+                        label: 'Ledger',
+                        icon: Icons.menu_book_rounded,
+                        gradient: const [Color(0xFF15803D), Color(0xFF166534)],
                         iconBg: Colors.white12,
                         labelColor: Colors.white,
                         onTap: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => const UserScreen())),
-                      )),
-                      const SizedBox(height: 12),
-
-                      _AnimatedCard(delay: 0.08, child: _BigDashCard(
-                        label: 'My Sites',
-                        icon: Icons.domain_rounded,
-                        gradient: const [Color(0xFFF59E0B), Color(0xFFD97706)],
-                        iconBg: Colors.black12,
-                        labelColor: AppColors.dark,
-                        onTap: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => const SitesScreen())),
-                      )),
-                      const SizedBox(height: 12),
-
-                      _AnimatedCard(delay: 0.16, child: _BigDashCard(
-                        label: 'Reports',
-                        icon: Icons.bar_chart_rounded,
-                        gradient: const [Color(0xFF1A1A2E), Color(0xFF2D2D4E)],
+                          MaterialPageRoute(builder: (_) => const LedgerScreen())),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                
+                    _AnimatedCard(
+                      delay: 0.40,
+                      child: _BigDashCard(
+                        label: 'Cashbook',
+                        icon: Icons.account_balance_wallet_rounded,
+                        gradient: const [Color(0xFF1D4ED8), Color(0xFF1E40AF)],
                         iconBg: Colors.white12,
                         labelColor: Colors.white,
                         onTap: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => const ReportsScreen())),
-                      )),
-                      const SizedBox(height: 12),
-
-                      // ── Two-column quick cards ─────────────────────────
-                      _AnimatedCard(
-                        delay: 0.24,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: _SmallDashCard(
-                                label: 'Payments',
-                                icon: Icons.payment_rounded,
-                                gradient: const [Color(0xFFEA580C), Color(0xFFC2410C)],
-                                onTap: () => Navigator.push(context,
-                                  MaterialPageRoute(builder: (_) =>
-                                    const PaymentListScreen(paymentType: 1))),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _SmallDashCard(
-                                label: 'Receipts',
-                                icon: Icons.receipt_long_rounded,
-                                gradient: const [Color(0xFF4F46E5), Color(0xFF6366F1)],
-                                onTap: () => Navigator.push(context,
-                                  MaterialPageRoute(builder: (_) =>
-                                    const PaymentListScreen(paymentType: 2))),
-                              ),
-                            ),
-                          ],
-                        ),
+                          MaterialPageRoute(builder: (_) => const CashbookScreen())),
                       ),
-                      // After the existing Payments/Receipts _AnimatedCard row, add:
-
-                      const SizedBox(height: 22),
-
-                      _SectionLabel(label: 'ACCOUNTS'),
-                      const SizedBox(height: 14),
-
-                      _AnimatedCard(
-                        delay: 0.32,
-                        child: _BigDashCard(
-                          label: 'Ledger',
-                          icon: Icons.menu_book_rounded,
-                          gradient: const [Color(0xFF15803D), Color(0xFF166534)],
-                          iconBg: Colors.white12,
-                          labelColor: Colors.white,
-                          onTap: () => Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => const LedgerScreen())),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      _AnimatedCard(
-                        delay: 0.40,
-                        child: _BigDashCard(
-                          label: 'Cashbook',
-                          icon: Icons.account_balance_wallet_rounded,
-                          gradient: const [Color(0xFF1D4ED8), Color(0xFF1E40AF)],
-                          iconBg: Colors.white12,
-                          labelColor: Colors.white,
-                          onTap: () => Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => const CashbookScreen())),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
                 ),
               ),
             ),
